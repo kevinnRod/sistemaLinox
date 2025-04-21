@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicia sesión</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+
+    <!-- Particles -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <!-- CSS personalizado (opcional) -->
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+<body class="h-screen bg-cover bg-center" style="background-image: url('/images/fondo_04.jpg')">
+
+    <div id="particles-js" class="absolute inset-0 z-0"></div>
+
+    <div class="overlay w-full h-screen flex items-center justify-center z-10">
+        <div class="form-container bg-white p-8 rounded shadow-md w-full max-w-md relative z-20">
+            <h1 class="form-title text-center text-2xl font-semibold mb-6">Inicia sesión</h1>
+
+            <!-- Error al iniciar sesión -->
+            <div th:if="${param.error}" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                Usuario o contraseña incorrectos.
+            </div>
+
+            <!-- Logout -->
+            <div th:if="${param.logout}" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                Has cerrado sesión exitosamente.
+            </div>
+
+            <form th:action="@{/login}" method="post" class="space-y-4">
+                <div>
+                    <label for="username" class="form-label block text-sm font-medium">Correo electrónico</label>
+                    <input 
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        class="form-input mt-1 block w-full border-gray-300 rounded shadow-sm"
+                        placeholder="Correo electrónico" />
+                </div>
+
+                <div class="relative">
+                    <label for="password" class="form-label block text-sm font-medium">Contraseña</label>
+                    <input 
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        class="form-input mt-1 block w-full border-gray-300 rounded shadow-sm pr-10"
+                        placeholder="Contraseña" />
+                    <span 
+                        id="togglePassword"
+                        class="absolute right-3 top-9 cursor-pointer text-gray-600">
+                        <i class="fa-solid fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" class="form-checkbox">
+                    <label for="remember-me" class="ml-2 text-sm text-gray-600">Recuérdame</label>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+                    Iniciar sesión
+                </button>
+            </form>
+
+            <div class="mt-6 text-sm text-center">
+                <a href="#" class="text-blue-500 hover:underline">¿Olvidaste tu contraseña?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS personalizado -->
+    <script th:src="@{/js/login.js}"></script>
+
+</body>
+</html>

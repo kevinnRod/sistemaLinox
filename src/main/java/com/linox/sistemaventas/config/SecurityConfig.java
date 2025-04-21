@@ -18,11 +18,13 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/assets/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated())
-                .formLogin(form -> form
+                    .formLogin(form -> form
+                        .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .permitAll())
+                    
                 .logout(logout -> logout.permitAll());
 
         return http.build();
