@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Usuarios</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-4">
+        <h2 class="mb-4">Lista de Usuarios</h2>
+
+        <div class="mb-3 text-end">
+            <a href="/usuarios/crear" class="btn btn-primary">+ Nuevo Usuario</a>
+        </div>
+
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Creado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.idUsuario}"></td>
+                    <td th:text="${usuario.usuario}"></td>
+                    <td th:text="${usuario.correo}"></td>
+                    <td>
+                        <span th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                            th:classappend="${usuario.idEstado == 1 ? 'text-success' : 'text-danger'}"></span>
+                    </td>
+                    <td th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <a th:href="@{'/usuarios/' + ${usuario.idUsuario}}" class="btn btn-sm btn-info">Ver</a>
+                        <a th:href="@{'/usuarios/editar/' + ${usuario.idUsuario}}"
+                            class="btn btn-sm btn-warning">Editar</a>
+                        <form th:action="@{'/usuarios/eliminar/' + ${usuario.idUsuario}}" method="post"
+                            style="display:inline;">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <th:block layout:fragment="js">
+        <script th:src="@{/assets/js/custom/usuarios.js}"></script>
+    </th:block>
+
+</body>
+
+</html>
