@@ -13,7 +13,7 @@
     <link rel="stylesheet" th:href="@{/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css}" />
     <link rel="stylesheet" th:href="@{/assets/plugins/global/plugins.bundle.css}" />
     <link rel="stylesheet" th:href="@{/assets/css/style.bundle.css}" />
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Extra head content -->
     <th:block layout:fragment="head"></th:block>
 </head>
@@ -86,14 +86,32 @@
                             </div>
                             <div class="menu-item">
                                 <a th:class="'menu-link ' + (${active_page} == 'usuario' ? 'active text-danger' : '')"
-                                    th:href="@{/usuarios}">
+                                    th:href="@{/usuario}">
                                     <span class="menu-icon">
-                                        <i class="bi bi-window fs-3"></i>
+                                        <i class="bi bi-person fs-3"></i>
                                     </span>
                                     <span class="menu-title">Usuarios</span>
                                 </a>
                             </div>
+                            <div class="menu-item">
+                                <a th:class="'menu-link ' + (${active_page} == 'rol' ? 'active text-danger' : '')"
+                                    th:href="@{/rol}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-tools fs-3"></i>
+                                    </span>
+                                    <span class="menu-title">Roles</span>
+                                </a>
+                            </div>
 
+                            <div class="menu-item">
+                                <a th:class="'menu-link ' + (${active_page} == 'permiso' ? 'active text-danger' : '')"
+                                    th:href="@{/permiso}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-key fs-3"></i>
+                                    </span>
+                                    <span class="menu-title">Permisos</span>
+                                </a>
+                            </div>
 
                             <div class="menu-item">
                                 <div class="menu-content pt-8 pb-2">

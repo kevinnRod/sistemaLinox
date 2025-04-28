@@ -1,7 +1,7 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.entities.RolPermiso;
-import com.linox.sistemaventas.entities.RolPermisoId;
+import com.linox.sistemaventas.models.RolPermiso;
+import com.linox.sistemaventas.models.RolPermisoId;
 import com.linox.sistemaventas.services.RolPermisoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

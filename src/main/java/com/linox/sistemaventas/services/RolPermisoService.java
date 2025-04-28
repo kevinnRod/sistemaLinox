@@ -1,10 +1,10 @@
 package com.linox.sistemaventas.services;
 
-import com.linox.sistemaventas.entities.RolPermiso;
-import com.linox.sistemaventas.entities.RolPermisoId;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.linox.sistemaventas.models.RolPermiso;
+import com.linox.sistemaventas.models.RolPermisoId;
 
 public interface RolPermisoService {
     List<RolPermiso> findAll();

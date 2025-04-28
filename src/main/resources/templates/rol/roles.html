@@ -4,45 +4,43 @@
 
 <head>
     <th:block layout:fragment="head">
-        <title>Usuarios</title>
+        <title>Roles</title>
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content" class="container mt-4">
-        <h2 class="mb-4">Lista de Usuarios</h2>
+        <h2 class="mb-4">Lista de Roles</h2>
 
         <div class="mb-3 text-end">
-            <a href="/usuario/create" class="btn btn-primary">+ Nuevo Usuario</a>
+            <a href="/rol/create" class="btn btn-primary">+ Nuevo Rol</a>
         </div>
 
         <table class="table table-striped">
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Correo</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
                     <th>Estado</th>
                     <th>Creado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="usuario : ${usuarios}">
-                    <td th:text="${usuario.idUsuario}"></td>
-                    <td th:text="${usuario.usuario}"></td>
-                    <td th:text="${usuario.correo}"></td>
+                <tr th:each="rol : ${roles}">
+                    <td th:text="${rol.idRol}"></td>
+                    <td th:text="${rol.nombreRol}"></td>
+                    <td th:text="${rol.descripcionRol}"></td>
                     <td>
-                        <span th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
-                            th:classappend="${usuario.idEstado == 1 ? 'text-success' : 'text-danger'}"></span>
+                        <span th:text="${rol.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                            th:classappend="${rol.idEstado == 1 ? 'text-success' : 'text-danger'}"></span>
                     </td>
-                    <td th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(rol.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>
-                        <a th:href="@{'/usuario/' + ${usuario.idUsuario}}" class="btn btn-sm btn-info">Ver</a>
-                        <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
-                            class="btn btn-sm btn-warning">Editar</a>
-                        <form th:action="@{'/usuario/eliminar/' + ${usuario.idUsuario}}" method="post"
-                            style="display:inline;">
+                        <a th:href="@{'/roles/' + ${rol.idRol}}" class="btn btn-sm btn-info">Ver</a>
+                        <a th:href="@{'/roles/editar/' + ${rol.idRol}}" class="btn btn-sm btn-warning">Editar</a>
+                        <form th:action="@{'/roles/eliminar/' + ${rol.idRol}}" method="post" style="display:inline;">
                             <input type="hidden" name="_method" value="delete" />
                             <button type="submit" class="btn btn-sm btn-danger"
                                 onclick="return confirm('¿Estás seguro de cambiar el estado a inactivo?')">Inactivar</button>

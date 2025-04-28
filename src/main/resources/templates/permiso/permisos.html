@@ -4,44 +4,44 @@
 
 <head>
     <th:block layout:fragment="head">
-        <title>Usuarios</title>
+        <title>Permisos</title>
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content" class="container mt-4">
-        <h2 class="mb-4">Lista de Usuarios</h2>
+        <h2 class="mb-4">Lista de Permisos</h2>
 
         <div class="mb-3 text-end">
-            <a href="/usuario/create" class="btn btn-primary">+ Nuevo Usuario</a>
+            <a href="/permiso/create" class="btn btn-primary">+ Nuevo Permiso</a>
         </div>
 
         <table class="table table-striped">
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Correo</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
                     <th>Estado</th>
                     <th>Creado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="usuario : ${usuarios}">
-                    <td th:text="${usuario.idUsuario}"></td>
-                    <td th:text="${usuario.usuario}"></td>
-                    <td th:text="${usuario.correo}"></td>
+                <tr th:each="permiso : ${permisos}">
+                    <td th:text="${permiso.idPermiso}"></td>
+                    <td th:text="${permiso.nombrePermiso}"></td>
+                    <td th:text="${permiso.descripcionPermiso}"></td>
                     <td>
-                        <span th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
-                            th:classappend="${usuario.idEstado == 1 ? 'text-success' : 'text-danger'}"></span>
+                        <span th:text="${permiso.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                            th:classappend="${permiso.idEstado == 1 ? 'text-success' : 'text-danger'}"></span>
                     </td>
-                    <td th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(permiso.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>
-                        <a th:href="@{'/usuario/' + ${usuario.idUsuario}}" class="btn btn-sm btn-info">Ver</a>
-                        <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
+                        <a th:href="@{'/permisos/' + ${permiso.idPermiso}}" class="btn btn-sm btn-info">Ver</a>
+                        <a th:href="@{'/permisos/editar/' + ${permiso.idPermiso}}"
                             class="btn btn-sm btn-warning">Editar</a>
-                        <form th:action="@{'/usuario/eliminar/' + ${usuario.idUsuario}}" method="post"
+                        <form th:action="@{'/permisos/eliminar/' + ${permiso.idPermiso}}" method="post"
                             style="display:inline;">
                             <input type="hidden" name="_method" value="delete" />
                             <button type="submit" class="btn btn-sm btn-danger"

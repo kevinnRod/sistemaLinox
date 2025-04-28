@@ -1,8 +1,9 @@
 package com.linox.sistemaventas.services;
 
-import com.linox.sistemaventas.entities.Rol;
 import java.util.List;
 import java.util.Optional;
+
+import com.linox.sistemaventas.models.Rol;
 
 public interface RolService {
     List<Rol> findAll();
@@ -12,4 +13,6 @@ public interface RolService {
     Rol save(Rol rol);
 
     void deleteById(Integer id);
+
+    List<Rol> findAllByEstadoActivo();
 }

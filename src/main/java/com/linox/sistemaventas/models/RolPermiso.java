@@ -1,4 +1,4 @@
-package com.linox.sistemaventas.entities;
+package com.linox.sistemaventas.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

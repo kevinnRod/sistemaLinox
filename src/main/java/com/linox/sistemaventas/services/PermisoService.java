@@ -1,8 +1,9 @@
 package com.linox.sistemaventas.services;
 
-import com.linox.sistemaventas.entities.Permiso;
 import java.util.List;
 import java.util.Optional;
+
+import com.linox.sistemaventas.models.Permiso;
 
 public interface PermisoService {
     List<Permiso> findAll();
@@ -12,4 +13,6 @@ public interface PermisoService {
     Permiso save(Permiso permiso);
 
     void deleteById(Integer id);
+
+    List<Permiso> findAllByEstadoActivo();
 }

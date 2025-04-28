@@ -1,6 +1,6 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.entities.Persona;
+import com.linox.sistemaventas.models.Persona;
 import com.linox.sistemaventas.repositories.PersonaRepository;
 import com.linox.sistemaventas.services.PersonaService;
 import org.springframework.beans.factory.annotation.Autowired;

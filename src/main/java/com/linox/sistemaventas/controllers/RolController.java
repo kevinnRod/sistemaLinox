@@ -1,23 +1,28 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.entities.Rol;
+import com.linox.sistemaventas.models.Rol;
 import com.linox.sistemaventas.services.RolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/roles")
+@Controller
+@RequestMapping("/rol")
 public class RolController {
 
     @Autowired
     private RolService rolService;
 
     @GetMapping
-    public List<Rol> getAll() {
-        return rolService.findAll();
+    public String getAll(Model model) {
+        List<Rol> roles = rolService.findAllByEstadoActivo();
+        model.addAttribute("roles", roles); // Pasar la lista de roles a la vista
+        model.addAttribute("active_page", "rol");
+        return "rol/roles"; // Nombre de la vista Thymeleaf
     }
 
     @GetMapping("/{id}")

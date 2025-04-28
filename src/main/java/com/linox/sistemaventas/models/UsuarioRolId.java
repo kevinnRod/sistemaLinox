@@ -1,4 +1,4 @@
-package com.linox.sistemaventas.entities;
+package com.linox.sistemaventas.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

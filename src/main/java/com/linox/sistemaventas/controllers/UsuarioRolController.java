@@ -1,7 +1,7 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.entities.UsuarioRol;
-import com.linox.sistemaventas.entities.UsuarioRolId;
+import com.linox.sistemaventas.models.UsuarioRol;
+import com.linox.sistemaventas.models.UsuarioRolId;
 import com.linox.sistemaventas.services.UsuarioRolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

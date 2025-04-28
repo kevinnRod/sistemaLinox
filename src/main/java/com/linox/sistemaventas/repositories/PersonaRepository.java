@@ -1,8 +1,9 @@
 package com.linox.sistemaventas.repositories;
 
-import com.linox.sistemaventas.entities.Persona;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.linox.sistemaventas.models.Persona;
 
 import java.util.Optional;
 

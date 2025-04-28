@@ -1,10 +1,10 @@
 package com.linox.sistemaventas.services;
 
-import com.linox.sistemaventas.entities.UsuarioRol;
-import com.linox.sistemaventas.entities.UsuarioRolId;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.linox.sistemaventas.models.UsuarioRol;
+import com.linox.sistemaventas.models.UsuarioRolId;
 
 public interface UsuarioRolService {
     List<UsuarioRol> findAll();
