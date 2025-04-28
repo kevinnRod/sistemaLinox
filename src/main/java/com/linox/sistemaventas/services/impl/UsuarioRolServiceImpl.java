@@ -1,7 +1,7 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.entities.UsuarioRol;
-import com.linox.sistemaventas.entities.UsuarioRolId;
+import com.linox.sistemaventas.models.UsuarioRol;
+import com.linox.sistemaventas.models.UsuarioRolId;
 import com.linox.sistemaventas.repositories.UsuarioRolRepository;
 import com.linox.sistemaventas.services.UsuarioRolService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,23 +1,28 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.entities.Permiso;
+import com.linox.sistemaventas.models.Permiso;
 import com.linox.sistemaventas.services.PermisoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/permisos")
+@Controller
+@RequestMapping("/permiso")
 public class PermisoController {
 
     @Autowired
     private PermisoService permisoService;
 
     @GetMapping
-    public List<Permiso> getAll() {
-        return permisoService.findAll();
+    public String getAll(Model model) {
+        List<Permiso> permisos = permisoService.findAllByEstadoActivo();
+        model.addAttribute("permisos", permisos); // Pasar la lista de permisos a la vista
+        model.addAttribute("active_page", "permiso");
+        return "permiso/permisos"; // Nombre de la vista Thymeleaf
     }
 
     @GetMapping("/{id}")

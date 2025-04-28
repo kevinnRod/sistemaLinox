@@ -1,6 +1,5 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.entities.Usuario;
 import com.linox.sistemaventas.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;

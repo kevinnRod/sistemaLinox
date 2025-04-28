@@ -1,9 +1,9 @@
 package com.linox.sistemaventas.services;
 
-import com.linox.sistemaventas.entities.Persona;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.linox.sistemaventas.models.Persona;
 
 public interface PersonaService {
     List<Persona> findAll();

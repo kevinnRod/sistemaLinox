@@ -1,6 +1,6 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.entities.Rol;
+import com.linox.sistemaventas.models.Rol;
 import com.linox.sistemaventas.repositories.RolRepository;
 import com.linox.sistemaventas.services.RolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +33,10 @@ public class RolServiceImpl implements RolService {
     @Override
     public void deleteById(Integer id) {
         rolRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Rol> findAllByEstadoActivo() {
+        return rolRepository.findByIdEstado(1); // 1 es el estado activo
     }
 }

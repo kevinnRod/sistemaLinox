@@ -1,6 +1,6 @@
 package com.linox.sistemaventas.config;
 
-import com.linox.sistemaventas.entities.Usuario;
+import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.repositories.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

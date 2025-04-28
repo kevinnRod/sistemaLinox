@@ -1,9 +1,10 @@
 package com.linox.sistemaventas.repositories;
 
-import com.linox.sistemaventas.entities.RolPermiso;
-import com.linox.sistemaventas.entities.RolPermisoId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.linox.sistemaventas.models.RolPermiso;
+import com.linox.sistemaventas.models.RolPermisoId;
 
 import java.util.List;
 

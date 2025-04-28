@@ -1,6 +1,6 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.entities.Usuario;
+import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.repositories.UsuarioRepository;
 import com.linox.sistemaventas.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +43,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Optional<Usuario> findByCorreo(String correo) {
         return usuarioRepository.findByCorreo(correo);
+    }
+
+    // Implementación del método findAllByEstadoActivo()
+    @Override
+    public List<Usuario> findAllByEstadoActivo() {
+        return usuarioRepository.findByIdEstado(1); // 1 es el estado activo
     }
 }
