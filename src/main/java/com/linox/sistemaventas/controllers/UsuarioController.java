@@ -1,24 +1,25 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.models.Usuario;
-import com.linox.sistemaventas.repositories.UsuarioRepository;
-import com.linox.sistemaventas.services.UsuarioService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.linox.sistemaventas.models.Usuario;
+import com.linox.sistemaventas.services.UsuarioService;
 
 @Controller
 @RequestMapping("/usuario") // Ruta base para las vistas de usuario
 public class UsuarioController {
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,13 +39,12 @@ public class UsuarioController {
     // Mostrar el formulario de creación de un nuevo usuario
     @GetMapping("/create")
     public String crearUsuario(Model model) {
-        Usuario usuario = new Usuario();
-        model.addAttribute("usuario", usuario); // Pasamos un usuario vacío para el formulario
+        model.addAttribute("active_page", "usuario");
         return "usuario/crearUsuario"; // Vuelve a la vista usuario/crear.html
     }
 
     // Crear un nuevo usuario
-    @PostMapping("/usuario/save")
+    @PostMapping("/save")
     public String saveUsuario(
             @RequestParam("usuario") String usuario,
             @RequestParam("correo") String correo,
@@ -55,45 +55,60 @@ public class UsuarioController {
         user.setCorreo(correo);
         user.setContrasenaEnc(passwordEncoder.encode(contrasenaEnc));
         user.setIdEstado(idEstado);
-
-        usuarioRepository.save(user);
-        System.out.println(usuario);
+        usuarioService.save(user);
         return "redirect:/usuario";
     }
 
-    // Actualizar un usuario por su ID
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Usuario usuario) {
+    @GetMapping("/editar/{id}")
+    public String editarUsuario(@PathVariable Integer id, Model model) {
         Optional<Usuario> existente = usuarioService.findById(id);
-
         if (!existente.isPresent()) {
-            return ResponseEntity.notFound().build();
+            return "redirect:/usuario";
         }
-
         Usuario usuarioExistente = existente.get();
-
-        // Solo actualizamos campos permitidos
-        usuarioExistente.setUsuario(usuario.getUsuario());
-        usuarioExistente.setCorreo(usuario.getCorreo());
-        usuarioExistente.setContrasenaEnc(usuario.getContrasenaEnc());
-        usuarioExistente.setUrlFoto(usuario.getUrlFoto());
-        usuarioExistente.setIdEstado(usuario.getIdEstado());
-
-        Usuario actualizado = usuarioService.save(usuarioExistente);
-        return ResponseEntity.ok(actualizado);
+        model.addAttribute("usuario", usuarioExistente);
+        model.addAttribute("active_page", "usuario");
+        return "usuario/editarUsuario"; // Vuelve a la vista usuario/crear.html
     }
 
-    // Cambiar el estado a inactivo
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        Optional<Usuario> existente = usuarioService.findById(id);
-        if (existente.isPresent()) {
-            Usuario usuario = existente.get();
-            usuario.setIdEstado(0); // Cambiar el estado a inactivo (0)
-            usuarioService.save(usuario); // Guardar el cambio
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/actualizar/{id}")
+    public String actualizarUsuario(@PathVariable Integer id, RedirectAttributes redirectAttributes,
+            @RequestParam("usuario") String usuario,
+            @RequestParam("correo") String correo,
+            @RequestParam("contrasena") String contrasena,
+            @RequestParam("idEstado") Integer idEstado) {
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+
+        if (!usuarioOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "El usuario no fue encontrado.");
+            return "redirect:/usuario";
         }
+        Usuario user = usuarioOpt.get();
+        user.setUsuario(usuario);
+        user.setCorreo(correo);
+        if (contrasena != "") {
+            user.setContrasenaEnc(passwordEncoder.encode(contrasena));
+        }
+        user.setIdEstado(idEstado);
+        usuarioService.save(user);
+        return "redirect:/usuario";
     }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarUsuario(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+
+        if (!usuarioOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "El usuario no fue encontrado.");
+            return "redirect:/usuario";
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        usuario.setIdEstado(0); // Cambia el estado a inactivo
+        usuarioService.save(usuario);
+
+        redirectAttributes.addFlashAttribute("success", "Usuario inactivado correctamente.");
+        return "redirect:/usuario";
+    }
+
 }

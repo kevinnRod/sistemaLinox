@@ -1,6 +1,8 @@
 package com.linox.sistemaventas.models;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +24,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Collection;
-import java.util.Collections;
 
 @Entity
 @Table(name = "usuario")

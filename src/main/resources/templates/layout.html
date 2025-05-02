@@ -38,7 +38,7 @@
                 <div class="aside-logo flex-column-auto" id="kt_aside_logo">
                     <!--begin::Logo-->
                     <a th:href="@{/}">
-                        <img src="/assets/media/logos/logo-demo13-compact.svg" alt="Logo" class="h-25px logo" />
+                        <img th:src="@{/assets/media/logos/logo-demo13-compact.svg}" alt="Logo" class="h-25px logo" />
                     </a>
 
                     <!--end::Logo-->
@@ -48,7 +48,7 @@
                         data-kt-toggle-name="aside-minimize">
                         <!--begin::Svg Icon | path: icons/duotune/arrows/arr074.svg-->
                         <span class="svg-icon svg-icon-1 rotate-180">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            <svg th:xmlns="@{http://www.w3.org/2000/svg}" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none">
                                 <path
                                     d="M11.2657 11.4343L15.45 7.25C15.8642 6.83579 15.8642 6.16421 15.45 5.75C15.0358 5.33579 14.3642 5.33579 13.95 5.75L8.40712 11.2929C8.01659 11.6834 8.01659 12.3166 8.40712 12.7071L13.95 18.25C14.3642 18.6642 15.0358 18.6642 15.45 18.25C15.8642 17.8358 15.8642 17.1642 15.45 16.75L11.2657 12.5657C10.9533 12.2533 10.9533 11.7467 11.2657 11.4343Z"
@@ -61,54 +61,56 @@
                 </div>
                 <!--end::Brand-->
                 <!--begin::Aside menu-->
-                <div class="aside-menu flex-column-fluid">
-                    <!--begin::Aside Menu-->
-                    <div class="hover-scroll-overlay-y my-2 py-5 py-lg-8" id="kt_aside_menu_wrapper"
+                <div class="aside-menu d-flex flex-column h-100">
+                    <!--begin::Aside Menu Wrapper (Scroll area)-->
+                    <div id="kt_aside_menu_wrapper" class="hover-scroll-overlay-y my-2 py-5 py-lg-8 flex-grow-1"
                         data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
                         data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer"
                         data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="0">
+
                         <!--begin::Menu-->
-                        <div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-                            id="#kt_aside_menu" data-kt-menu="true">
+                        <div class="menu menu-column menu-title-gray-800 menu-state-title-primary 
+                                    menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                            id="kt_aside_menu" data-kt-menu="true">
+
                             <div class="menu-item">
                                 <div class="menu-content pb-2">
                                     <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
                                 </div>
                             </div>
+
                             <div class="menu-item">
-                                <a class="menu-link {% if active_page == 'inicio' %}active text-danger{% endif %}"
-                                    href="/dashboard">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-grid fs-3"></i>
-                                    </span>
+                                <a class="menu-link"
+                                    th:classappend="${active_page} == 'inicio' ? ' active text-danger' : ''"
+                                    th:href="@{/dashboard}">
+                                    <span class="menu-icon"><i class="bi bi-grid fs-3"></i></span>
                                     <span class="menu-title">Inicio</span>
                                 </a>
                             </div>
+
                             <div class="menu-item">
-                                <a th:class="'menu-link ' + (${active_page} == 'usuario' ? 'active text-danger' : '')"
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'usuario' ? 'active text-danger' : '')"
                                     th:href="@{/usuario}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-person fs-3"></i>
-                                    </span>
+                                    <span class="menu-icon"><i class="bi bi-person fs-3"></i></span>
                                     <span class="menu-title">Usuarios</span>
                                 </a>
                             </div>
+
                             <div class="menu-item">
-                                <a th:class="'menu-link ' + (${active_page} == 'rol' ? 'active text-danger' : '')"
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'rol' ? 'active text-danger' : '')"
                                     th:href="@{/rol}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-tools fs-3"></i>
-                                    </span>
+                                    <span class="menu-icon"><i class="bi bi-person-gear fs-3"></i></span>
                                     <span class="menu-title">Roles</span>
                                 </a>
                             </div>
 
                             <div class="menu-item">
-                                <a th:class="'menu-link ' + (${active_page} == 'permiso' ? 'active text-danger' : '')"
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'permiso' ? 'active text-danger' : '')"
                                     th:href="@{/permiso}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-key fs-3"></i>
-                                    </span>
+                                    <span class="menu-icon"><i class="bi bi-key fs-3"></i></span>
                                     <span class="menu-title">Permisos</span>
                                 </a>
                             </div>
@@ -118,32 +120,33 @@
                                     <span class="menu-section text-muted text-uppercase fs-8 ls-1">Crafted</span>
                                 </div>
                             </div>
-                            <div data-kt-menu-trigger="click"
-                                class="menu-item menu-accordion {% if 'menu1' in active_page %}show{% endif %}">
+
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${#strings.contains(active_page, 'menu1')} ? ' show' : ''">
+
                                 <span class="menu-link">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-archive fs-3"></i>
-                                    </span>
-                                    <span class="menu-title">documentos de Entrada</span>
+                                    <span class="menu-icon"><i class="bi bi-archive fs-3"></i></span>
+                                    <span class="menu-title">Documentos de Entrada</span>
                                     <span class="menu-arrow"></span>
                                 </span>
+
                                 <div class="menu-sub menu-sub-accordion menu-active-bg">
-                                    <div data-kt-menu-trigger="click"
-                                        class="menu-item menu-accordion {% if 'submenu1' in active_page %}show{% endif %}">
+                                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                        th:classappend="${#strings.contains(active_page, 'submenu1')} ? ' show' : ''">
+
                                         <span class="menu-link">
-                                            <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
-                                            </span>
+                                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
                                             <span class="menu-title">Documentos de Seguimiento</span>
                                             <span class="menu-arrow"></span>
                                         </span>
+
                                         <div class="menu-sub menu-sub-accordion menu-active-bg">
                                             <div class="menu-item">
-                                                <a class="menu-link {% if 'visita' in active_page %}active text-danger{% endif %}"
-                                                    href="">
-                                                    <span class="menu-bullet">
-                                                        <span class="bullet bullet-dot"></span>
-                                                    </span>
+                                                <a class="menu-link"
+                                                    th:classappend="${#strings.contains(active_page, 'visita')} ? ' active text-danger' : ''"
+                                                    th:href="@{/visita}">
+                                                    <span class="menu-bullet"><span
+                                                            class="bullet bullet-dot"></span></span>
                                                     <span class="menu-title">Visitas</span>
                                                 </a>
                                             </div>
@@ -151,11 +154,22 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <!--end::Menu-->
                     </div>
+
+                    <!--begin::Logout Button (Always visible)-->
+                    <div id="kt_aside_footer" class="p-4">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                            </button>
+                        </form>
+                    </div>
+                    <!--end::Logout Button-->
                 </div>
+
+
                 <!--end::Aside menu-->
             </div>
             <!--end::Aside-->
@@ -175,7 +189,8 @@
                         <!--begin::Mobile logo-->
                         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
                             <a href="" class="d-lg-none">
-                                <img alt="Logo" src="/assets/media/logos/logo-demo13-compact.svg" class="h-25px" />
+                                <img alt="Logo" th:src="@{/assets/media/logos/logo-demo13-compact.svg}"
+                                    class="h-25px" />
                             </a>
                         </div>
                         <!--end::Mobile logo-->
@@ -222,12 +237,13 @@
                                                     <!--begin::Username-->
                                                     <div class="d-flex flex-column">
                                                         <div class="fw-bolder d-flex align-items-center fs-5">
-                                                            Max Smith
+                                                            <span sec:authentication="principal.usuario"></span>
                                                             <span
                                                                 class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span>
                                                         </div>
                                                         <a href="#"
-                                                            class="fw-bold text-muted text-hover-primary fs-7">max@kt.com</a>
+                                                            class="fw-bold text-muted text-hover-primary fs-7"><span
+                                                                sec:authentication="principal.correo"></span></a>
                                                     </div>
                                                     <!--end::Username-->
                                                 </div>
@@ -238,14 +254,12 @@
                                             <!--end::Menu separator-->
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-5">
-                                                <a href="../../demo13/dist/account/overview.html"
-                                                    class="menu-link px-5">My Profile</a>
+                                                <a href="" class="menu-link px-5">My Profile</a>
                                             </div>
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-5">
-                                                <a href="../../demo13/dist/pages/projects/list.html"
-                                                    class="menu-link px-5">
+                                                <a href="" class="menu-link px-5">
                                                     <span class="menu-text">My Projects</span>
                                                     <span class="menu-badge">
                                                         <span
@@ -265,26 +279,22 @@
                                                 <div class="menu-sub menu-sub-dropdown w-175px py-4">
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/referrals.html"
-                                                            class="menu-link px-5">Referrals</a>
+                                                        <a href="" class="menu-link px-5">Referrals</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/billing.html"
-                                                            class="menu-link px-5">Billing</a>
+                                                        <a href="" class="menu-link px-5">Billing</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/statements.html"
-                                                            class="menu-link px-5">Payments</a>
+                                                        <a href="" class="menu-link px-5">Payments</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/statements.html"
-                                                            class="menu-link d-flex flex-stack px-5">Statements
+                                                        <a href="" class="menu-link d-flex flex-stack px-5">Statements
                                                             <i class="fas fa-exclamation-circle ms-2 fs-7"
                                                                 data-bs-toggle="tooltip"
                                                                 title="View your statements"></i></a>
@@ -313,8 +323,7 @@
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-5">
-                                                <a href="../../demo13/dist/account/statements.html"
-                                                    class="menu-link px-5">My Statements</a>
+                                                <a href="" class="menu-link px-5">My Statements</a>
                                             </div>
                                             <!--end::Menu item-->
                                             <!--begin::Menu separator-->
@@ -328,58 +337,55 @@
                                                         <span
                                                             class="fs-8 rounded bg-light px-3 py-2 position-absolute translate-middle-y top-50 end-0">English
                                                             <img class="w-15px h-15px rounded-1 ms-2"
-                                                                src="assets/media/flags/united-states.svg"
+                                                                th:src="@{/assets/media/flags/united-states.svg}"
                                                                 alt="" /></span></span>
                                                 </a>
                                                 <!--begin::Menu sub-->
                                                 <div class="menu-sub menu-sub-dropdown w-175px py-4">
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/settings.html"
-                                                            class="menu-link d-flex px-5 active">
+                                                        <a href="" class="menu-link d-flex px-5 active">
                                                             <span class="symbol symbol-20px me-4">
                                                                 <img class="rounded-1"
-                                                                    src="assets/media/flags/united-states.svg" alt="" />
+                                                                    th:src="@{/assets/media/flags/united-states.svg}"
+                                                                    alt="" />
                                                             </span>English</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/settings.html"
-                                                            class="menu-link d-flex px-5">
+                                                        <a href="" class="menu-link d-flex px-5">
                                                             <span class="symbol symbol-20px me-4">
                                                                 <img class="rounded-1"
-                                                                    src="assets/media/flags/spain.svg" alt="" />
+                                                                    th:src="@{/assets/media/flags/spain.svg}" alt="" />
                                                             </span>Spanish</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/settings.html"
-                                                            class="menu-link d-flex px-5">
+                                                        <a href="" class="menu-link d-flex px-5">
                                                             <span class="symbol symbol-20px me-4">
                                                                 <img class="rounded-1"
-                                                                    src="assets/media/flags/germany.svg" alt="" />
+                                                                    th:src="@{/assets/media/flags/germany.svg}"
+                                                                    alt="" />
                                                             </span>German</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/settings.html"
-                                                            class="menu-link d-flex px-5">
+                                                        <a href="" class="menu-link d-flex px-5">
                                                             <span class="symbol symbol-20px me-4">
                                                                 <img class="rounded-1"
-                                                                    src="@{assets/media/flags/japan.svg}" alt="" />
+                                                                    th:src="@{/assets/media/flags/japan.svg}" alt="" />
                                                             </span>Japanese</a>
                                                     </div>
                                                     <!--end::Menu item-->
                                                     <!--begin::Menu item-->
                                                     <div class="menu-item px-3">
-                                                        <a href="../../demo13/dist/account/settings.html"
-                                                            class="menu-link d-flex px-5">
+                                                        <a href="" class="menu-link d-flex px-5">
                                                             <span class="symbol symbol-20px me-4">
                                                                 <img class="rounded-1"
-                                                                    src="assets/media/flags/france.svg" alt="" />
+                                                                    th:src="@{/assets/media/flags/france.svg}" alt="" />
                                                             </span>French</a>
                                                     </div>
                                                     <!--end::Menu item-->
@@ -389,15 +395,20 @@
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-5 my-1">
-                                                <a href="../../demo13/dist/account/settings.html"
-                                                    class="menu-link px-5">Account Settings</a>
+                                                <a href="" class="menu-link px-5">Account Settings</a>
                                             </div>
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
+                                            <!-- Botón personalizado que dispara el logout -->
                                             <div class="menu-item px-5">
-                                                <a href="../../demo13/dist/authentication/flows/basic/sign-in.html"
-                                                    class="menu-link px-5">Sign Out</a>
+                                                <a href="#" class="menu-link px-5"
+                                                    onclick="document.getElementById('logoutForm').submit();">Sign
+                                                    Out</a>
                                             </div>
+
+                                            <!-- Formulario oculto de logout -->
+                                            <form id="logoutForm" th:action="@{/logout}" method="post"
+                                                style="display: none;"></form>
                                             <!--end::Menu item-->
                                             <!--begin::Menu separator-->
                                             <div class="separator my-2"></div>
@@ -410,7 +421,7 @@
                                                         for="kt_user_menu_dark_mode_toggle">
                                                         <input class="form-check-input w-30px h-20px" type="checkbox"
                                                             value="1" name="mode" id="kt_user_menu_dark_mode_toggle"
-                                                            data-kt-url="../../demo13/dist/index.html" />
+                                                            data-kt-url="" />
                                                         <span class="pulse-ring ms-n1"></span>
                                                         <span class="form-check-label text-gray-600 fs-7">Dark
                                                             Mode</span>
@@ -468,14 +479,14 @@
                         <!--begin::Menu-->
                         <ul class="menu menu-gray-600 menu-hover-primary fw-bold order-1">
                             <li class="menu-item">
-                                <a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
+                                <a th:href="@{https://keenthemes.com}" target="_blank" class="menu-link px-2">About</a>
                             </li>
                             <li class="menu-item">
-                                <a href="https://keenthemes.com/support" target="_blank"
+                                <a th:href="@{https://keenthemes.com/support}" target="_blank"
                                     class="menu-link px-2">Support</a>
                             </li>
                             <li class="menu-item">
-                                <a href="https://1.envato.market/EA4JP" target="_blank"
+                                <a th:href="@{https://1.envato.market/EA4JP}" target="_blank"
                                     class="menu-link px-2">Purchase</a>
                             </li>
                         </ul>

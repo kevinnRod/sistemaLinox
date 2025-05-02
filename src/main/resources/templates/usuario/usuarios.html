@@ -9,11 +9,11 @@
 </head>
 
 <body>
-    <div layout:fragment="content" class="container mt-4">
+    <div layout:fragment="content">
         <h2 class="mb-4">Lista de Usuarios</h2>
 
         <div class="mb-3 text-end">
-            <a href="/usuario/create" class="btn btn-primary">+ Nuevo Usuario</a>
+            <a th:href="@{/usuario/create}" class="btn btn-primary">+ Nuevo Usuario</a>
         </div>
 
         <table class="table table-striped">
@@ -27,7 +27,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody th:if="${usuarios != null and !usuarios.isEmpty()}">
                 <tr th:each="usuario : ${usuarios}">
                     <td th:text="${usuario.idUsuario}"></td>
                     <td th:text="${usuario.usuario}"></td>
@@ -38,23 +38,28 @@
                     </td>
                     <td th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>
-                        <a th:href="@{'/usuario/' + ${usuario.idUsuario}}" class="btn btn-sm btn-info">Ver</a>
                         <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
                             class="btn btn-sm btn-warning">Editar</a>
+
                         <form th:action="@{'/usuario/eliminar/' + ${usuario.idUsuario}}" method="post"
-                            style="display:inline;">
+                            style="display:inline;"
+                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
                             <input type="hidden" name="_method" value="delete" />
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                onclick="return confirm('¿Estás seguro de cambiar el estado a inactivo?')">Inactivar</button>
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                         </form>
                     </td>
+
+                </tr>
+            </tbody>
+            <tbody th:unless="${usuarios != null and !usuarios.isEmpty()}">
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <th:block layout:fragment="js">
-        <script th:src=""></script>
     </th:block>
 
 </body>
