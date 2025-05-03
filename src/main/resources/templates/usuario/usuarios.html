@@ -10,58 +10,70 @@
 
 <body>
     <div layout:fragment="content">
-        <h2 class="mb-4">Lista de Usuarios</h2>
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Usuarios</h2>
+                <a th:href="@{/usuario/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nuevo Usuario
+                </a>
+            </div>
 
-        <div class="mb-3 text-end">
-            <a th:href="@{/usuario/create}" class="btn btn-primary">+ Nuevo Usuario</a>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${usuarios != null and !usuarios.isEmpty()}">
+                        <tr th:each="usuario : ${usuarios}">
+                            <td class="text-center" th:text="${usuario.idUsuario}"></td>
+                            <td th:text="${usuario.usuario}"></td>
+                            <td th:text="${usuario.correo}"></td>
+                            <td class="text-center">
+                                <span class="badge" th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${usuario.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center"
+                                th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+
+                                    <form th:action="@{'/usuario/eliminar/' + ${usuario.idUsuario}}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${usuarios != null and !usuarios.isEmpty()}">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <table class="table table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Correo</th>
-                    <th>Estado</th>
-                    <th>Creado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody th:if="${usuarios != null and !usuarios.isEmpty()}">
-                <tr th:each="usuario : ${usuarios}">
-                    <td th:text="${usuario.idUsuario}"></td>
-                    <td th:text="${usuario.usuario}"></td>
-                    <td th:text="${usuario.correo}"></td>
-                    <td>
-                        <span th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
-                            th:classappend="${usuario.idEstado == 1 ? 'text-success' : 'text-danger'}"></span>
-                    </td>
-                    <td th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td>
-                        <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
-                            class="btn btn-sm btn-warning">Editar</a>
-
-                        <form th:action="@{'/usuario/eliminar/' + ${usuario.idUsuario}}" method="post"
-                            style="display:inline;"
-                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
-                            <input type="hidden" name="_method" value="delete" />
-                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                        </form>
-                    </td>
-
-                </tr>
-            </tbody>
-            <tbody th:unless="${usuarios != null and !usuarios.isEmpty()}">
-                <tr>
-                    <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 
     <th:block layout:fragment="js">
+        <!-- Si usas íconos de Bootstrap, asegúrate de tener esta línea en tu layout base -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> -->
     </th:block>
-
 </body>
 
 </html>

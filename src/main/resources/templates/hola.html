@@ -4,16 +4,35 @@
 
 <head>
     <th:block layout:fragment="head">
-        <title>Home</title>
+        <title>Inicio</title>
+        <!-- Asegúrate de tener Bootstrap incluido en tu layout base -->
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content">
-        <h1>Bienvenido al panel</h1>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-body text-center p-5">
+                            <h1 class="display-5 mb-4">¡Bienvenido al Panel!</h1>
+                            <p class="lead">
+                                Te has autenticado como: <strong><span
+                                        sec:authentication="principal.usuario"></span></strong>
+                            </p>
+                            <hr class="my-4">
+                            <p class="text-muted">Utiliza el menú de navegación para acceder a las funcionalidades
+                                disponibles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <th:block layout:fragment="js">
+        <!-- Scripts opcionales -->
     </th:block>
 </body>
 

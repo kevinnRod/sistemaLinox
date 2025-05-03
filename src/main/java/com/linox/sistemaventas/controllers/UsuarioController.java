@@ -49,13 +49,18 @@ public class UsuarioController {
             @RequestParam("usuario") String usuario,
             @RequestParam("correo") String correo,
             @RequestParam("contrasenaEnc") String contrasenaEnc,
-            @RequestParam("idEstado") Integer idEstado) {
-        Usuario user = new Usuario();
-        user.setUsuario(usuario);
-        user.setCorreo(correo);
-        user.setContrasenaEnc(passwordEncoder.encode(contrasenaEnc));
-        user.setIdEstado(idEstado);
-        usuarioService.save(user);
+            @RequestParam("idEstado") Integer idEstado, RedirectAttributes redirectAttributes) {
+        try {
+            Usuario user = new Usuario();
+            user.setUsuario(usuario);
+            user.setCorreo(correo);
+            user.setContrasenaEnc(passwordEncoder.encode(contrasenaEnc));
+            user.setIdEstado(idEstado);
+            usuarioService.save(user);
+            redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el usuario: " + e.getMessage());
+        }
         return "redirect:/usuario";
     }
 
@@ -77,37 +82,47 @@ public class UsuarioController {
             @RequestParam("correo") String correo,
             @RequestParam("contrasena") String contrasena,
             @RequestParam("idEstado") Integer idEstado) {
-        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        try {
+            Optional<Usuario> usuarioOpt = usuarioService.findById(id);
 
-        if (!usuarioOpt.isPresent()) {
-            redirectAttributes.addFlashAttribute("error", "El usuario no fue encontrado.");
-            return "redirect:/usuario";
+            if (!usuarioOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "El usuario no fue encontrado.");
+                return "redirect:/usuario";
+            }
+            Usuario user = usuarioOpt.get();
+            user.setUsuario(usuario);
+            user.setCorreo(correo);
+            if (contrasena != "") {
+                user.setContrasenaEnc(passwordEncoder.encode(contrasena));
+            }
+            user.setIdEstado(idEstado);
+            usuarioService.save(user);
+            redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el usuario: " + e.getMessage());
         }
-        Usuario user = usuarioOpt.get();
-        user.setUsuario(usuario);
-        user.setCorreo(correo);
-        if (contrasena != "") {
-            user.setContrasenaEnc(passwordEncoder.encode(contrasena));
-        }
-        user.setIdEstado(idEstado);
-        usuarioService.save(user);
         return "redirect:/usuario";
     }
 
     @PostMapping("/eliminar/{id}")
     public String eliminarUsuario(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        try {
+            Optional<Usuario> usuarioOpt = usuarioService.findById(id);
 
-        if (!usuarioOpt.isPresent()) {
-            redirectAttributes.addFlashAttribute("error", "El usuario no fue encontrado.");
-            return "redirect:/usuario";
+            if (!usuarioOpt.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "El usuario no fue encontrado.");
+                return "redirect:/usuario";
+            }
+
+            Usuario usuario = usuarioOpt.get();
+            usuario.setIdEstado(0); // Cambia el estado a inactivo
+            usuarioService.save(usuario);
+
+            redirectAttributes.addFlashAttribute("success", "Usuario eliminado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar el usuario: " + e.getMessage());
         }
 
-        Usuario usuario = usuarioOpt.get();
-        usuario.setIdEstado(0); // Cambia el estado a inactivo
-        usuarioService.save(usuario);
-
-        redirectAttributes.addFlashAttribute("success", "Usuario inactivado correctamente.");
         return "redirect:/usuario";
     }
 
