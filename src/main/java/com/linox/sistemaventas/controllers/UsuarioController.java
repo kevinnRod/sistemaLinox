@@ -1,7 +1,12 @@
 package com.linox.sistemaventas.controllers;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,14 +17,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.linox.sistemaventas.models.Rol;
 import com.linox.sistemaventas.models.Usuario;
+import com.linox.sistemaventas.models.UsuarioRol;
+import com.linox.sistemaventas.services.RolService;
+import com.linox.sistemaventas.services.UsuarioRolService;
 import com.linox.sistemaventas.services.UsuarioService;
 
 @Controller
 @RequestMapping("/usuario") // Ruta base para las vistas de usuario
 public class UsuarioController {
+
+    @Autowired
+    private RolService rolService;
+
+    @Autowired
+    private UsuarioRolService usuarioRolService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,18 +65,45 @@ public class UsuarioController {
             @RequestParam("usuario") String usuario,
             @RequestParam("correo") String correo,
             @RequestParam("contrasenaEnc") String contrasenaEnc,
-            @RequestParam("idEstado") Integer idEstado, RedirectAttributes redirectAttributes) {
+            @RequestParam("idEstado") Integer idEstado,
+            @RequestParam(value = "foto", required = false) MultipartFile foto,
+            RedirectAttributes redirectAttributes) {
+
         try {
             Usuario user = new Usuario();
             user.setUsuario(usuario);
             user.setCorreo(correo);
             user.setContrasenaEnc(passwordEncoder.encode(contrasenaEnc));
             user.setIdEstado(idEstado);
+
+            // Procesar la imagen si se envió
+            if (foto != null && !foto.isEmpty()) {
+                // Carpeta donde se guardan las fotos (relativa a la raíz del proyecto)
+                String uploadDir = "uploads/usuarios/";
+                String fileName = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
+                Path uploadPath = Paths.get(uploadDir);
+
+                // Crear carpeta si no existe
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                // Guardar el archivo en disco
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Guardar la ruta relativa en la BD
+                user.setUrlFoto("/uploads/usuarios/" + fileName);
+            }
+
+            // Guardar el usuario
             usuarioService.save(user);
             redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el usuario: " + e.getMessage());
         }
+
         return "redirect:/usuario";
     }
 
@@ -71,6 +114,10 @@ public class UsuarioController {
             return "redirect:/usuario";
         }
         Usuario usuarioExistente = existente.get();
+        List<UsuarioRol> roles = usuarioRolService.findAllByEstadoActivo(id);
+        List<Rol> listaRoles = rolService.findAllByEstadoActivo();
+        model.addAttribute("rolesA", roles);
+        model.addAttribute("listaRoles", listaRoles);
         model.addAttribute("usuario", usuarioExistente);
         model.addAttribute("active_page", "usuario");
         return "usuario/editarUsuario"; // Vuelve a la vista usuario/crear.html
@@ -81,7 +128,8 @@ public class UsuarioController {
             @RequestParam("usuario") String usuario,
             @RequestParam("correo") String correo,
             @RequestParam("contrasena") String contrasena,
-            @RequestParam("idEstado") Integer idEstado) {
+            @RequestParam("idEstado") Integer idEstado,
+            @RequestParam(value = "foto", required = false) MultipartFile foto) {
         try {
             Optional<Usuario> usuarioOpt = usuarioService.findById(id);
 
@@ -96,6 +144,25 @@ public class UsuarioController {
                 user.setContrasenaEnc(passwordEncoder.encode(contrasena));
             }
             user.setIdEstado(idEstado);
+            // Procesar la imagen si se envió
+            if (foto != null && !foto.isEmpty()) {
+                // Carpeta donde se guardan las fotos (relativa a la raíz del proyecto)
+                String uploadDir = "uploads/usuarios/";
+                String fileName = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
+                Path uploadPath = Paths.get(uploadDir);
+
+                // Crear carpeta si no existe
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                // Guardar el archivo en disco
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Guardar la ruta relativa en la BD
+                user.setUrlFoto("/uploads/usuarios/" + fileName);
+            }
             usuarioService.save(user);
             redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
         } catch (Exception e) {
@@ -124,6 +191,23 @@ public class UsuarioController {
         }
 
         return "redirect:/usuario";
+    }
+
+    @GetMapping("/ver/{id}")
+    public String verUsuario(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        if (!usuarioOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "Usuario no encontrado.");
+            return "redirect:/usuario";
+        }
+        // Obtener roles del usuario
+        List<UsuarioRol> roles = usuarioRolService.findAllByEstadoActivo(id);
+        List<Rol> listaRoles = rolService.findAllByEstadoActivo();
+        model.addAttribute("active_page", "usuario");
+        model.addAttribute("usuario", usuarioOpt.get());
+        model.addAttribute("rolesA", roles);
+        model.addAttribute("listaRoles", listaRoles);
+        return "usuario/detalleUsuario";
     }
 
 }

@@ -23,6 +23,7 @@
                     <thead class="table-dark text-center">
                         <tr>
                             <th>ID</th>
+                            <th>Foto</th>
                             <th>Usuario</th>
                             <th>Correo</th>
                             <th>Estado</th>
@@ -33,6 +34,13 @@
                     <tbody th:if="${usuarios != null and !usuarios.isEmpty()}">
                         <tr th:each="usuario : ${usuarios}">
                             <td class="text-center" th:text="${usuario.idUsuario}"></td>
+                            <td class="text-center">
+                                <img th:src="${usuario.urlFoto != null && !usuario.urlFoto.isEmpty() 
+                    ? usuario.urlFoto 
+                    : '/images/user-default.png'}" alt="Foto" class="rounded-circle"
+                                    style="width: 40px; height: 40px; object-fit: cover;">
+                            </td>
+
                             <td th:text="${usuario.usuario}"></td>
                             <td th:text="${usuario.correo}"></td>
                             <td class="text-center">
@@ -44,6 +52,9 @@
                                 th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/usuario/ver/' + ${usuario.idUsuario}}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
                                     <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
                                         class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil-square"></i> Editar

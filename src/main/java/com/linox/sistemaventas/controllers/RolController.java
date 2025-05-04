@@ -13,12 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.linox.sistemaventas.models.Permiso;
 import com.linox.sistemaventas.models.Rol;
+import com.linox.sistemaventas.models.RolPermiso;
+import com.linox.sistemaventas.services.PermisoService;
+import com.linox.sistemaventas.services.RolPermisoService;
 import com.linox.sistemaventas.services.RolService;
 
 @Controller
 @RequestMapping("/rol")
 public class RolController {
+
+    @Autowired
+    private PermisoService permisoService;
+
+    @Autowired
+    private RolPermisoService rolPermisoService;
 
     @Autowired
     private RolService rolService;
@@ -62,6 +72,14 @@ public class RolController {
             return "redirect:/rol";
         }
         Rol rolExistente = existente.get();
+        // Lista de permisos asignados a este rol (estado activo)
+        List<RolPermiso> permisosAsignados = rolPermisoService.findAllByEstadoActivo(id);
+
+        // Lista de permisos disponibles (activos)
+        List<Permiso> listaPermisos = permisoService.findAllByEstadoActivo();
+
+        model.addAttribute("permisosAsignados", permisosAsignados);
+        model.addAttribute("listaPermisos", listaPermisos);
         model.addAttribute("rol", rolExistente);
         model.addAttribute("active_page", "rol");
         return "rol/editarRol"; // Vuelve a la vista usuario/crear.html

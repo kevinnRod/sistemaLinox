@@ -9,54 +9,157 @@
 </head>
 
 <body>
-    <div layout:fragment="content" class="container mt-5">
+    <div layout:fragment="content" class="">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-11">
                 <div class="card shadow">
                     <div class="card-header bg-warning text-white">
                         <h4 class="mb-0">Editar Rol</h4>
                     </div>
-                    <div class="card-body">
-                        <form th:action="@{'/rol/actualizar/' + ${rol.idRol}}" method="post">
-                            <div class="mb-3">
-                                <label for="nombreRol" class="form-label">Nombre del Rol</label>
-                                <input type="text" class="form-control" id="nombreRol" name="nombreRol"
-                                    th:value="${rol.nombreRol}" placeholder="Ingrese nombre del rol" required>
-                            </div>
+                    <div class="row card-body ">
+                        <div class="col-md-8">
+                            <form th:action="@{'/rol/actualizar/' + ${rol.idRol}}" method="post">
+                                <div class="mb-3">
+                                    <label for="nombreRol" class="form-label">Nombre del Rol</label>
+                                    <input type="text" class="form-control" id="nombreRol" name="nombreRol"
+                                        th:value="${rol.nombreRol}" placeholder="Ingrese nombre del rol" required>
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="descripcionRol" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcionRol" name="descripcionRol" rows="3"
-                                    placeholder="Ingrese una descripción del rol"
-                                    th:text="${rol.descripcionRol}"></textarea>
-                            </div>
+                                <div class="mb-3">
+                                    <label for="descripcionRol" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="descripcionRol" name="descripcionRol" rows="3"
+                                        placeholder="Ingrese una descripción del rol"
+                                        th:text="${rol.descripcionRol}"></textarea>
+                                </div>
 
+                                <div class="mb-3">
+                                    <label for="idEstado" class="form-label">Estado</label>
+                                    <select class="form-select" id="idEstado" name="idEstado">
+                                        <option value="1" th:selected="${rol.idEstado == 1}">Activo</option>
+                                        <option value="0" th:selected="${rol.idEstado == 0}">Inactivo</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-arrow-repeat"></i> Actualizar
+                                    </button>
+                                    <a th:href="@{/rol}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle"></i> Cancelar
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 rounded-4">
+                                <div
+                                    class="card-header bg-light px-4 py-3 d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Permisos Asignados</h5>
+                                    <button id="asignarPermisoModalBtn" class="btn btn-sm btn-primary" type="button">
+                                        <i class="bi bi-plus-circle me-1"></i> Agregar Permiso
+                                    </button>
+                                </div>
+                                <div class="card-body px-4 py-3">
+                                    <form th:action="@{/rolPermiso/eliminar}" method="post" id="formEliminarPermiso"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este permiso?');">
+                                        <input type="hidden" name="idRol" th:value="${rol.idRol}" />
+                                        <input type="hidden" name="idPermiso" id="idPermisoSeleccionado" />
+                                        <ul class="list-group mb-3">
+                                            <li th:each="rp : ${permisosAsignados}" class="list-group-item">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio"
+                                                        name="permisoSeleccionado"
+                                                        th:id="'permiso-' + ${rp.permiso.idPermiso}"
+                                                        th:value="${rp.permiso.idPermiso}"
+                                                        onchange="mostrarBotonEliminarPermiso(this.value)">
+                                                    <label class="form-check-label"
+                                                        th:for="'permiso-' + ${rp.permiso.idPermiso}"
+                                                        th:text="${rp.permiso.nombrePermiso}">Permiso</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" id="btnEliminarPermiso" class="btn btn-danger d-none">
+                                                <i class="bi bi-trash"></i> Eliminar Permiso
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout:fragment="modal">
+        <div class="modal fade" id="asignarPermisoModal" tabindex="-1" aria-labelledby="asignarPermisoModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="asignarPermisoModalLabel">Asignar Permiso al Rol</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <form th:action="@{/rolPermiso/asignar}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="idRol" th:value="${rol.idRol}">
                             <div class="mb-3">
-                                <label for="idEstado" class="form-label">Estado</label>
-                                <select class="form-select" id="idEstado" name="idEstado">
-                                    <option value="1" th:selected="${rol.idEstado == 1}">Activo</option>
-                                    <option value="0" th:selected="${rol.idEstado == 0}">Inactivo</option>
+                                <label for="permiso" class="form-label">Selecciona un Permiso</label>
+                                <select class="form-select" id="permiso" name="idPermiso" required>
+                                    <option value="" disabled selected>Selecciona un permiso</option>
+                                    <option th:each="permiso : ${listaPermisos}" th:value="${permiso.idPermiso}"
+                                        th:text="${permiso.nombrePermiso}"></option>
                                 </select>
                             </div>
-
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-arrow-repeat"></i> Actualizar
-                                </button>
-                                <a th:href="@{/rol}" class="btn btn-secondary">
-                                    <i class="bi bi-x-circle"></i> Cancelar
-                                </a>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Asignar Permiso</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
     <th:block layout:fragment="js">
-        <!-- Asegúrate de tener Bootstrap Icons si los usas -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const btnAbrirModal = document.getElementById('asignarPermisoModalBtn');
+                const modalElement = document.getElementById('asignarPermisoModal');
+
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    btnAbrirModal.addEventListener('click', function () {
+                        modalElement.removeAttribute("aria-hidden");
+                        modal.show();
+                    });
+                }
+            });
+        </script>
+
+        <script>
+            function mostrarBotonEliminarPermiso(idPermiso) {
+                document.getElementById("btnEliminarPermiso").classList.remove("d-none");
+                document.getElementById("idPermisoSeleccionado").value = idPermiso;
+            }
+
+            document.addEventListener('click', function (event) {
+                const permisoContainer = document.querySelector('.list-group');
+                const botonEliminar = document.getElementById("btnEliminarPermiso");
+
+                if (!permisoContainer.contains(event.target)) {
+                    const radios = document.getElementsByName("permisoSeleccionado");
+                    radios.forEach(radio => radio.checked = false);
+                    botonEliminar.classList.add("d-none");
+                }
+            });
+        </script>
     </th:block>
+
 </body>
 
 </html>

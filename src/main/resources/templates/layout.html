@@ -14,7 +14,7 @@
     <link rel="stylesheet" th:href="@{/assets/plugins/global/plugins.bundle.css}" />
     <link rel="stylesheet" th:href="@{/assets/css/style.bundle.css}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Extra head content -->
+
     <th:block layout:fragment="head"></th:block>
 </head>
 
@@ -221,7 +221,11 @@
                                         <div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px"
                                             data-kt-menu-trigger="click" data-kt-menu-attach="parent"
                                             data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-                                            <img th:src="@{/assets/media/avatars/150-2.jpg}" alt="metronic" />
+                                            <img th:src="${#authentication.principal.urlFoto != null and !#authentication.principal.urlFoto.isEmpty() 
+                                                            ? #authentication.principal.urlFoto 
+                                                            : '/images/user-default.png'}" alt="Usuario"
+                                                class="rounded-circle" />
+
                                         </div>
                                         <!--begin::Menu-->
                                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
@@ -231,8 +235,12 @@
                                                 <div class="menu-content d-flex align-items-center px-3">
                                                     <!--begin::Avatar-->
                                                     <div class="symbol symbol-50px me-5">
-                                                        <img alt="Logo" th:src="@{/assets/media/avatars/150-26.jpg}" />
+                                                        <img alt="Foto de usuario" th:src="${#authentication.principal.urlFoto != null && !#authentication.principal.urlFoto.isEmpty() 
+                                                                ? #authentication.principal.urlFoto 
+                                                                : '/images/user-default.png'}"
+                                                            class="rounded-circle" />
                                                     </div>
+
                                                     <!--end::Avatar-->
                                                     <!--begin::Username-->
                                                     <div class="d-flex flex-column">
@@ -453,7 +461,7 @@
                 </div>
                 <!--end::Header-->
                 <!--begin::Content-->
-                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                <div class=" d-flex flex-column flex-column-fluid" id="kt_content">
                     <!--begin::Post-->
                     <div class="post d-flex flex-column-fluid" id="kt_post">
                         <!--begin::Container-->
@@ -500,6 +508,7 @@
         </div>
         <!--end::Page-->
     </div>
+    <div layout:fragment="modal"></div>
     <!--end::Root-->
     <!--begin::Drawers-->
     <!--end::Drawers-->
@@ -507,6 +516,11 @@
     <!--end::Modals-->
     <!--begin::Global Javascript Bundle(used by all pages)-->
     <!-- Scripts -->
+    <!-- Bootstrap JS y Popper.js -->
+
+    <!-- JS Extra -->
+    <th:block layout:fragment="js"></th:block>
+
     <script th:src="@{/assets/plugins/global/plugins.bundle.js}"></script>
     <script th:src="@{/assets/js/scripts.bundle.js}"></script>
 
@@ -517,8 +531,9 @@
     <script th:src="@{/assets/js/custom/modals/create-app.js}"></script>
     <script th:src="@{/assets/js/custom/modals/upgrade-plan.js}"></script>
 
-    <!-- JS Extra -->
-    <th:block layout:fragment="js"></th:block>
+
+
+
 
 
 </body>
