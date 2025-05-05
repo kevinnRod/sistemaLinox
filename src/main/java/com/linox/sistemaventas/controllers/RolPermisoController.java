@@ -1,20 +1,26 @@
 package com.linox.sistemaventas.controllers;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.linox.sistemaventas.models.Rol;
 import com.linox.sistemaventas.models.Permiso;
+import com.linox.sistemaventas.models.Rol;
 import com.linox.sistemaventas.models.RolPermiso;
-import com.linox.sistemaventas.services.RolService;
 import com.linox.sistemaventas.services.PermisoService;
 import com.linox.sistemaventas.services.RolPermisoService;
+import com.linox.sistemaventas.services.RolService;
 
 @Controller
 @RequestMapping("/rolPermiso")
@@ -109,6 +115,19 @@ public class RolPermisoController {
         }
 
         return "redirect:/rol/editar/" + idRol;
+    }
+
+    @GetMapping("/permisos/{idRol}")
+    @ResponseBody
+    public ResponseEntity<List<String>> obtenerPermisosPorRol(@PathVariable("idRol") Integer idRol) {
+        List<RolPermiso> permisosAsignados = rolPermisoService.findAllByEstadoActivo(idRol);
+
+        // Devuelve una lista vacía con estado 200 OK si no hay permisos
+        List<String> nombresPermisos = permisosAsignados.stream()
+                .map(rp -> rp.getPermiso().getNombrePermiso())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(nombresPermisos);
     }
 
 }

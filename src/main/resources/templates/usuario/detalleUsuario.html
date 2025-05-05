@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
 <head>
     <th:block layout:fragment="head">
@@ -54,30 +54,40 @@
                         </div>
                     </div>
 
-                    <!-- Tarjeta de Roles -->
-                    <div class="card shadow-sm border-0 rounded-4 mb-4">
-                        <div class="card-header bg-light px-4 py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Roles Asignados</h5>
-
+                    <div class="row">
+                        <!-- Tarjeta de Roles -->
+                        <div class="col-md-6 card shadow-sm border-0 rounded-4 mb-4">
+                            <div
+                                class="card-header bg-light px-4 py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Roles Asignados</h5>
+                            </div>
+                            <div class="card-body px-4 py-3">
+                                <ul>
+                                    <li th:each="ur : ${rolesA}">
+                                        <a href="#" th:data-id="${ur.rol.idRol}" th:text="${ur.rol.nombreRol}"
+                                            class="rol-link">Rol</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="card-body px-4 py-3">
-                            <ul>
-                                <li th:each="ur : ${rolesA}" th:text="${ur.rol.nombreRol}">Rol</li>
-                            </ul>
+
+                        <!-- Tarjeta de Permisos -->
+                        <div class="col-md-6 card shadow-sm border-0 rounded-4 mb-4">
+                            <div class="card-header bg-light px-4 py-3">
+                                <h5 class="mb-0">Permisos del Rol</h5>
+                            </div>
+                            <div class="card-body px-4 py-3">
+                                <ul id="permisos-lista">
+                                    <li class="text-muted">Seleccione un rol para ver sus permisos.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Tarjeta de Permisos (placeholder) -->
-                    <div class="card shadow-sm border-0 rounded-4 mb-4">
-                        <div class="card-header bg-light px-4 py-3">
-                            <h5 class="mb-0">Permisos</h5>
-                        </div>
-                        <div class="card-body px-4 py-3">
-                            <p class="text-muted">Gestión de permisos aún no implementada.</p>
-                        </div>
-                    </div>
+
 
                     <div class="text-end">
+                        <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}" class="btn btn-warning">Editar</a>
                         <a th:href="@{/usuario}" class="btn btn-secondary">Volver</a>
                     </div>
                 </div>
@@ -89,6 +99,36 @@
 
 
     <th:block layout:fragment="js">
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll(".rol-link").forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        const rolId = this.dataset.id;
+
+                        fetch(`/rolPermiso/permisos/${rolId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const lista = document.getElementById("permisos-lista");
+                                lista.innerHTML = "";
+
+                                if (data.length === 0) {
+                                    lista.innerHTML = "<li class='text-muted'>Este rol no tiene permisos asignados.</li>";
+                                } else {
+                                    data.forEach(permiso => {
+                                        const li = document.createElement("li");
+                                        li.textContent = permiso;
+                                        lista.appendChild(li);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error al obtener permisos:", error);
+                            });
+                    });
+                });
+            });
+        </script>
 
 
 

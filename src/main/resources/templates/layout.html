@@ -88,7 +88,7 @@
                                 </a>
                             </div>
 
-                            <div class="menu-item">
+                            <div class="menu-item" id="menuUsuarios" style="display: none;">
                                 <a class="menu-link"
                                     th:class="'menu-link ' + (${active_page} == 'usuario' ? 'active text-danger' : '')"
                                     th:href="@{/usuario}">
@@ -262,7 +262,8 @@
                                             <!--end::Menu separator-->
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-5">
-                                                <a href="" class="menu-link px-5">My Profile</a>
+                                                <a th:href="@{'/usuario/ver/' + ${#authentication.principal.idUsuario}}"
+                                                    class="menu-link px-5">My Profile</a>
                                             </div>
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->
@@ -520,6 +521,28 @@
 
     <!-- JS Extra -->
     <th:block layout:fragment="js"></th:block>
+
+
+    <script>
+        fetch('/usuario/roles-usuario')
+            .then(response => response.json())
+            .then(roles => {
+                if (Array.isArray(roles)) {
+                    const esAdmin = roles.some(r => r.nombreRol === 'ADMIN');
+                    if (esAdmin) {
+                        document.getElementById('menuUsuarios').style.display = 'block';
+                    } else {
+                        document.getElementById('menuUsuarios').style.display = 'none';
+                    }
+                } else {
+                    console.error('La respuesta no es un arreglo:', roles);
+                }
+            })
+            .catch(error => {
+                console.error('Error al hacer la solicitud:', error);
+            });
+
+    </script>
 
     <script th:src="@{/assets/plugins/global/plugins.bundle.js}"></script>
     <script th:src="@{/assets/js/scripts.bundle.js}"></script>

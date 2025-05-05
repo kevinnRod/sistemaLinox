@@ -4,11 +4,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +35,7 @@ import com.linox.sistemaventas.models.UsuarioRol;
 import com.linox.sistemaventas.services.RolService;
 import com.linox.sistemaventas.services.UsuarioRolService;
 import com.linox.sistemaventas.services.UsuarioService;
+import com.linox.sistemaventas.services.impl.UsuarioDetailsServiceImpl;
 
 @Controller
 @RequestMapping("/usuario") // Ruta base para las vistas de usuario
@@ -42,6 +52,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private UsuarioDetailsServiceImpl userDetailsService;
 
     // Obtener todos los usuarios y redirigir a la vista
     @GetMapping
@@ -138,6 +151,7 @@ public class UsuarioController {
                 return "redirect:/usuario";
             }
             Usuario user = usuarioOpt.get();
+            String nombreG = user.getUsuario();
             user.setUsuario(usuario);
             user.setCorreo(correo);
             if (contrasena != "") {
@@ -164,6 +178,19 @@ public class UsuarioController {
                 user.setUrlFoto("/uploads/usuarios/" + fileName);
             }
             usuarioService.save(user);
+            // Actualiza el contexto de seguridad si el usuario actualizado es el
+            // autenticado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUsername = auth.getName();
+            if (nombreG.equals(currentUsername)) {
+                // Crea una nueva autenticación con los datos actualizados
+                UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsuario());
+                Authentication newAuth = new UsernamePasswordAuthenticationToken(userDetails, auth.getCredentials(),
+                        userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(newAuth);
+                redirectAttributes.addFlashAttribute("success", "Usuario Actualizado correctamente.");
+                return "redirect:/usuario/ver/" + user.getIdUsuario();
+            }
             redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el usuario: " + e.getMessage());
@@ -208,6 +235,29 @@ public class UsuarioController {
         model.addAttribute("rolesA", roles);
         model.addAttribute("listaRoles", listaRoles);
         return "usuario/detalleUsuario";
+    }
+
+    @GetMapping("/roles-usuario")
+    public ResponseEntity<?> getRolesUsuario(Authentication authentication) {
+        try {
+            // Obtener el usuario autenticado
+            Usuario usuario = (Usuario) authentication.getPrincipal();
+            List<UsuarioRol> roles = usuarioRolService.findAllByEstadoActivo(usuario.getIdUsuario());
+
+            // Convertir los roles a un formato más simple si es necesario
+            List<Map<String, Object>> rolesSimplificados = roles.stream()
+                    .map(role -> {
+                        Map<String, Object> roleData = new HashMap<>();
+                        roleData.put("nombreRol", role.getRol().getNombreRol());
+                        return roleData;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(rolesSimplificados);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener roles");
+        }
     }
 
 }
