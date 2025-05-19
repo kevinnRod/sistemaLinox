@@ -133,6 +133,15 @@
                                 </a>
                             </div>
 
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'unidad-medida' ? 'active text-danger' : '')"
+                                    th:href="@{/unidadMedida}">
+                                    <span class="menu-icon"><i class="bi bi-tags fs-3"></i></span>
+                                    <span class="menu-title">Unidades de medida</span>
+                                </a>
+                            </div>
+
 
                             <div class="menu-item">
                                 <a class="menu-link"
