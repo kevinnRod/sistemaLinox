@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Crear Persona</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="card shadow rounded">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Nueva Persona</h4>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/persona/save}" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="dni" class="form-label">DNI</label>
+                            <input type="text" name="dni" class="form-control" id="dni" maxlength="8" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" name="nombres" class="form-control" id="nombres" maxlength="40"
+                                required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" name="apellidos" class="form-control" id="apellidos" maxlength="50"
+                                required />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" name="fechaNacimiento" class="form-control" id="fechaNacimiento" />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="genero" class="form-label">Género</label>
+                            <select name="genero" class="form-select" id="genero">
+                                <option value="">Seleccione</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="idEstado" class="form-label">Estado</label>
+                            <select name="idEstado" class="form-select" id="idEstado" required>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="correo" class="form-label">Correo Electrónico</label>
+                            <input type="email" name="correo" class="form-control" id="correo" maxlength="50" />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" name="telefono" class="form-control" id="telefono" maxlength="20" />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <input type="text" name="direccion" class="form-control" id="direccion" maxlength="100" />
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a th:href="@{/persona}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+    </th:block>
+</body>
+
+</html>

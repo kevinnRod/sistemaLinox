@@ -1,6 +1,8 @@
 package com.linox.sistemaventas.models;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,15 +18,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Collection;
-import java.util.Collections;
 
 @Entity
 @Table(name = "usuario")
@@ -45,9 +45,9 @@ public class Usuario implements UserDetails {
     private String correo;
 
     @Column(name = "contraseña_enc", length = 255, nullable = false)
-    private String contrasenaEnc; // Nombre de columna explícito por el carácter especial
+    private String contrasenaEnc;
 
-    @Column(name = "url_foto", columnDefinition = "TEXT") // O @Lob si es byte[] o ajustar length
+    @Column(name = "url_foto", columnDefinition = "TEXT")
     private String urlFoto;
 
     @CreationTimestamp
@@ -59,16 +59,15 @@ public class Usuario implements UserDetails {
     private LocalDateTime updatedAt;
 
     @Column(name = "id_estado")
-    private Integer idEstado; // FK a Estado?
+    private Integer idEstado;
 
-    // Relación OneToMany hacia la entidad de unión UsuarioRol
+    // Relación ManyToOne hacia Persona (opcional)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_persona")
+    private Persona persona;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<UsuarioRol> usuarioRoles = new HashSet<>();
-
-    // Relación OneToOne con Persona (asumiendo que un usuario mapea a una persona)
-    // mappedBy indica que la gestión de la FK está en la entidad Persona
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-    private Persona persona;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Personas</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Personas</h2> <a th:href="@{/persona/create}"
+                    class="btn btn-success shadow-sm"> <i class="bi bi-plus-lg"></i> Nueva Persona </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>DNI</th>
+                            <th>Nombre Completo</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th> <!-- Nueva columna -->
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${personas != null and !personas.isEmpty()}">
+                        <tr th:each="persona : ${personas}">
+                            <td class="text-center" th:text="${persona.idPersona}"></td>
+                            <td th:text="${persona.dni}"></td>
+                            <td th:text="${persona.nombres + ' ' + persona.apellidos}"></td>
+                            <td th:text="${persona.correo}"></td>
+                            <td th:text="${persona.telefono}"></td>
+                            <td th:text="${persona.direccion}"></td> <!-- Muestra la dirección -->
+                            <td class="text-center">
+                                <span class="badge" th:text="${persona.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${persona.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center"
+                                th:text="${#temporals.format(persona.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/persona/editar/' + ${persona.idPersona}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form th:action="@{'/persona/eliminar/' + ${persona.idPersona}}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta persona?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tbody th:unless="${personas != null and !personas.isEmpty()}">
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No hay personas registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Si no tienes Bootstrap Icons en tu layout, descomenta la línea siguiente -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> -->
+    </th:block>
+</body>
+
+</html>

@@ -15,4 +15,6 @@ public interface PersonaService {
     Persona save(Persona persona);
 
     void deleteById(Integer id);
+
+    List<Persona> findAllByEstadoActivo();
 }

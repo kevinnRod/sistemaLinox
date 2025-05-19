@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.linox.sistemaventas.models.Persona;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +17,6 @@ public interface PersonaRepository extends JpaRepository<Persona, Integer> {
     boolean existsByDni(String dni);
 
     boolean existsByCorreo(String correo);
+
+    List<Persona> findByIdEstado(Integer idEstado);
 }

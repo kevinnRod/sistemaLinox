@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Crear Empresa</title>
+        <!-- Bootstrap CSS (asegúrate de incluirlo si no está en layout) -->
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Registrar Nueva Empresa</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/empresa/save}" method="post" id="empresaForm" novalidate>
+                            <div class="mb-3">
+                                <label for="ruc" class="form-label">RUC <span class="text-danger">*</span></label>
+                                <input type="text" name="ruc" class="form-control" id="ruc" maxlength="11"
+                                    pattern="\d{11}" title="El RUC debe tener 11 números" required />
+                                <div class="invalid-feedback">
+                                    Por favor, ingrese un RUC válido de 11 dígitos numéricos.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="razonSocial" class="form-label">Razón Social <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="razonSocial" class="form-control" id="razonSocial"
+                                    maxlength="100" required />
+                                <div class="invalid-feedback">
+                                    La razón social es obligatoria.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="nombreComercial" class="form-label">Nombre Comercial</label>
+                                <input type="text" name="nombreComercial" class="form-control" id="nombreComercial"
+                                    maxlength="80" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" name="direccion" class="form-control" id="direccion"
+                                    maxlength="150" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control" id="telefono" maxlength="20" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo Electrónico</label>
+                                <input type="email" name="correo" class="form-control" id="correo" maxlength="100" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="idEstado" class="form-label">Estado <span
+                                        class="text-danger">*</span></label>
+                                <select name="idEstado" class="form-select" id="idEstado" required>
+                                    <option value="" disabled selected>Seleccione estado</option>
+                                    <option value="1">Activo</option>
+                                    <option value="0">Inactivo</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor, seleccione un estado.
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save2"></i> Guardar
+                                </button>
+                                <a th:href="@{/empresa}" class="btn btn-secondary ms-2">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Bootstrap Bundle JS (incluye Popper) -->
+
+        <script>
+            // Validación personalizada Bootstrap 5 para el formulario
+            (() => {
+                'use strict'
+
+                const form = document.querySelector('#empresaForm')
+
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })()
+        </script>
+    </th:block>
+</body>
+
+</html>

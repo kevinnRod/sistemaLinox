@@ -1,48 +1,116 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.models.UsuarioRol;
-import com.linox.sistemaventas.models.UsuarioRolId;
-import com.linox.sistemaventas.services.UsuarioRolService;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.linox.sistemaventas.models.Rol;
+import com.linox.sistemaventas.models.Usuario;
+import com.linox.sistemaventas.models.UsuarioRol;
+import com.linox.sistemaventas.services.RolService;
+import com.linox.sistemaventas.services.UsuarioRolService;
+import com.linox.sistemaventas.services.UsuarioService;
 
-@RestController
-@RequestMapping("/api/usuario-roles")
+@Controller
+@RequestMapping("/usuarioRol")
 public class UsuarioRolController {
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private RolService rolService;
 
     @Autowired
     private UsuarioRolService usuarioRolService;
 
-    @GetMapping
-    public List<UsuarioRol> getAll() {
-        return usuarioRolService.findAll();
+    @PostMapping("/asignar")
+    public String asignarRol(
+            @RequestParam("idUsuario") Integer idUsuario,
+            @RequestParam("idRol") Integer idRol,
+            RedirectAttributes redirectAttributes) {
+
+        if (idUsuario == null || idRol == null || idUsuario <= 0 || idRol <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Parámetros inválidos.");
+            return "redirect:/usuario/ver/" + idUsuario; // Redirigir a una lista de usuarios si los parámetros son
+                                                         // incorrectos
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioService.findById(idUsuario);
+        Optional<Rol> rolOpt = rolService.findById(idRol);
+
+        if (!usuarioOpt.isPresent() || !rolOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "Usuario o rol no encontrado.");
+            return "redirect:/usuario/ver/" + idUsuario; // Redirigir a la lista si no se encuentran el usuario o rol
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        Rol rol = rolOpt.get();
+
+        boolean yaAsignado = usuarioRolService.existsByUsuarioAndRol(usuario, rol);
+
+        if (yaAsignado) {
+
+            Optional<UsuarioRol> usuarioRolOpt = usuarioRolService.findByUsuarioAndRol(usuario, rol);
+
+            if (usuarioRolOpt.get().getIdEstado() == 0) {
+                UsuarioRol usuarioRol = usuarioRolOpt.get();
+                usuarioRol.setIdEstado(1); // Eliminación lógica
+                usuarioRolService.save(usuarioRol); // Guardar cambios
+                redirectAttributes.addFlashAttribute("success", "Rol Guardado correctamente.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "El rol ya está asignado al usuario.");
+            }
+
+        } else {
+            UsuarioRol usuarioRol = new UsuarioRol(usuario, rol);
+            usuarioRol.setIdEstado(1);
+            usuarioRolService.save(usuarioRol);
+            redirectAttributes.addFlashAttribute("success", "Rol asignado correctamente.");
+        }
+
+        return "redirect:/usuario/editar/" + idUsuario;
     }
 
-    @GetMapping("/{idUsuario}/{idRol}")
-    public ResponseEntity<UsuarioRol> getById(@PathVariable Integer idUsuario, @PathVariable Integer idRol) {
-        UsuarioRolId id = new UsuarioRolId(idUsuario, idRol);
-        return usuarioRolService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/eliminar")
+    public String eliminarRolAsignado(
+            @RequestParam("idUsuario") Integer idUsuario,
+            @RequestParam("idRol") Integer idRol,
+            RedirectAttributes redirectAttributes) {
+
+        if (idUsuario == null || idRol == null || idUsuario <= 0 || idRol <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Parámetros inválidos.");
+            return "redirect:/usuario/editar/" + idUsuario;
+        }
+
+        Optional<Usuario> usuarioOpt = usuarioService.findById(idUsuario);
+        Optional<Rol> rolOpt = rolService.findById(idRol);
+
+        if (!usuarioOpt.isPresent() || !rolOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "Usuario o rol no encontrado.");
+            return "redirect:/usuario/editar/" + idUsuario;
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        Rol rol = rolOpt.get();
+
+        Optional<UsuarioRol> usuarioRolOpt = usuarioRolService.findByUsuarioAndRol(usuario, rol);
+
+        if (usuarioRolOpt.isPresent()) {
+            UsuarioRol usuarioRol = usuarioRolOpt.get();
+            usuarioRol.setIdEstado(0); // Eliminación lógica
+            usuarioRolService.save(usuarioRol); // Guardar cambios
+            redirectAttributes.addFlashAttribute("success", "Rol eliminado correctamente.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "El rol no está asignado al usuario.");
+        }
+
+        return "redirect:/usuario/editar/" + idUsuario;
     }
 
-    @GetMapping("/usuario/{idUsuario}")
-    public List<UsuarioRol> getByUsuarioId(@PathVariable Integer idUsuario) {
-        return usuarioRolService.findByUsuarioId(idUsuario);
-    }
-
-    @PostMapping
-    public ResponseEntity<UsuarioRol> create(@RequestBody UsuarioRol usuarioRol) {
-        return ResponseEntity.ok(usuarioRolService.save(usuarioRol));
-    }
-
-    @DeleteMapping("/{idUsuario}/{idRol}")
-    public ResponseEntity<Void> delete(@PathVariable Integer idUsuario, @PathVariable Integer idRol) {
-        UsuarioRolId id = new UsuarioRolId(idUsuario, idRol);
-        usuarioRolService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
 }

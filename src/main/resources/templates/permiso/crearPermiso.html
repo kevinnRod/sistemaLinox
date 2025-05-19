@@ -4,45 +4,42 @@
 
 <head>
     <th:block layout:fragment="head">
-        <title>Crear Usuario</title>
+        <title>Crear Permiso</title>
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content" class="container mt-4">
-        <h2 class="mb-4">Crear Nuevo Usuario</h2>
+        <h2>Crear Nuevo Permiso</h2>
 
-        <form th:action="@{/usuario/guardar}" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="usuario">Nombre de Usuario</label>
-                <input type="text" id="usuario" name="usuario" class="form-control" required />
+        <form th:action="@{/permiso/save}" method="post">
+            <div class="mb-3">
+                <label for="nombrePermiso" class="form-label">Nombre del Permiso</label>
+                <input type="text" name="nombrePermiso" class="form-control" id="nombrePermiso" required />
             </div>
 
-            <div class="form-group">
-                <label for="correo">Correo</label>
-                <input type="email" id="correo" name="correo" class="form-control" required />
+            <div class="mb-3">
+                <label for="descripcionPermiso" class="form-label">Descripción</label>
+                <textarea name="descripcionPermiso" class="form-control" id="descripcionPermiso" rows="3"></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="contrasena">Contraseña</label>
-                <input type="password" id="contrasena" name="contrasena" class="form-control" required />
+            <div class="mb-3">
+                <label for="idEstado" class="form-label">Estado</label>
+                <select name="idEstado" class="form-control" id="idEstado" required>
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
             </div>
 
-            <div class="form-group">
-                <label for="foto">Foto</label>
-                <input type="file" id="foto" name="foto" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Crear Usuario</button>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a th:href="@{/permiso}" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 
     <th:block layout:fragment="js">
-
     </th:block>
-
 </body>
 
 </html>

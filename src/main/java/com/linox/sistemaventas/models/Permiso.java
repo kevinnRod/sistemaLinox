@@ -49,9 +49,6 @@ public class Permiso {
     @Column(name = "id_estado")
     private Integer idEstado; // FK a Estado?
 
-    @Column(name = "id_sucursal")
-    private Integer idSucursal; // FK a Sucursal?
-
     // Relación OneToMany hacia la entidad de unión RolPermiso
     @OneToMany(mappedBy = "permiso", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<RolPermiso> permisoRoles = new HashSet<>();

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Detalle de Usuario</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-5">
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    <div class="card shadow-sm border-0 rounded-4 mb-4">
+                        <div class="card-header bg-primary text-white rounded-top-4 py-3 px-4">
+                            <h3 class="mb-0">Perfil del Usuario</h3>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-3 text-center">
+                                    <img th:src="${usuario.urlFoto != null && !usuario.urlFoto.isEmpty() 
+                    ?  usuario.urlFoto 
+                    : '/images/user-default.png'}" alt="Foto de Usuario" class="img-fluid rounded-circle border"
+                                        style="width: 120px; height: 120px; object-fit: cover;">
+                                </div>
+                                <div class="col-md-9">
+                                    <h4 th:text="${usuario.usuario}">Nombre de usuario</h4>
+                                    <p class="mb-1 text-muted">Correo: <span th:text="${usuario.correo}">correo</span>
+                                    </p>
+                                    <p class="mb-1">Estado:
+                                        <span
+                                            th:classappend="${usuario.idEstado == 1} ? 'badge bg-success' : 'badge bg-danger'"
+                                            th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}">
+                                            Estado
+                                        </span>
+                                    </p>
+                                    <p class="mb-0">Creado: <span
+                                            th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}">fecha</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Tarjeta de Roles -->
+                        <div class="col-md-6 card shadow-sm border-0 rounded-4 mb-4">
+                            <div
+                                class="card-header bg-light px-4 py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Roles Asignados</h5>
+                            </div>
+                            <div class="card-body px-4 py-3">
+                                <ul>
+                                    <li th:each="ur : ${rolesA}">
+                                        <a href="#" th:data-id="${ur.rol.idRol}" th:text="${ur.rol.nombreRol}"
+                                            class="rol-link">Rol</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta de Permisos -->
+                        <div class="col-md-6 card shadow-sm border-0 rounded-4 mb-4">
+                            <div class="card-header bg-light px-4 py-3">
+                                <h5 class="mb-0">Permisos del Rol</h5>
+                            </div>
+                            <div class="card-body px-4 py-3">
+                                <ul id="permisos-lista">
+                                    <li class="text-muted">Seleccione un rol para ver sus permisos.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="text-end">
+                        <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}" class="btn btn-warning">Editar</a>
+                        <a th:href="@{/usuario}" class="btn btn-secondary">Volver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <th:block layout:fragment="js">
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll(".rol-link").forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        const rolId = this.dataset.id;
+
+                        fetch(`/rolPermiso/permisos/${rolId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const lista = document.getElementById("permisos-lista");
+                                lista.innerHTML = "";
+
+                                if (data.length === 0) {
+                                    lista.innerHTML = "<li class='text-muted'>Este rol no tiene permisos asignados.</li>";
+                                } else {
+                                    data.forEach(permiso => {
+                                        const li = document.createElement("li");
+                                        li.textContent = permiso;
+                                        lista.appendChild(li);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error al obtener permisos:", error);
+                            });
+                    });
+                });
+            });
+        </script>
+
+
+
+    </th:block>
+</body>
+
+</html>

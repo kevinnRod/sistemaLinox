@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Empresas</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Empresas</h2>
+                <a th:href="@{/empresa/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nueva Empresa
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>RUC</th>
+                            <th>Razón Social</th>
+                            <th>Nombre Comercial</th>
+                            <th>Dirección</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${empresas != null and !empresas.isEmpty()}">
+                        <tr th:each="empresa : ${empresas}">
+                            <td class="text-center" th:text="${empresa.idEmpresa}"></td>
+                            <td th:text="${empresa.ruc}"></td>
+                            <td th:text="${empresa.razonSocial}"></td>
+                            <td th:text="${empresa.nombreComercial}"></td>
+                            <td th:text="${empresa.direccion}"></td>
+                            <td th:text="${empresa.telefono}"></td>
+                            <td th:text="${empresa.correo}"></td>
+                            <td class="text-center">
+                                <span class="badge" th:text="${empresa.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${empresa.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center"
+                                th:text="${#temporals.format(empresa.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/empresa/editar/' + ${empresa.idEmpresa}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+
+                                    <form th:action="@{'/empresa/eliminar/' + ${empresa.idEmpresa}}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta empresa?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${empresas != null and !empresas.isEmpty()}">
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">No hay empresas registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Bootstrap Icons -->
+    </th:block>
+</body>
+
+</html>

@@ -49,9 +49,6 @@ public class Rol {
     @Column(name = "id_estado")
     private Integer idEstado; // Podría ser una relación @ManyToOne a una entidad Estado
 
-    @Column(name = "id_sucursal")
-    private Integer idSucursal; // Podría ser una relación @ManyToOne a una entidad Sucursal
-
     // Relación OneToMany hacia la entidad de unión UsuarioRol
     @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<UsuarioRol> rolUsuarios = new HashSet<>();
