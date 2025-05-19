@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Registrar Proveedor y Empresa</title>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <h2 class="mb-4"><i class="bi bi-building"></i> Registrar Proveedor y Empresa</h2>
+    <!-- Mensajes de error -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form th:action="@{/proveedor/save}" method="post">
+        <!-- Datos Empresa -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <strong><i class="bi bi-building"></i> Datos de la Empresa</strong>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="ruc" class="form-label">RUC <span class="text-danger">*</span></label>
+                        <input type="text" name="ruc" id="ruc" class="form-control" maxlength="11" required th:value="${ruc}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="razonSocial" class="form-label">Razón Social <span class="text-danger">*</span></label>
+                        <input type="text" name="razonSocial" id="razonSocial" class="form-control" required th:value="${razonSocial}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="nombreComercial" class="form-label">Nombre Comercial</label>
+                        <input type="text" name="nombreComercial" id="nombreComercial" class="form-control" th:value="${nombreComercial}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" name="direccion" id="direccion" class="form-control" th:value="${direccion}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" id="telefono" class="form-control" th:value="${telefono}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="correo" id="correo" class="form-control" th:value="${correo}">
+                    </div>
+                    <!-- Estado de la empresa -->
+                    <input type="hidden" name="estadoEmpresa" value="1" />
+
+                    <!-- Estado del proveedor -->
+                    <input type="hidden" name="idEstado" value="1" />
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Botones -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Guardar
+            </button>
+            <a th:href="@{/proveedor}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<th:block layout:fragment="js"></th:block>
+</body>
+</html>
