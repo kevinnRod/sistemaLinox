@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Cargos</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Cargos</h2>
+                <a th:href="@{/cargo/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nuevo Cargo
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre del Cargo</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Actualizado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${cargos != null and !cargos.isEmpty()}">
+                        <tr th:each="cargo : ${cargos}">
+                            <td class="text-center" th:text="${cargo.idCargo}"></td>
+                            <td th:text="${cargo.nombreCargo}"></td>
+                            <td class="text-center">
+                                <span class="badge" th:text="${cargo.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${cargo.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center" th:text="${#temporals.format(cargo.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center" th:text="${#temporals.format(cargo.updateAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/cargo/editar/' + ${cargo.idCargo}}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+
+                                    <form th:action="@{'/cargo/eliminar/' + ${cargo.idCargo}}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cargo?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${cargos != null and !cargos.isEmpty()}">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No hay cargos registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Bootstrap Icons, si no están incluidos en el layout -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> -->
+    </th:block>
+</body>
+
+</html>
