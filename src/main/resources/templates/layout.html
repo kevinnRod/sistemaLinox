@@ -37,7 +37,7 @@
                 <!--begin::Brand-->
                 <div class="aside-logo flex-column-auto" id="kt_aside_logo">
                     <!--begin::Logo-->
-                    <a th:href="@{/dashboard}">
+                    <a th:href="@{/empresa-anfitrion/editar/1}">
                         <img th:src="@{/assets/media/logos/logo-demo13-compact.svg}" alt="Logo" class="h-25px logo" />
                     </a>
 
@@ -114,6 +114,40 @@
                                     <span class="menu-title">Permisos</span>
                                 </a>
                             </div>
+
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'categoria-cliente' ? 'active text-danger' : '')"
+                                    th:href="@{/categoriaCliente}">
+                                    <span class="menu-icon"><i class="bi bi-tags fs-3"></i></span>
+                                    <span class="menu-title">Categorías de Cliente</span>
+                                </a>
+                            </div>
+
+
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'cliente' ? 'active text-danger' : '')"
+                                    th:href="@{/cliente}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-people-fill fs-3"></i> <!-- Ícono cambiado -->
+                                    </span>
+                                    <span class="menu-title">Clientes</span>
+                                </a>
+                            </div>
+
+
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'empresa' ? 'active text-danger' : '')"
+                                    th:href="@{/empresa}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-building fs-3"></i> <!-- Ícono para empresa -->
+                                    </span>
+                                    <span class="menu-title">Empresas</span>
+                                </a>
+                            </div>
+
 
                             <div class="menu-item">
                                 <div class="menu-content pt-8 pb-2">
@@ -263,7 +297,7 @@
                                             <!--begin::Menu item-->
                                             <div class="menu-item px-5">
                                                 <a th:href="@{'/usuario/ver/' + ${#authentication.principal.idUsuario}}"
-                                                    class="menu-link px-5">My Profile</a>
+                                                    class="menu-link px-5">Mi Perfil</a>
                                             </div>
                                             <!--end::Menu item-->
                                             <!--begin::Menu item-->

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Editar Empresa</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">Editar Empresa</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{'/empresa/actualizar/' + ${empresa.idEmpresa}}" method="post">
+                            <div class="mb-3">
+                                <label for="ruc" class="form-label">RUC</label>
+                                <input type="text" class="form-control" id="ruc" name="ruc" th:value="${empresa.ruc}"
+                                    maxlength="11" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="razonSocial" class="form-label">Razón Social</label>
+                                <input type="text" class="form-control" id="razonSocial" name="razonSocial"
+                                    th:value="${empresa.razonSocial}" maxlength="100" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="nombreComercial" class="form-label">Nombre Comercial</label>
+                                <input type="text" class="form-control" id="nombreComercial" name="nombreComercial"
+                                    th:value="${empresa.nombreComercial}" maxlength="80">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion"
+                                    th:value="${empresa.direccion}" maxlength="150">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono" name="telefono"
+                                    th:value="${empresa.telefono}" maxlength="20">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="correo" name="correo"
+                                    th:value="${empresa.correo}" maxlength="100">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="idEstado" class="form-label">Estado</label>
+                                <select class="form-select" id="idEstado" name="idEstado">
+                                    <option value="1" th:selected="${empresa.idEstado == 1}">Activo</option>
+                                    <option value="0" th:selected="${empresa.idEstado == 0}">Inactivo</option>
+                                </select>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-arrow-repeat"></i> Actualizar
+                                </button>
+                                <a th:href="@{/empresa}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Bootstrap Icons si los estás usando -->
+    </th:block>
+</body>
+
+</html>

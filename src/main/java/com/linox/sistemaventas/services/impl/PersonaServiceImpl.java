@@ -1,13 +1,14 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.models.Persona;
-import com.linox.sistemaventas.repositories.PersonaRepository;
-import com.linox.sistemaventas.services.PersonaService;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.linox.sistemaventas.models.Persona;
+import com.linox.sistemaventas.repositories.PersonaRepository;
+import com.linox.sistemaventas.services.PersonaService;
 
 @Service
 public class PersonaServiceImpl implements PersonaService {
@@ -38,5 +39,10 @@ public class PersonaServiceImpl implements PersonaService {
     @Override
     public void deleteById(Integer id) {
         personaRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Persona> findAllByEstadoActivo() {
+        return personaRepository.findByIdEstado(1); // 1 es el estado activo
     }
 }

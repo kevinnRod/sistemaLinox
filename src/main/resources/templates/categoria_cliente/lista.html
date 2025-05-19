@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Categorías de Cliente</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Categorías de Cliente</h2>
+                <a th:href="@{/categoriaCliente/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nueva Categoría
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${categorias != null and !categorias.isEmpty()}">
+                        <tr th:each="categoria : ${categorias}">
+                            <td class="text-center" th:text="${categoria.idCategoria}"></td>
+                            <td th:text="${categoria.nombre}"></td>
+                            <td class="text-center">
+                                <span class="badge" th:text="${categoria.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${categoria.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center"
+                                th:text="${#temporals.format(categoria.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/categoriaCliente/editar/' + ${categoria.idCategoria}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+
+                                    <form th:action="@{'/categoriaCliente/eliminar/' + ${categoria.idCategoria}}"
+                                        method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta categoría?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${categorias != null and !categorias.isEmpty()}">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No hay categorías registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Incluye Bootstrap Icons si aún no lo tienes en tu layout -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> -->
+    </th:block>
+</body>
+
+</html>

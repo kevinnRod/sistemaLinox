@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Crear Categoría de Cliente</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-4">
+        <h2>Crear Nueva Categoría de Cliente</h2>
+
+        <form th:action="@{/categoriaCliente/save}" method="post">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre de la Categoría</label>
+                <input type="text" name="nombre" class="form-control" id="nombre" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="idEstado" class="form-label">Estado</label>
+                <select name="idEstado" class="form-control" id="idEstado" required>
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a th:href="@{/categoriaCliente}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <th:block layout:fragment="js">
+    </th:block>
+</body>
+
+</html>

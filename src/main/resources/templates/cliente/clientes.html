@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Clientes</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Clientes</h2>
+                <a th:href="@{/cliente/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nuevo Cliente
+                </a>
+            </div>
+
+            <!-- Mensajes flash -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre Completo</th>
+                            <th>DNI</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Categoría</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${clientes != null and !clientes.isEmpty()}">
+                        <tr th:each="cliente : ${clientes}">
+                            <td class="text-center" th:text="${cliente.codigoCliente}"></td>
+                            <td th:text="${cliente.nombres + ' ' + cliente.apellidos}"></td>
+                            <td class="text-center" th:text="${cliente.dni}"></td>
+                            <td class="text-center" th:text="${cliente.telefono}"></td>
+                            <td th:text="${cliente.direccion}"></td>
+                            <td th:text="${cliente.categoriaCliente.nombre}"></td>
+                            <td class="text-center">
+                                <span class="badge bg-primary"
+                                    th:text="${cliente instanceof T(com.linox.sistemaventas.models.ClienteJuridico) ? 'Jurídico' : 'Natural'}">
+                                </span>
+                            </td>
+
+
+
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/cliente/editar/' + ${cliente.idPersona}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+
+                                    <form th:action="@{'/cliente/eliminar/' + ${cliente.idPersona}}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cliente?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${clientes != null and !clientes.isEmpty()}">
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No hay clientes registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Agrega JS si es necesario -->
+    </th:block>
+</body>
+
+</html>

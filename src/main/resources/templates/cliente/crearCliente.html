@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Crear Cliente</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-4">
+        <h2>Registrar Cliente</h2>
+
+        <form th:action="@{/cliente/save}" method="post" id="clienteForm">
+            <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo de Cliente</label>
+                <select name="tipo" id="tipo" class="form-select" required onchange="toggleTipoCliente()">
+                    <option value="NATURAL" selected>Natural</option>
+                    <option value="JURIDICO">Jurídico</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="nombres" class="form-label">Nombres</label>
+                <input type="text" class="form-control" name="nombres" id="nombres" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="apellidos" class="form-label">Apellidos</label>
+                <input type="text" class="form-control" name="apellidos" id="apellidos" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="dni" class="form-label">DNI</label>
+                <input type="text" class="form-control" name="dni" id="dni" required>
+            </div>
+
+            <div class="mb-3" id="rucContainer" style="display: none;">
+                <label for="ruc" class="form-label">RUC</label>
+                <input type="text" class="form-control" name="ruc" id="ruc">
+            </div>
+
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="text" class="form-control" name="telefono" id="telefono" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" name="direccion" id="direccion" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="idCategoriaCliente" class="form-label">Categoría</label>
+                <select name="idCategoriaCliente" id="idCategoriaCliente" class="form-select" required>
+                    <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}" th:text="${cat.nombre}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a th:href="@{/cliente}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <th:block layout:fragment="js">
+        <script>
+            function toggleTipoCliente() {
+                const tipo = document.getElementById("tipo").value;
+                const rucContainer = document.getElementById("rucContainer");
+                if (tipo === "JURIDICO") {
+                    rucContainer.style.display = "block";
+                    document.getElementById("ruc").required = true;
+                } else {
+                    rucContainer.style.display = "none";
+                    document.getElementById("ruc").required = false;
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                toggleTipoCliente(); // Inicializa visibilidad según opción por defecto
+            });
+        </script>
+    </th:block>
+</body>
+
+</html>
