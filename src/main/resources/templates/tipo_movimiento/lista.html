@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Tipos de Movimiento</title>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-arrow-left-right"></i> Tipos de Movimiento</h2>
+        <a th:href="@{/tipoMovimiento/create}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle"></i> Nuevo Tipo
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Actualizado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${tipos != null and !tipos.isEmpty()}">
+                        <tr th:each="tipo : ${tipos}">
+                            <td class="text-center" th:text="${tipo.id}"></td>
+                            <td th:text="${tipo.codigo}"></td>
+                            <td th:text="${tipo.nombre}"></td>
+                            <td class="text-center">
+                                <span class="badge"
+                                      th:text="${tipo.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                      th:classappend="${tipo.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center" th:text="${#temporals.format(tipo.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="text-center" th:text="${#temporals.format(tipo.updatedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/tipoMovimiento/editar/' + ${tipo.id}}" class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form th:action="@{'/tipoMovimiento/eliminar/' + ${tipo.id}}" method="post"
+                                          onsubmit="return confirm('¿Deseas eliminar este tipo de movimiento?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${tipos != null and !tipos.isEmpty()}">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-info-circle"></i> No hay tipos de movimiento registrados.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="js"></th:block>
+</body>
+</html>

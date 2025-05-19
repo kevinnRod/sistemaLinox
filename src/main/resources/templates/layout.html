@@ -165,6 +165,17 @@
                                 </a>
                             </div>
 
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'tipo-movimiento' ? 'active text-danger' : '')"
+                                    th:href="@{/tipoMovimiento}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-people-fill fs-3"></i> <!-- Ícono cambiado -->
+                                    </span>
+                                    <span class="menu-title">Tipo de movimiento</span>
+                                </a>
+                            </div>
+
 
                             <div class="menu-item">
                                 <a class="menu-link"
