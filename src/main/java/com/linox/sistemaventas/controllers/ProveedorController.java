@@ -131,30 +131,69 @@ public String guardarProveedor(
     @PostMapping("/actualizar/{id}")
     public String actualizarProveedor(
             @PathVariable Integer id,
-            @RequestParam("idEmpresa") Integer idEmpresa,
-            @RequestParam("idEstado") Integer idEstado,
+            @RequestParam String ruc,
+            @RequestParam String razonSocial,
+            @RequestParam(required = false) String nombreComercial,
+            @RequestParam(required = false) String direccion,
+            @RequestParam(required = false) String telefono,
+            @RequestParam(required = false) String correo,
+            @RequestParam Integer estadoEmpresa,
+            @RequestParam Integer idEstado,
             RedirectAttributes redirectAttributes) {
+    
+        Optional<Proveedor> proveedorOpt = proveedorService.findById(id);
+    
+        if (!proveedorOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "Proveedor no encontrado.");
+            return "redirect:/proveedor";
+        }
+    
+        Proveedor proveedor = proveedorOpt.get();
+        Empresa empresa = proveedor.getEmpresa();
+    
+        // Validación: RUC debe tener 11 dígitos
+        if (!ruc.matches("\\d{11}")) {
+            redirectAttributes.addFlashAttribute("error", "El RUC debe tener exactamente 11 dígitos.");
+            return "redirect:/proveedor/editar/" + id;
+        }
+    
+        // Validación: evitar duplicado de RUC en otra empresa
+        Optional<Empresa> empresaByRuc = empresaService.buscarPorRuc(ruc);
+        if (empresaByRuc.isPresent() && !empresaByRuc.get().getIdEmpresa().equals(empresa.getIdEmpresa())) {
+            redirectAttributes.addFlashAttribute("error", "Ya existe otra empresa con ese RUC.");
+            return "redirect:/proveedor/editar/" + id;
+        }
+    
+        // Validación: evitar duplicado de razón social en otra empresa
+        Optional<Empresa> empresaByRazon = empresaService.buscarPorRazonSocial(razonSocial);
+        if (empresaByRazon.isPresent() && !empresaByRazon.get().getIdEmpresa().equals(empresa.getIdEmpresa())) {
+            redirectAttributes.addFlashAttribute("error", "Ya existe otra empresa con esa Razón Social.");
+            return "redirect:/proveedor/editar/" + id;
+        }
+    
         try {
-            Optional<Proveedor> proveedorOpt = proveedorService.findById(id);
-            if (!proveedorOpt.isPresent()) {
-                redirectAttributes.addFlashAttribute("error", "Proveedor no encontrado.");
-                return "redirect:/proveedor";
-            }
-
-            Proveedor proveedor = proveedorOpt.get();
-            Empresa empresa = new Empresa();
-            empresa.setIdEmpresa(idEmpresa);
-
-            proveedor.setEmpresa(empresa);
+            // Actualizar empresa
+            empresa.setRuc(ruc);
+            empresa.setRazonSocial(razonSocial);
+            empresa.setNombreComercial(nombreComercial);
+            empresa.setDireccion(direccion);
+            empresa.setTelefono(telefono);
+            empresa.setCorreo(correo);
+            empresa.setIdEstado(estadoEmpresa);
+            empresaService.guardar(empresa);
+    
+            // Actualizar proveedor
             proveedor.setIdEstado(idEstado);
             proveedorService.save(proveedor);
-
+    
             redirectAttributes.addFlashAttribute("success", "Proveedor actualizado correctamente.");
+            return "redirect:/proveedor";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al actualizar el proveedor: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar: " + e.getMessage());
+            return "redirect:/proveedor/editar/" + id;
         }
-        return "redirect:/proveedor";
     }
+    
 
     @PostMapping("/eliminar/{id}")
     public String eliminarProveedor(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
