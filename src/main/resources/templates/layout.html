@@ -124,6 +124,15 @@
                                 </a>
                             </div>
 
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'categoria-producto' ? 'active text-danger' : '')"
+                                    th:href="@{/categoriaProducto}">
+                                    <span class="menu-icon"><i class="bi bi-tags fs-3"></i></span>
+                                    <span class="menu-title">Categorías de Producto</span>
+                                </a>
+                            </div>
+
 
                             <div class="menu-item">
                                 <a class="menu-link"
