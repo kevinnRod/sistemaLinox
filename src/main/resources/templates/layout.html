@@ -38,8 +38,10 @@
                 <div class="aside-logo flex-column-auto" id="kt_aside_logo">
                     <!--begin::Logo-->
                     <a th:href="@{/empresa-anfitrion/editar/1}">
-                        <img th:src="@{/assets/media/logos/logo-demo13-compact.svg}" alt="Logo" class="h-25px logo" />
+                        <img th:src="@{/assets/media/logos/logo-demo13-compact.svg}" alt="Logo"
+                            class="logo rounded-circle" style="height: 50px; width: 50px; object-fit: cover;" />
                     </a>
+
 
                     <!--end::Logo-->
                     <!--begin::Aside toggler-->
@@ -224,6 +226,18 @@
                                     <span class="menu-title">Empresas</span>
                                 </a>
                             </div>
+
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'cargo' ? 'active text-danger' : '')"
+                                    th:href="@{/cargo}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-briefcase fs-3"></i> <!-- Ícono para cargo -->
+                                    </span>
+                                    <span class="menu-title">Cargos</span>
+                                </a>
+                            </div>
+
 
 
                             <div class="menu-item">
@@ -654,6 +668,31 @@
             });
 
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/empresa-anfitrion/1')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo obtener la empresa anfitrion');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const logoUrl = data.logo;
+                    if (logoUrl && logoUrl.trim() !== '') {
+                        const logoImg = document.querySelector('img.logo');
+                        if (logoImg) {
+                            logoImg.src = logoUrl;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar el logo de la empresa anfitrion:', error);
+                });
+        });
+    </script>
+
 
     <script th:src="@{/assets/plugins/global/plugins.bundle.js}"></script>
     <script th:src="@{/assets/js/scripts.bundle.js}"></script>

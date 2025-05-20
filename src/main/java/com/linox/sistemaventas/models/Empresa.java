@@ -23,10 +23,10 @@ public class Empresa {
     @Column(name = "id_empresa")
     private Integer idEmpresa;
 
-    @Column(length = 11, nullable = false)
+    @Column(length = 11, nullable = false, unique = true)
     private String ruc;
 
-    @Column(name = "razon_social", length = 100, nullable = false)
+    @Column(name = "razon_social", length = 100, nullable = false, unique = true)
     private String razonSocial;
 
     @Column(name = "nombre_comercial", length = 80)
