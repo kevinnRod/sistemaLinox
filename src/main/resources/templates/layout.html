@@ -88,93 +88,130 @@
                                 </a>
                             </div>
 
-                            <div class="menu-item" id="menuUsuarios" style="display: none;">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'usuario' ? 'active text-danger' : '')"
-                                    th:href="@{/usuario}">
-                                    <span class="menu-icon"><i class="bi bi-person fs-3"></i></span>
-                                    <span class="menu-title">Usuarios</span>
-                                </a>
-                            </div>
+                            <!-- GESTIÓN DE USUARIOS -->
+<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+th:classappend="${#strings.contains(active_page, 'usuario') || #strings.contains(active_page, 'rol') || #strings.contains(active_page, 'permiso')} ? ' show' : ''">
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'rol' ? 'active text-danger' : '')"
-                                    th:href="@{/rol}">
-                                    <span class="menu-icon"><i class="bi bi-person-gear fs-3"></i></span>
-                                    <span class="menu-title">Roles</span>
-                                </a>
-                            </div>
+<span class="menu-link">
+    <span class="menu-icon"><i class="bi bi-person-gear fs-3"></i></span>
+    <span class="menu-title">Gestión de Usuarios</span>
+    <span class="menu-arrow"></span>
+</span>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'permiso' ? 'active text-danger' : '')"
-                                    th:href="@{/permiso}">
-                                    <span class="menu-icon"><i class="bi bi-key fs-3"></i></span>
-                                    <span class="menu-title">Permisos</span>
-                                </a>
-                            </div>
+<div class="menu-sub menu-sub-accordion menu-active-bg">
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'usuario' ? 'active text-danger' : ''" th:href="@{/usuario}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Usuarios</span>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'rol' ? 'active text-danger' : ''" th:href="@{/rol}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Roles</span>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'permiso' ? 'active text-danger' : ''" th:href="@{/permiso}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Permisos</span>
+        </a>
+    </div>
+</div>
+</div>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'categoria-cliente' ? 'active text-danger' : '')"
-                                    th:href="@{/categoriaCliente}">
-                                    <span class="menu-icon"><i class="bi bi-tags fs-3"></i></span>
-                                    <span class="menu-title">Categorías de Cliente</span>
-                                </a>
-                            </div>
+<!-- CLIENTE -->
+<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+th:classappend="${#strings.contains(active_page, 'cliente') || #strings.contains(active_page, 'categoria-cliente')} ? ' show' : ''">
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'categoria-producto' ? 'active text-danger' : '')"
-                                    th:href="@{/categoriaProducto}">
-                                    <span class="menu-icon"><i class="bi bi-tags fs-3"></i></span>
-                                    <span class="menu-title">Categorías de Producto</span>
-                                </a>
-                            </div>
+<span class="menu-link">
+    <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
+    <span class="menu-title">Clientes</span>
+    <span class="menu-arrow"></span>
+</span>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'unidad-medida' ? 'active text-danger' : '')"
-                                    th:href="@{/unidadMedida}">
-                                    <span class="menu-icon"><i class="bi bi-tags fs-3"></i></span>
-                                    <span class="menu-title">Unidades de medida</span>
-                                </a>
-                            </div>
+<div class="menu-sub menu-sub-accordion menu-active-bg">
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'categoria-cliente' ? 'active text-danger' : ''" th:href="@{/categoriaCliente}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Categorías de Cliente</span>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'cliente' ? 'active text-danger' : ''" th:href="@{/cliente}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Clientes</span>
+        </a>
+    </div>
+</div>
+</div>
 
+<!-- PRODUCTO -->
+<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+th:classappend="${#strings.contains(active_page, 'unidad-medida') || #strings.contains(active_page, 'categoria-producto')} ? ' show' : ''">
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'cliente' ? 'active text-danger' : '')"
-                                    th:href="@{/cliente}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-people-fill fs-3"></i> <!-- Ícono cambiado -->
-                                    </span>
-                                    <span class="menu-title">Clientes</span>
-                                </a>
-                            </div>
+<span class="menu-link">
+    <span class="menu-icon"><i class="bi bi-box-seam fs-3"></i></span>
+    <span class="menu-title">Productos</span>
+    <span class="menu-arrow"></span>
+</span>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'proveedor' ? 'active text-danger' : '')"
-                                    th:href="@{/proveedor}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-people-fill fs-3"></i> <!-- Ícono cambiado -->
-                                    </span>
-                                    <span class="menu-title">Proveedores</span>
-                                </a>
-                            </div>
+<div class="menu-sub menu-sub-accordion menu-active-bg">
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'categoria-producto' ? 'active text-danger' : ''" th:href="@{/categoriaProducto}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Categorías de Producto</span>
+        </a>
+    </div>
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'unidad-medida' ? 'active text-danger' : ''" th:href="@{/unidadMedida}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Unidades de Medida</span>
+        </a>
+    </div>
+</div>
+</div>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'tipo-movimiento' ? 'active text-danger' : '')"
-                                    th:href="@{/tipoMovimiento}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-people-fill fs-3"></i> <!-- Ícono cambiado -->
-                                    </span>
-                                    <span class="menu-title">Tipo de movimiento</span>
-                                </a>
-                            </div>
+<!-- PROVEEDORES -->
+<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+th:classappend="${active_page} == 'proveedor' ? ' show' : ''">
+
+<span class="menu-link">
+    <span class="menu-icon"><i class="bi bi-truck fs-3"></i></span>
+    <span class="menu-title">Proveedores</span>
+    <span class="menu-arrow"></span>
+</span>
+
+<div class="menu-sub menu-sub-accordion menu-active-bg">
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'proveedor' ? 'active text-danger' : ''" th:href="@{/proveedor}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Proveedores</span>
+        </a>
+    </div>
+</div>
+</div>
+
+<!-- MOVIMIENTOS -->
+<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+th:classappend="${active_page} == 'tipo-movimiento' ? ' show' : ''">
+
+<span class="menu-link">
+    <span class="menu-icon"><i class="bi bi-arrow-left-right fs-3"></i></span>
+    <span class="menu-title">Movimientos</span>
+    <span class="menu-arrow"></span>
+</span>
+
+<div class="menu-sub menu-sub-accordion menu-active-bg">
+    <div class="menu-item">
+        <a class="menu-link" th:classappend="${active_page} == 'tipo-movimiento' ? 'active text-danger' : ''" th:href="@{/tipoMovimiento}">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Tipos de Movimiento</span>
+        </a>
+    </div>
+</div>
+</div>
+
 
 
                             <div class="menu-item">
