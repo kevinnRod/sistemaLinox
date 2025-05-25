@@ -89,7 +89,7 @@ public class EmpresaAnfitrionController {
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(logo.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                empresa.setLogo("/uploads/empresa/" + fileName);
+                empresa.setLogoUrl("/uploads/empresa/" + fileName);
             }
 
             empresaAnfitrionService.save(empresa);
@@ -109,7 +109,7 @@ public class EmpresaAnfitrionController {
         Optional<EmpresaAnfitrion> empresaOpt = empresaAnfitrionService.findById(id);
         if (empresaOpt.isPresent()) {
             Map<String, String> data = new HashMap<>();
-            data.put("logo", empresaOpt.get().getLogo());
+            data.put("logo", empresaOpt.get().getLogoUrl());
             return ResponseEntity.ok(data);
         } else {
             return ResponseEntity.notFound().build();

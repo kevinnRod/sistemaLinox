@@ -64,9 +64,9 @@
                 <div class="mb-4">
                     <label class="form-label">Logo actual:</label>
                     <div>
-                        <img th:if="${empresa.logo != null and !#strings.isEmpty(empresa.logo)}"
-                            th:src="@{${empresa.logo}}" class="img-thumbnail" style="max-height: 150px;">
-                        <p th:if="${empresa.logo == null or #strings.isEmpty(empresa.logo)}"
+                        <img th:if="${empresa.logoUrl != null and !#strings.isEmpty(empresa.logoUrl)}"
+                            th:src="@{${empresa.logoUrl}}" class="img-thumbnail" style="max-height: 150px;">
+                        <p th:if="${empresa.logoUrl == null or #strings.isEmpty(empresa.logoUrl)}"
                             class="text-muted fst-italic">
                             Sin logo cargado
                         </p>

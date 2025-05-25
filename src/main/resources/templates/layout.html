@@ -161,6 +161,16 @@
                                 </a>
                             </div>
 
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:class="'menu-link ' + (${active_page} == 'sucursal' ? 'active text-danger' : '')"
+                                    th:href="@{/sucursal}">
+                                    <span class="menu-icon">
+                                        <i class="bi bi-geo-alt fs-3"></i> <!-- Ícono para sucursal -->
+                                    </span>
+                                    <span class="menu-title">Sucursales</span>
+                                </a>
+                            </div>
 
 
                             <div class="menu-item">
