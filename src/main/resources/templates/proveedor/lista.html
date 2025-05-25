@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Listado de Proveedores</title>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-truck"></i> Proveedores Registrados</h2>
+        <a th:href="@{/proveedor/create}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle"></i> Nuevo Proveedor
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>RUC</th>
+                            <th>Razón Social</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Actualizado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${proveedores != null and !proveedores.isEmpty()}">
+                        <tr th:each="proveedor : ${proveedores}">
+                            <td class="text-center" th:text="${proveedor.id}"></td>
+                            <td th:text="${proveedor.empresa.ruc}"></td>
+                            <td th:text="${proveedor.empresa.razonSocial}"></td>
+                            <td class="text-center">
+                                <span class="badge"
+                                      th:text="${proveedor.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                      th:classappend="${proveedor.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                </span>
+                            </td>
+                            <td class="text-center"
+                                th:text="${#temporals.format(proveedor.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center"
+                                th:text="${#temporals.format(proveedor.updatedAt, 'dd/MM/yyyy HH:mm')}">
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/proveedor/editar/' + ${proveedor.id}}"
+                                       class="btn btn-sm btn-warning" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <form th:action="@{'/proveedor/eliminar/' + ${proveedor.id}}"
+                                          method="post"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar este proveedor?');">
+                                        <input type="hidden" name="_method" value="delete"/>
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${proveedores != null and !proveedores.isEmpty()}">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-info-circle"></i> No hay proveedores registrados.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="js"></th:block>
+</body>
+
+</html>

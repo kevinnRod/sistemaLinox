@@ -20,6 +20,10 @@ public class EmpresaServiceImpl implements EmpresaService {
     public Empresa guardar(Empresa empresa) {
         return empresaRepository.save(empresa);
     }
+    @Override
+    public List<Empresa> findAll() {
+        return empresaRepository.findAll();
+    }
 
     @Override
     public Empresa actualizar(Empresa empresa) {
@@ -39,4 +43,15 @@ public class EmpresaServiceImpl implements EmpresaService {
         Optional<Empresa> opt = empresaRepository.findById(id);
         return opt.orElse(null);
     }
+
+    @Override
+    public Optional<Empresa> buscarPorRuc(String ruc) {
+        return empresaRepository.findByRuc(ruc);
+    }
+
+    @Override
+    public Optional<Empresa> buscarPorRazonSocial(String razonSocial) {
+        return empresaRepository.findByRazonSocial(razonSocial);
+    }
+
 }

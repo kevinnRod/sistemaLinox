@@ -154,9 +154,10 @@ public class UsuarioController {
             String nombreG = user.getUsuario();
             user.setUsuario(usuario);
             user.setCorreo(correo);
-            if (contrasena != "") {
+            if (contrasena != null && !contrasena.isBlank()) {
                 user.setContrasenaEnc(passwordEncoder.encode(contrasena));
             }
+            
             user.setIdEstado(idEstado);
             // Procesar la imagen si se envió
             if (foto != null && !foto.isEmpty()) {
