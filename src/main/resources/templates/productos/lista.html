@@ -24,6 +24,7 @@
                 <thead class="table-dark text-center">
                     <tr>
                         <th>ID</th>
+                        <th>Sucursal</th>
                         <th>Código</th>
                         <th>Nombre</th>
                         <th>Precio Unitario</th>
@@ -38,6 +39,7 @@
                 <tbody th:if="${productos != null and !productos.isEmpty()}">
                     <tr th:each="producto : ${productos}">
                         <td class="text-center" th:text="${producto.id}"></td>
+                        <td th:text="${producto.sucursal != null ? producto.sucursal.nombreSucursal : '—'}"></td>
                         <td th:text="${producto.codProducto}"></td>
                         <td th:text="${producto.nombreProducto}"></td>
                         <td class="text-end" th:text="${#numbers.formatDecimal(producto.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>

@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface SucursalService {
 
     List<Sucursal> findAllByEstadoActivo();
+    List<Sucursal> findAllActivos();
 
     Optional<Sucursal> findById(Integer id);
 

@@ -2,7 +2,11 @@ package com.linox.sistemaventas.controllers;
 
 import com.linox.sistemaventas.models.Producto;
 import com.linox.sistemaventas.services.ProductoService;
+import com.linox.sistemaventas.services.SucursalService;
 import com.linox.sistemaventas.services.UnidadMedidaService;
+
+import groovyjarjarantlr4.v4.parse.ANTLRParser.qid_return;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +25,9 @@ public class ProductoController {
     @Autowired
     private UnidadMedidaService unidadMedidaService;
 
+    @Autowired
+    private SucursalService sucursalService;
+
     // Mostrar lista
     @GetMapping
     public String listarProductos(Model model) {
@@ -35,6 +42,8 @@ public class ProductoController {
         model.addAttribute("producto", new Producto());
         model.addAttribute("unidades", unidadMedidaService.findAllActivos());
         model.addAttribute("active_page", "producto");
+        model.addAttribute("sucursales", sucursalService.findAllActivos());
+
         return "productos/crear";
     }
 
@@ -46,7 +55,10 @@ public class ProductoController {
             model.addAttribute("error", "Ya existe un producto activo con ese código.");
             model.addAttribute("producto", producto);
             model.addAttribute("unidades", unidadMedidaService.findAllActivos());
+            model.addAttribute("sucursales", sucursalService.findAllActivos());
+
             model.addAttribute("active_page", "producto");
+
             return "productos/crear";
         }
     
@@ -57,19 +69,20 @@ public class ProductoController {
     
     
 
-    // Mostrar formulario de edición
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEditar(@PathVariable Integer id, Model model) {
         Optional<Producto> productoOpt = productoService.findById(id);
         if (productoOpt.isPresent()) {
             model.addAttribute("producto", productoOpt.get());
             model.addAttribute("unidades", unidadMedidaService.findAllActivos());
+            model.addAttribute("sucursales", sucursalService.findAllActivos()); // ✅ Agregado
             model.addAttribute("active_page", "producto");
             return "productos/editar";
         } else {
             return "redirect:/productos";
         }
     }
+    
 
     @PostMapping("/update")
     public String actualizarProducto(@ModelAttribute Producto producto, Model model) {
@@ -79,13 +92,15 @@ public class ProductoController {
         boolean existeOtro = existentes.stream()
             .anyMatch(p -> !p.getId().equals(producto.getId()));
     
-        if (existeOtro) {
-            model.addAttribute("error", "Ya existe otro producto activo con ese código.");
-            model.addAttribute("producto", producto);
-            model.addAttribute("unidades", unidadMedidaService.findAllActivos());
-            model.addAttribute("active_page", "producto");
-            return "productos/editar";
-        }
+            if (existeOtro) {
+                model.addAttribute("error", "Ya existe otro producto activo con ese código.");
+                model.addAttribute("producto", producto);
+                model.addAttribute("unidades", unidadMedidaService.findAllActivos());
+                model.addAttribute("sucursales", sucursalService.findAllActivos()); // ✅ Faltaba aquí
+                model.addAttribute("active_page", "producto");
+                return "productos/editar";
+            }
+            
     
         // Restaurar createdAt
         Optional<Producto> originalOpt = productoService.findById(producto.getId());

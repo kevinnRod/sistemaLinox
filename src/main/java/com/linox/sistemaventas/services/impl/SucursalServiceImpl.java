@@ -1,6 +1,7 @@
 package com.linox.sistemaventas.services.impl;
 
 import com.linox.sistemaventas.models.Sucursal;
+import com.linox.sistemaventas.models.UnidadMedida;
 import com.linox.sistemaventas.repositories.SucursalRepository;
 import com.linox.sistemaventas.services.SucursalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,10 @@ public class SucursalServiceImpl implements SucursalService {
     @Override
     public void eliminarPorId(Integer id) {
         sucursalRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Sucursal> findAllActivos() {
+        return sucursalRepository.findByIdEstado(1); 
     }
 }

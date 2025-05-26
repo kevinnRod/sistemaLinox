@@ -40,8 +40,9 @@ public class Producto implements Serializable {
     @JoinColumn(name = "id_proveedor")
     private Proveedor proveedor;
 
-    @Column(name = "id_sucursal")
-    private Integer idSucursal;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sucursal")
+    private Sucursal sucursal;    
 
     @Column(name = "id_estado")
     private Integer idEstado;
@@ -130,12 +131,12 @@ public class Producto implements Serializable {
         this.proveedor = proveedor;
     }
     
-    public Integer getIdSucursal() {
-        return idSucursal;
+    public Sucursal getSucursal() {
+        return sucursal;
     }
     
-    public void setIdSucursal(Integer idSucursal) {
-        this.idSucursal = idSucursal;
+    public void setSucursal(Sucursal sucursal) {
+        this.sucursal = sucursal;
     }
     
     public Integer getIdEstado() {

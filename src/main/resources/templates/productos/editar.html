@@ -74,6 +74,20 @@
                         </select>
                     </div>
 
+                    <div class="col-md-6">
+                        <label for="sucursal" class="form-label">Sucursal</label>
+                        <select name="sucursal.idSucursal" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option th:each="s : ${sucursales}"
+                                    th:value="${s.idSucursal}"
+                                    th:text="${s.nombreSucursal}"
+                                    th:selected="${producto.sucursal != null} ? ${s.idSucursal} == ${producto.sucursal.idSucursal} : false">
+                            </option>
+                        </select>
+                        
+                    </div>
+                    
+
                     <input type="hidden" name="idEstado" th:value="*{idEstado}" />
                 </div>
             </div>
