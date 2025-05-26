@@ -231,6 +231,15 @@ th:classappend="${#strings.contains(active_page, 'usuario') || #strings.contains
                                             </a>
                                         </div>
                                     </div>
+
+                                    <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                        <div class="menu-item">
+                                            <a class="menu-link" th:classappend="${active_page} == 'kardex' ? 'active text-danger' : ''" th:href="@{/kardex}">
+                                                <span class="menu-icon"><i class="bi bi-shuffle fs-4"></i></span>
+                                                <span class="menu-title">Kardex</span>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
 
 

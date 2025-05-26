@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Listado de Movimientos Kardex</title>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="bi bi-list-columns"></i> Kardex</h2>
+        <a th:href="@{/kardex/create}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-lg"></i> Nuevo Movimiento
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Stock Resultante</th>
+                    <th>Precio Unitario</th>
+                    <th>Documento</th>
+                    <th>Sucursal</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody th:if="${kardex != null and !kardex.isEmpty()}">
+                <tr th:each="k : ${kardex}">
+                    <td class="text-center" th:text="${k.idKardex}"></td>
+                    <td th:text="${k.producto?.nombreProducto}"></td>
+                    <td th:text="${k.tipoMovimiento?.nombre}"></td>
+                    <td class="text-end" th:text="${k.cantidad}"></td>
+                    <td class="text-end" th:text="${k.stockResultante}"></td>
+                    <td class="text-end" th:text="${k.precioUnitario}"></td>
+                    <td th:text="${k.documentoReferencia?.tipo + ' #' + k.documentoReferencia?.id}"></td>
+                    <td th:text="${k.sucursal?.nombreSucursal}"></td>
+                    <td class="text-center" th:text="${#temporals.format(k.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
+                            <a th:href="@{'/kardex/editar/' + ${k.idKardex}}" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <form th:action="@{'/kardex/eliminar/' + ${k.idKardex}}" method="post"
+                                  onsubmit="return confirm('¿Eliminar este movimiento?');">
+                                <input type="hidden" name="_method" value="delete" />
+                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody th:unless="${kardex != null and !kardex.isEmpty()}">
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-3">
+                        <i class="bi bi-info-circle"></i> No hay movimientos registrados.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<th:block layout:fragment="js"></th:block>
+</body>
+</html>

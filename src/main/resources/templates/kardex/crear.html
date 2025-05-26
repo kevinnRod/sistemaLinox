@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Registrar Movimiento en Kardex</title>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <h2 class="mb-4"><i class="bi bi-journal-plus"></i> Registrar Movimiento en Kardex</h2>
+
+    <form th:action="@{/kardex/save}" method="post" th:object="${kardex}">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <strong><i class="bi bi-archive"></i> Datos del Movimiento</strong>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label for="producto" class="form-label">Producto <span class="text-danger">*</span></label>
+                        <select id="producto" name="producto.id" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option th:each="p : ${productos}" th:value="${p.id}" th:text="${p.nombreProducto}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="tipoMovimiento" class="form-label">Tipo de Movimiento <span class="text-danger">*</span></label>
+                        <select id="tipoMovimiento" name="tipoMovimiento.id" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option th:each="t : ${tiposMovimiento}" th:value="${t.id}" th:text="${t.nombre}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="cantidad" class="form-label">Cantidad <span class="text-danger">*</span></label>
+                        <input type="number" step="0.001" name="cantidad" id="cantidad" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="stockResultante" class="form-label">Stock Resultante</label>
+                        <input type="number" step="0.001" name="stockResultante" id="stockResultante" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="precioUnitario" class="form-label">Precio Unitario</label>
+                        <input type="number" step="0.01" name="precioUnitario" id="precioUnitario" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo Documento Ref.</label>
+                        <select id="tipoDocRef" name="documentoReferencia.tipo" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option value="VENTA">VENTA</option>
+                            <option value="PEDIDO">PEDIDO</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Documento Referencia</label>
+                        <select id="idDocRef" name="documentoReferencia.id" class="form-select" required>
+                            <option value="" disabled selected>Seleccione tipo primero...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Número Documento Ref.</label>
+                        <input type="text" id="numeroDocRef" name="documentoReferencia.numero" class="form-control" readonly>
+                    </div>
+                    
+
+                    <div class="col-md-6">
+                        <label for="sucursal" class="form-label">Sucursal <span class="text-danger">*</span></label>
+                        <select id="sucursal" name="sucursal.idSucursal" class="form-select" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option th:each="s : ${sucursales}" th:value="${s.idSucursal}" th:text="${s.nombreSucursal}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaMovimiento" class="form-label">Fecha del Movimiento</label>
+                        <input type="datetime-local" name="fechaMovimiento" id="fechaMovimiento" class="form-control">
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea name="observaciones" id="observaciones" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <input type="hidden" name="idEstado" value="1" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Guardar
+            </button>
+            <a th:href="@{/kardex}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<th:block layout:fragment="js"></th:block>
+</body>
+</html>

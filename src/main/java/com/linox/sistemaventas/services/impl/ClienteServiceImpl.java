@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.linox.sistemaventas.models.Cliente;
+import com.linox.sistemaventas.models.Sucursal;
 import com.linox.sistemaventas.repositories.ClienteRepository;
 import com.linox.sistemaventas.services.ClienteService;
 
@@ -48,5 +49,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public long countAll() {
         return clienteRepository.count();
+    }
+
+    @Override
+    public List<Cliente> findAllActivos() {
+        return clienteRepository.findByIdEstado(1); 
     }
 }

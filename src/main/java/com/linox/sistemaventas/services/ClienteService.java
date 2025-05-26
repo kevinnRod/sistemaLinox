@@ -15,6 +15,7 @@ public interface ClienteService {
     void deleteById(Integer id);
 
     List<Cliente> findAllByEstadoActivo();
+    List<Cliente> findAllActivos();
 
     long countAll();
 }

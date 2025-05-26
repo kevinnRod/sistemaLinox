@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.linox.sistemaventas.models.Persona;
+import com.linox.sistemaventas.models.Sucursal;
 
 public interface PersonaService {
     List<Persona> findAll();
@@ -17,4 +18,7 @@ public interface PersonaService {
     void deleteById(Integer id);
 
     List<Persona> findAllByEstadoActivo();
+
+    List<Persona> findAllActivos();
+
 }
