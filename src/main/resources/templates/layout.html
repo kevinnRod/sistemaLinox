@@ -159,6 +159,12 @@
 
     <div class="menu-sub menu-sub-accordion menu-active-bg">
         <div class="menu-item">
+            <a class="menu-link" th:classappend="${active_page} == 'producto' ? 'active text-danger' : ''" th:href="@{/productos}">
+                <span class="menu-icon"><i class="bi bi-tags fs-4"></i></span>
+                <span class="menu-title">Productos</span>
+            </a>
+        </div>
+        <div class="menu-item">
             <a class="menu-link" th:classappend="${active_page} == 'categoria-producto' ? 'active text-danger' : ''" th:href="@{/categoriaProducto}">
                 <span class="menu-icon"><i class="bi bi-tags fs-4"></i></span>
                 <span class="menu-title">Categorías de Producto</span>
