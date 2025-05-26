@@ -12,9 +12,9 @@
     <div layout:fragment="content">
         <div class="container mt-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Gestión de Empresas</h2>
+                <h2 class="mb-0">Gestión de Datos de la Empresa</h2>
                 <a th:href="@{/empresa/create}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-lg"></i> Nueva Empresa
+                    <i class="bi bi-plus-lg"></i> Nuevos datos
                 </a>
             </div>
 
@@ -53,7 +53,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <a th:href="@{'/empresa/editar/' + ${empresa.idEmpresa}}"
+                                    <a th:href="@{'/empresa-anfitrion/editar/' + ${empresa.idEmpresa}}"
                                         class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Sucursales</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Sucursales</h2>
+                <a th:href="@{/sucursal/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nueva Sucursal
+                </a>
+            </div>
+
+            <!-- Flash messages -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Empresa</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${sucursales != null and !sucursales.isEmpty()}">
+                        <tr th:each="sucursal : ${sucursales}">
+                            <td class="text-center" th:text="${sucursal.idSucursal}"></td>
+                            <td th:text="${sucursal.nombreSucursal}"></td>
+                            <td th:text="${sucursal.direccion}"></td>
+                            <td th:text="${sucursal.telefono}"></td>
+                            <td th:text="${sucursal.email}"></td>
+                            <td th:text="${sucursal.empresaAnfitrion.nombreComercial}"></td>
+                            <td class="text-center">
+                                <span class="badge" th:text="${sucursal.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${sucursal.idEstado == 1 ? 'bg-success' : 'bg-danger'}"></span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/sucursal/editar/' + ${sucursal.idSucursal}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form th:action="@{'/sucursal/eliminar/' + ${sucursal.idSucursal}}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta sucursal?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${sucursales != null and !sucursales.isEmpty()}">
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No hay sucursales registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,12 +1,16 @@
 package com.linox.sistemaventas.services;
 
-import com.linox.sistemaventas.models.Cargo;
-
 import java.util.List;
 import java.util.Optional;
 
+import com.linox.sistemaventas.models.Cargo;
+
 public interface CargoService {
     List<Cargo> listar();
+
+    List<Cargo> findAllActivos();
+
+    Optional<Cargo> findById(Integer id);
 
     Optional<Cargo> obtenerPorId(Integer id);
 

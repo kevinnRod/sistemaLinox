@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.linox.sistemaventas.models.Empresa;
+import com.linox.sistemaventas.models.EmpresaAnfitrion;
 import com.linox.sistemaventas.services.EmpresaService;
 
 @Controller
@@ -48,7 +49,7 @@ public class EmpresaController {
             @RequestParam("idEstado") Integer idEstado,
             RedirectAttributes redirectAttributes) {
         try {
-            Empresa empresa = new Empresa();
+            EmpresaAnfitrion empresa = new EmpresaAnfitrion();
             empresa.setRuc(ruc);
             empresa.setRazonSocial(razonSocial);
             empresa.setNombreComercial(nombreComercial);
