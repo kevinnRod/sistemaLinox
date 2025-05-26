@@ -89,166 +89,216 @@
                                     <span class="menu-title">Inicio</span>
                                 </a>
                             </div>
-<!-- GESTIÓN DE USUARIOS -->
-<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
-    th:classappend="${#strings.contains(active_page, 'usuario') || #strings.contains(active_page, 'rol') || #strings.contains(active_page, 'permiso')} ? ' show' : ''">
-    
-    <span class="menu-link">
-        <span class="menu-icon"><i class="bi bi-person-gear fs-3"></i></span>
-        <span class="menu-title">Gestión de Usuarios</span>
-        <span class="menu-arrow"></span>
-    </span>
+                            <!-- GESTIÓN DE USUARIOS -->
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${#strings.contains(active_page, 'usuario') || #strings.contains(active_page, 'rol') || #strings.contains(active_page, 'permiso')} ? ' show' : ''">
 
-    <div class="menu-sub menu-sub-accordion menu-active-bg">
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'usuario' ? 'active text-danger' : ''" th:href="@{/usuario}">
-                <span class="menu-icon"><i class="bi bi-person fs-4"></i></span>
-                <span class="menu-title">Usuarios</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'rol' ? 'active text-danger' : ''" th:href="@{/rol}">
-                <span class="menu-icon"><i class="bi bi-shield-lock fs-4"></i></span>
-                <span class="menu-title">Roles</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'permiso' ? 'active text-danger' : ''" th:href="@{/permiso}">
-                <span class="menu-icon"><i class="bi bi-key fs-4"></i></span>
-                <span class="menu-title">Permisos</span>
-            </a>
-        </div>
-    </div>
-</div>
+                                <span class="menu-link">
+                                    <span class="menu-icon"><i class="bi bi-person-gear fs-3"></i></span>
+                                    <span class="menu-title">Gestión de Usuarios</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
 
-<!-- CLIENTES -->
-<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
-    th:classappend="${#strings.contains(active_page, 'cliente') || #strings.contains(active_page, 'categoria-cliente')} ? ' show' : ''">
-    
-    <span class="menu-link">
-        <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
-        <span class="menu-title">Clientes</span>
-        <span class="menu-arrow"></span>
-    </span>
-
-    <div class="menu-sub menu-sub-accordion menu-active-bg">
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'categoria-cliente' ? 'active text-danger' : ''" th:href="@{/categoriaCliente}">
-                <span class="menu-icon"><i class="bi bi-bookmark-star fs-4"></i></span>
-                <span class="menu-title">Categorías de Cliente</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'cliente' ? 'active text-danger' : ''" th:href="@{/cliente}">
-                <span class="menu-icon"><i class="bi bi-person-badge fs-4"></i></span>
-                <span class="menu-title">Clientes</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- PRODUCTOS -->
-<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
-    th:classappend="${#strings.contains(active_page, 'unidad-medida') || #strings.contains(active_page, 'categoria-producto')} ? ' show' : ''">
-
-    <span class="menu-link">
-        <span class="menu-icon"><i class="bi bi-box-seam fs-3"></i></span>
-        <span class="menu-title">Productos</span>
-        <span class="menu-arrow"></span>
-    </span>
-
-    <div class="menu-sub menu-sub-accordion menu-active-bg">
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'categoria-producto' ? 'active text-danger' : ''" th:href="@{/categoriaProducto}">
-                <span class="menu-icon"><i class="bi bi-tags fs-4"></i></span>
-                <span class="menu-title">Categorías de Producto</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'unidad-medida' ? 'active text-danger' : ''" th:href="@{/unidadMedida}">
-                <span class="menu-icon"><i class="bi bi-rulers fs-4"></i></span>
-                <span class="menu-title">Unidades de Medida</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- PROVEEDORES -->
-<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
-    th:classappend="${active_page} == 'proveedor' ? ' show' : ''">
-
-    <span class="menu-link">
-        <span class="menu-icon"><i class="bi bi-truck fs-3"></i></span>
-        <span class="menu-title">Proveedores</span>
-        <span class="menu-arrow"></span>
-    </span>
-
-    <div class="menu-sub menu-sub-accordion menu-active-bg">
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'proveedor' ? 'active text-danger' : ''" th:href="@{/proveedor}">
-                <span class="menu-icon"><i class="bi bi-building-check fs-4"></i></span>
-                <span class="menu-title">Listado de Proveedores</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- MOVIMIENTOS -->
-<div data-kt-menu-trigger="click" class="menu-item menu-accordion"
-    th:classappend="${active_page} == 'tipo-movimiento' ? ' show' : ''">
-
-    <span class="menu-link">
-        <span class="menu-icon"><i class="bi bi-arrow-left-right fs-3"></i></span>
-        <span class="menu-title">Movimientos</span>
-        <span class="menu-arrow"></span>
-    </span>
-
-    <div class="menu-sub menu-sub-accordion menu-active-bg">
-        <div class="menu-item">
-            <a class="menu-link" th:classappend="${active_page} == 'tipo-movimiento' ? 'active text-danger' : ''" th:href="@{/tipoMovimiento}">
-                <span class="menu-icon"><i class="bi bi-shuffle fs-4"></i></span>
-                <span class="menu-title">Tipos de Movimiento</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-
-
-
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'empresa' ? 'active text-danger' : '')"
-                                    th:href="@{/empresa}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-building fs-3"></i> <!-- Ícono para empresa -->
-                                    </span>
-                                    <span class="menu-title">Empresas</span>
-                                </a>
+                                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'usuario' ? 'active text-danger' : ''"
+                                            th:href="@{/usuario}">
+                                            <span class="menu-icon"><i class="bi bi-person fs-4"></i></span>
+                                            <span class="menu-title">Usuarios</span>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'rol' ? 'active text-danger' : ''"
+                                            th:href="@{/rol}">
+                                            <span class="menu-icon"><i class="bi bi-shield-lock fs-4"></i></span>
+                                            <span class="menu-title">Roles</span>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'permiso' ? 'active text-danger' : ''"
+                                            th:href="@{/permiso}">
+                                            <span class="menu-icon"><i class="bi bi-key fs-4"></i></span>
+                                            <span class="menu-title">Permisos</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'cargo' ? 'active text-danger' : '')"
-                                    th:href="@{/cargo}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-briefcase fs-3"></i> <!-- Ícono para cargo -->
-                                    </span>
-                                    <span class="menu-title">Cargos</span>
-                                </a>
+                            <!-- CLIENTES -->
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${#strings.contains(active_page, 'cliente') || #strings.contains(active_page, 'categoria-cliente')} ? ' show' : ''">
+
+                                <span class="menu-link">
+                                    <span class="menu-icon"><i class="bi bi-people fs-3"></i></span>
+                                    <span class="menu-title">Clientes</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+
+                                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'categoria-cliente' ? 'active text-danger' : ''"
+                                            th:href="@{/categoriaCliente}">
+                                            <span class="menu-icon"><i class="bi bi-bookmark-star fs-4"></i></span>
+                                            <span class="menu-title">Categorías de Cliente</span>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'cliente' ? 'active text-danger' : ''"
+                                            th:href="@{/cliente}">
+                                            <span class="menu-icon"><i class="bi bi-person-badge fs-4"></i></span>
+                                            <span class="menu-title">Clientes</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="menu-item">
-                                <a class="menu-link"
-                                    th:class="'menu-link ' + (${active_page} == 'sucursal' ? 'active text-danger' : '')"
-                                    th:href="@{/sucursal}">
-                                    <span class="menu-icon">
-                                        <i class="bi bi-geo-alt fs-3"></i> <!-- Ícono para sucursal -->
-                                    </span>
-                                    <span class="menu-title">Sucursales</span>
-                                </a>
+                            <!-- PRODUCTOS -->
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${#strings.contains(active_page, 'unidad-medida') || #strings.contains(active_page, 'categoria-producto')} ? ' show' : ''">
+
+                                <span class="menu-link">
+                                    <span class="menu-icon"><i class="bi bi-box-seam fs-3"></i></span>
+                                    <span class="menu-title">Productos</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+
+                                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'categoria-producto' ? 'active text-danger' : ''"
+                                            th:href="@{/categoriaProducto}">
+                                            <span class="menu-icon"><i class="bi bi-tags fs-4"></i></span>
+                                            <span class="menu-title">Categorías de Producto</span>
+                                        </a>
+                                    </div>
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'unidad-medida' ? 'active text-danger' : ''"
+                                            th:href="@{/unidadMedida}">
+                                            <span class="menu-icon"><i class="bi bi-rulers fs-4"></i></span>
+                                            <span class="menu-title">Unidades de Medida</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
 
+                            <!-- PROVEEDORES -->
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${active_page} == 'proveedor' ? ' show' : ''">
+
+                                <span class="menu-link">
+                                    <span class="menu-icon"><i class="bi bi-truck fs-3"></i></span>
+                                    <span class="menu-title">Proveedores</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+
+                                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'proveedor' ? 'active text-danger' : ''"
+                                            th:href="@{/proveedor}">
+                                            <span class="menu-icon"><i class="bi bi-building-check fs-4"></i></span>
+                                            <span class="menu-title">Listado de Proveedores</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MOVIMIENTOS -->
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${active_page} == 'tipo-movimiento' ? ' show' : ''">
+
+                                <span class="menu-link">
+                                    <span class="menu-icon"><i class="bi bi-arrow-left-right fs-3"></i></span>
+                                    <span class="menu-title">Movimientos</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+
+                                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'tipo-movimiento' ? 'active text-danger' : ''"
+                                            th:href="@{/tipoMovimiento}">
+                                            <span class="menu-icon"><i class="bi bi-shuffle fs-4"></i></span>
+                                            <span class="menu-title">Tipos de Movimiento</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EMPRESA -->
+                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                th:classappend="${#strings.contains(active_page, 'empresa') || #strings.contains(active_page, 'sucursal') || #strings.contains(active_page, 'empleado') || #strings.contains(active_page, 'cargo')} ? ' show' : ''">
+
+                                <span class="menu-link">
+                                    <span class="menu-icon"><i class="bi bi-building fs-3"></i></span>
+                                    <span class="menu-title">Empresa</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+
+                                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                    <!-- Datos de la empresa -->
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'empresa' ? 'active text-danger' : ''"
+                                            th:href="@{/empresa}">
+                                            <span class="menu-icon"><i class="bi bi-info-circle fs-4"></i></span>
+                                            <span class="menu-title">Datos de la empresa</span>
+                                        </a>
+                                    </div>
+
+
+                                    <!-- EMPLEADOS (submenu) -->
+                                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                                        th:classappend="${#strings.contains(active_page, 'empleado') || #strings.contains(active_page, 'cargo')} ? ' show' : ''">
+
+                                        <span class="menu-link">
+                                            <span class="menu-icon"><i class="bi bi-people fs-4"></i></span>
+                                            <span class="menu-title">Empleados</span>
+                                            <span class="menu-arrow"></span>
+                                        </span>
+
+                                        <div class="menu-sub menu-sub-accordion menu-active-bg">
+                                            <!-- Lista de empleados -->
+                                            <div class="menu-item">
+                                                <a class="menu-link"
+                                                    th:classappend="${active_page} == 'empleado' ? 'active text-danger' : ''"
+                                                    th:href="@{/empleado}">
+                                                    <span class="menu-icon"><i
+                                                            class="bi bi-person-lines-fill fs-5"></i></span>
+                                                    <span class="menu-title">Lista de empleados</span>
+                                                </a>
+                                            </div>
+
+                                            <!-- Cargos -->
+                                            <div class="menu-item">
+                                                <a class="menu-link"
+                                                    th:classappend="${active_page} == 'cargo' ? 'active text-danger' : ''"
+                                                    th:href="@{/cargo}">
+                                                    <span class="menu-icon"><i class="bi bi-briefcase fs-5"></i></span>
+                                                    <span class="menu-title">Cargos</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Sucursales -->
+                                    <div class="menu-item">
+                                        <a class="menu-link"
+                                            th:classappend="${active_page} == 'sucursal' ? 'active text-danger' : ''"
+                                            th:href="@{/sucursal}">
+                                            <span class="menu-icon"><i class="bi bi-geo-alt fs-4"></i></span>
+                                            <span class="menu-title">Sucursales</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="menu-item">
                                 <div class="menu-content pt-8 pb-2">
@@ -665,9 +715,9 @@
                 if (Array.isArray(roles)) {
                     const esAdmin = roles.some(r => r.nombreRol === 'ADMIN');
                     if (esAdmin) {
-                        document.getElementById('menuUsuarios').style.display = 'block';
+
                     } else {
-                        document.getElementById('menuUsuarios').style.display = 'none';
+
                     }
                 } else {
                     console.error('La respuesta no es un arreglo:', roles);

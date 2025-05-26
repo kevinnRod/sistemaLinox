@@ -1,13 +1,14 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.models.Cargo;
-import com.linox.sistemaventas.repositories.CargoRepository;
-import com.linox.sistemaventas.services.CargoService;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.linox.sistemaventas.models.Cargo;
+import com.linox.sistemaventas.repositories.CargoRepository;
+import com.linox.sistemaventas.services.CargoService;
 
 @Service
 public class CargoServiceImpl implements CargoService {
@@ -18,6 +19,16 @@ public class CargoServiceImpl implements CargoService {
     @Override
     public List<Cargo> listar() {
         return cargoRepository.findAll();
+    }
+
+    @Override
+    public List<Cargo> findAllActivos() {
+        return cargoRepository.findByIdEstado(1); // Método personalizado en el repository
+    }
+
+    @Override
+    public Optional<Cargo> findById(Integer id) {
+        return cargoRepository.findById(id);
     }
 
     @Override

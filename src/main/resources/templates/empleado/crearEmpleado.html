@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Nuevo Empleado</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <h2 class="mb-4">Registrar Nuevo Empleado</h2>
+            <!-- Mostrar mensajes -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+            <form th:action="@{/empleado/save}" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>DNI</label>
+                        <input type="text" class="form-control" name="dni"
+                            th:value="${datos != null and datos.containsKey('dni') ? datos['dni'] : ''}" pattern="\d{8}"
+                            maxlength="8" required>
+                        <div class="text-danger" th:if="${errores != null and errores.containsKey('dni')}"
+                            th:text="${errores['dni']}"></div>
+
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Nombres</label>
+                        <input type="text" class="form-control" name="nombres"
+                            th:value="${datos != null and datos.containsKey('nombres') ? datos['nombres'] : ''}"
+                            required>
+                        <div class="text-danger" th:if="${errores != null and errores.containsKey('nombres')}"
+                            th:text="${errores['nombres']}">
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label>Apellidos</label>
+                        <input type="text" class="form-control" name="apellidos"
+                            th:value="${datos != null and datos.containsKey('apellidos') ? datos['apellidos'] : ''}"
+                            required>
+                        <div class="text-danger" th:if="${errores != null and errores.containsKey('apellidos')}"
+                            th:text="${errores['apellidos']}"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Correo</label>
+                        <input type="email" class="form-control" name="correo"
+                            th:value="${datos != null and datos.containsKey('correo') ? datos['correo'] : ''}" required>
+                        <div class="text-danger" th:if="${errores != null and errores.containsKey('correo')}"
+                            th:text="${errores['correo']}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Teléfono</label>
+                        <input type="text" class="form-control" name="telefono">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Dirección</label>
+                    <input type="text" class="form-control" name="direccion">
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Cargo</label>
+                        <select name="idCargo" class="form-control" required>
+                            <option th:each="cargo : ${cargos}" th:value="${cargo.idCargo}"
+                                th:text="${cargo.nombreCargo}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Sucursal</label>
+                        <select name="idSucursal" class="form-control" required>
+                            <option th:each="sucursal : ${sucursales}" th:value="${sucursal.idSucursal}"
+                                th:text="${sucursal.nombreSucursal}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <a th:href="@{/empleado}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -64,7 +64,7 @@ public class EmpresaAnfitrionController {
 
         if (!empresaOpt.isPresent()) {
             redirectAttributes.addFlashAttribute("error", "Empresa no encontrada.");
-            return "redirect:/dashboard";
+            return "redirect:/empresa";
         }
 
         try {
@@ -99,7 +99,7 @@ public class EmpresaAnfitrionController {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar la empresa: " + e.getMessage());
         }
 
-        return "redirect:/dashboard";
+        return "redirect:/empresa";
     }
 
     // Suponiendo que tu clase es EmpresaAnfitrionController

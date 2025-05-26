@@ -1,61 +1,62 @@
 package com.linox.sistemaventas.models;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Table(name = "persona") // ✅ Tabla única para toda la jerarquía
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo_persona", discriminatorType = DiscriminatorType.STRING)
-@Data
+@Table(name = "persona")
+@Inheritance(strategy = InheritanceType.JOINED)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class Persona {
+@ToString
+@EqualsAndHashCode(of = "idPersona")
+public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_persona")
     private Integer idPersona;
 
-    @Column(length = 8, nullable = false, unique = true)
+    @Column(name = "dni", length = 8)
     private String dni;
 
-    @Column(length = 40, nullable = false)
+    @Column(name = "nombres", length = 40)
     private String nombres;
 
-    @Column(length = 50, nullable = false)
+    @Column(name = "apellidos", length = 50)
     private String apellidos;
 
-    private LocalDate fechaNacimiento;
-
-    @Column(length = 1)
-    private Character genero;
-
-    @Column(length = 50, unique = true)
+    @Column(name = "correo", length = 50)
     private String correo;
 
-    @Column(length = 20)
+    @Column(name = "telefono", length = 20)
     private String telefono;
 
-    @Column(length = 100)
+    @Column(name = "direccion", length = 100)
     private String direccion;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "id_estado")
     private Integer idEstado;
-
 }

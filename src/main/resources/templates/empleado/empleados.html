@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Empleados</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <!-- Mostrar mensajes -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Empleados</h2>
+                <a th:href="@{/empleado/create}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nuevo Empleado
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>DNI</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${empleados != null and !empleados.isEmpty()}">
+                        <tr th:each="empleado : ${empleados}">
+                            <td class="text-center" th:text="${empleado.idPersona}"></td>
+                            <td th:text="${empleado.codEmpleado}"></td>
+                            <td th:text="${empleado.nombres + ' ' + empleado.apellidos}"></td>
+                            <td th:text="${empleado.dni}"></td>
+                            <td th:text="${empleado.correo}"></td>
+                            <td class="text-center">
+                                <span class="badge"
+                                    th:classappend="${empleado.idEstado == 1 ? 'bg-success' : 'bg-danger'}"
+                                    th:text="${empleado.idEstado == 1 ? 'Activo' : 'Inactivo'}"></span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/empleado/editar/' + ${empleado.idPersona}}"
+                                        class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form th:action="@{'/empleado/eliminar/' + ${empleado.idPersona}}" method="post"
+                                        onsubmit="return confirm('¿Está seguro que desea eliminar este empleado?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${empleados != null and !empleados.isEmpty()}">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No hay empleados registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
