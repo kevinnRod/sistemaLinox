@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.linox.sistemaventas.models.Persona;
-import com.linox.sistemaventas.models.Sucursal;
 import com.linox.sistemaventas.repositories.PersonaRepository;
 import com.linox.sistemaventas.services.PersonaService;
 
@@ -49,6 +48,6 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     public List<Persona> findAllActivos() {
-        return personaRepository.findByIdEstado(1); 
+        return personaRepository.findByIdEstado(1);
     }
 }

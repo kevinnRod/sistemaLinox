@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.linox.sistemaventas.models.Empresa;
 import com.linox.sistemaventas.models.EmpresaAnfitrion;
+import com.linox.sistemaventas.services.EmpresaAnfitrionService;
 import com.linox.sistemaventas.services.EmpresaService;
 
 @Controller
@@ -24,9 +25,12 @@ public class EmpresaController {
     @Autowired
     private EmpresaService empresaService;
 
+    @Autowired
+    private EmpresaAnfitrionService empresaAnfitrionService;
+
     @GetMapping
     public String getAll(Model model) {
-        List<Empresa> empresas = empresaService.listarActivas();
+        List<EmpresaAnfitrion> empresas = empresaAnfitrionService.findAll();
         model.addAttribute("empresas", empresas);
         model.addAttribute("active_page", "empresa");
         return "empresa/empresas";

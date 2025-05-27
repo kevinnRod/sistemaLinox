@@ -1,13 +1,14 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.models.Producto;
-import com.linox.sistemaventas.repositories.ProductoRepository;
-import com.linox.sistemaventas.services.ProductoService;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.linox.sistemaventas.models.Producto;
+import com.linox.sistemaventas.repositories.ProductoRepository;
+import com.linox.sistemaventas.services.ProductoService;
 
 @Service
 public class ProductoServiceImpl implements ProductoService {
@@ -44,6 +45,9 @@ public class ProductoServiceImpl implements ProductoService {
     public List<Producto> findByCodProductoAndIdEstado(String codProducto, Integer idEstado) {
         return productoRepository.findByCodProductoAndIdEstado(codProducto, idEstado);
     }
-    
 
+    @Override
+    public long count() {
+        return productoRepository.count();
+    }
 }

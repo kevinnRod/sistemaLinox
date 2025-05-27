@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 
@@ -33,19 +32,16 @@ public class VentaController {
     @GetMapping("/ventas")
     public List<Map<String, Object>> listarVentas() {
         return ventaService.findAllActivas().stream()
-            .map(v -> {
-                Map<String, Object> datos = new HashMap<>();
-                datos.put("id", v.getIdVenta());
-                datos.put("numero", v.getCodVenta());
-                datos.put("cliente", v.getCliente().getNombres() + " " + v.getCliente().getApellidos());
-                datos.put("tipo", "VENTA");
-                return datos;
-            })
-            .toList();
+                .map(v -> {
+                    Map<String, Object> datos = new HashMap<>();
+                    datos.put("id", v.getIdVenta());
+                    datos.put("numero", v.getCodVenta());
+                    datos.put("cliente", v.getCliente().getNombres() + " " + v.getCliente().getApellidos());
+                    datos.put("tipo", "VENTA");
+                    return datos;
+                })
+                .toList();
     }
-    
-
-
 
     // Mostrar formulario de creación
     @GetMapping("/create")

@@ -1,7 +1,6 @@
 package com.linox.sistemaventas.controllers;
 
 import com.linox.sistemaventas.models.Kardex;
-import com.linox.sistemaventas.models.Producto;
 import com.linox.sistemaventas.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
