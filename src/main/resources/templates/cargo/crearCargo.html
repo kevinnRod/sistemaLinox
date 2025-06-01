@@ -10,20 +10,16 @@
 
 <body>
     <div layout:fragment="content" class="container mt-4">
+
+        <!-- Mostrar mensajes de éxito o error -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
         <h2>Crear Nuevo Cargo</h2>
 
         <form th:action="@{/cargo/save}" method="post">
             <div class="mb-3">
                 <label for="nombreCargo" class="form-label">Nombre del Cargo</label>
                 <input type="text" name="nombreCargo" class="form-control" id="nombreCargo" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="idEstado" class="form-label">Estado</label>
-                <select name="idEstado" class="form-control" id="idEstado" required>
-                    <option value="1" selected>Activo</option>
-                    <option value="0">Inactivo</option>
-                </select>
             </div>
 
             <div class="text-end">

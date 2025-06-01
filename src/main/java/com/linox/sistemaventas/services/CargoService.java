@@ -19,4 +19,6 @@ public interface CargoService {
     void eliminar(Integer id);
 
     boolean existePorNombre(String nombreCargo);
+
+    Optional<Cargo> buscarPorNombre(String nombreCargo);
 }

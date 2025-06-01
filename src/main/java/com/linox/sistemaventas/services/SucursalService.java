@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface SucursalService {
 
     List<Sucursal> findAllByEstadoActivo();
+
     List<Sucursal> findAllActivos();
 
     Optional<Sucursal> findById(Integer id);
@@ -15,4 +16,8 @@ public interface SucursalService {
     Sucursal save(Sucursal sucursal);
 
     void eliminarPorId(Integer id);
+
+    boolean existsByNombreSucursal(String nombreSucursal);
+
+    Optional<Sucursal> findByNombreSucursal(String nombreSucursal);
 }

@@ -1,13 +1,16 @@
 package com.linox.sistemaventas.services.impl;
 
-import com.linox.sistemaventas.models.Sucursal;
-import com.linox.sistemaventas.repositories.SucursalRepository;
-import com.linox.sistemaventas.services.SucursalService;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.linox.sistemaventas.models.Sucursal;
+import com.linox.sistemaventas.repositories.SucursalRepository;
+import com.linox.sistemaventas.services.SucursalService;
+
+//import groovyjarjarantlr4.v4.parse.ANTLRParser.ruleEntry_return;
 
 @Service
 public class SucursalServiceImpl implements SucursalService {
@@ -38,5 +41,15 @@ public class SucursalServiceImpl implements SucursalService {
     @Override
     public List<Sucursal> findAllActivos() {
         return sucursalRepository.findByIdEstado(1);
+    }
+
+    @Override
+    public boolean existsByNombreSucursal(String nombreSucursal) {
+        return sucursalRepository.existsByNombreSucursal(nombreSucursal);
+    }
+
+    @Override
+    public Optional<Sucursal> findByNombreSucursal(String nombreSucursal) {
+        return sucursalRepository.findByNombreSucursal(nombreSucursal);
     }
 }

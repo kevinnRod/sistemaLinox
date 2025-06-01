@@ -50,4 +50,10 @@ public class CargoServiceImpl implements CargoService {
     public boolean existePorNombre(String nombreCargo) {
         return cargoRepository.existsByNombreCargo(nombreCargo);
     }
+
+    @Override
+    public Optional<Cargo> buscarPorNombre(String nombreCargo) {
+        return cargoRepository.findByNombreCargoIgnoreCase(nombreCargo);
+    }
+
 }

@@ -1,22 +1,20 @@
 package com.linox.sistemaventas.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 @Entity
-@DiscriminatorValue("CLIENTE_JURIDICO")
+@Table(name = "cliente_juridico")
 public class ClienteJuridico extends Cliente {
 
-    @Column(name = "ruc", length = 11)
-    private String ruc;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_empresa", referencedColumnName = "id_empresa")
+    private Empresa empresa;
 
-    // Getters y Setters
-    public String getRuc() {
-        return ruc;
+    public Empresa getEmpresa() {
+        return empresa;
     }
 
-    public void setRuc(String ruc) {
-        this.ruc = ruc;
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
     }
 }

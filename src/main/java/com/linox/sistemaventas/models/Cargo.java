@@ -24,7 +24,7 @@ public class Cargo {
     private String nombreCargo;
 
     @Column(name = "id_estado", nullable = false)
-    private Short idEstado = 1;
+    private Integer idEstado = 1;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -50,11 +50,11 @@ public class Cargo {
         this.nombreCargo = nombreCargo;
     }
 
-    public Short getIdEstado() {
+    public Integer getIdEstado() {
         return idEstado;
     }
 
-    public void setIdEstado(Short idEstado) {
+    public void setIdEstado(Integer idEstado) {
         this.idEstado = idEstado;
     }
 

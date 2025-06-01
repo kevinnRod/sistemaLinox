@@ -84,13 +84,14 @@
                             <div class="menu-item">
                                 <a class="menu-link"
                                     th:classappend="${active_page} == 'inicio' ? ' active text-danger' : ''"
-                                    th:href="@{/dashboard}">
+                                    th:href="@{/inicio}">
                                     <span class="menu-icon"><i class="bi bi-grid fs-3"></i></span>
                                     <span class="menu-title">Inicio</span>
                                 </a>
                             </div>
                             <!-- GESTIÓN DE USUARIOS -->
-                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion"
+                            <div th:if="${session.roles != null and session.roles.contains('ADMIN')}"
+                                data-kt-menu-trigger="click" class="menu-item menu-accordion"
                                 th:classappend="${#strings.contains(active_page, 'usuario') || #strings.contains(active_page, 'rol') || #strings.contains(active_page, 'permiso')} ? ' show' : ''">
 
                                 <span class="menu-link">

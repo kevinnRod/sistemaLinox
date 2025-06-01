@@ -13,22 +13,21 @@
         <div class="container mt-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Gestión de Clientes</h2>
-                <a th:href="@{/cliente/create}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-lg"></i> Nuevo Cliente
+                <a th:href="@{/cliente/create}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nuevo Cliente
                 </a>
             </div>
 
-            <!-- Mensajes flash -->
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle">
-                    <thead class="table-dark text-center">
+                <table class="table table-bordered table-hover text-center align-middle">
+                    <thead class="table-dark">
                         <tr>
                             <th>Código</th>
-                            <th>Nombre Completo</th>
-                            <th>DNI</th>
+                            <th>Nombre / Razón Social</th>
+                            <th>DNI / RUC</th>
                             <th>Teléfono</th>
                             <th>Dirección</th>
                             <th>Categoría</th>
@@ -36,53 +35,34 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody th:if="${clientes != null and !clientes.isEmpty()}">
+                    <tbody>
                         <tr th:each="cliente : ${clientes}">
-                            <td class="text-center" th:text="${cliente.codigoCliente}"></td>
-                            <td th:text="${cliente.nombres + ' ' + cliente.apellidos}"></td>
-                            <td class="text-center" th:text="${cliente.dni}"></td>
-                            <td class="text-center" th:text="${cliente.telefono}"></td>
+                            <td th:text="${cliente.codigo}"></td>
+                            <td th:text="${cliente.nombre}"></td>
+                            <td th:text="${cliente.identificacion}"></td>
+                            <td th:text="${cliente.telefono}"></td>
                             <td th:text="${cliente.direccion}"></td>
-                            <td th:text="${cliente.categoriaCliente.nombre}"></td>
-                            <td class="text-center">
-                                <span class="badge bg-primary"
-                                    th:text="${cliente instanceof T(com.linox.sistemaventas.models.ClienteJuridico) ? 'Jurídico' : 'Natural'}">
-                                </span>
+                            <td th:text="${cliente.categoria}"></td>
+                            <td th:text="${cliente.tipo}"></td>
+                            <td>
+                                <a th:href="@{/cliente/editar/{id}(id=${cliente.codigo})}"
+                                    class="btn btn-primary btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <form th:action="@{/cliente/eliminar/{id}(id=${cliente.codigo})}" method="post"
+                                    class="d-inline"
+                                    onsubmit="return confirm('¿Está seguro de eliminar este cliente?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </form>
                             </td>
-
-
-
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a th:href="@{'/cliente/editar/' + ${cliente.idPersona}}"
-                                        class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
-
-                                    <form th:action="@{'/cliente/eliminar/' + ${cliente.idPersona}}" method="post"
-                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cliente?');">
-                                        <input type="hidden" name="_method" value="delete" />
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody th:unless="${clientes != null and !clientes.isEmpty()}">
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">No hay clientes registrados.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <th:block layout:fragment="js">
-        <!-- Agrega JS si es necesario -->
-    </th:block>
 </body>
 
 </html>

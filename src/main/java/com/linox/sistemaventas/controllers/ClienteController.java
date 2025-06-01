@@ -1,16 +1,30 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.models.*;
-import com.linox.sistemaventas.services.CategoriaClienteService;
-import com.linox.sistemaventas.services.ClienteService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Optional;
+import com.linox.sistemaventas.models.CategoriaCliente;
+import com.linox.sistemaventas.models.Cliente;
+import com.linox.sistemaventas.models.ClienteJuridico;
+import com.linox.sistemaventas.models.ClienteNatural;
+import com.linox.sistemaventas.models.Empresa;
+import com.linox.sistemaventas.models.Persona;
+import com.linox.sistemaventas.services.CategoriaClienteService;
+import com.linox.sistemaventas.services.ClienteService;
+import com.linox.sistemaventas.services.EmpresaService;
+import com.linox.sistemaventas.services.PersonaService;
 
 @Controller
 @RequestMapping("/cliente")
@@ -22,11 +36,40 @@ public class ClienteController {
     @Autowired
     private CategoriaClienteService categoriaClienteService;
 
+    @Autowired
+    private PersonaService personaService;
+
+    @Autowired
+    private EmpresaService empresaService;
+
     // Listar clientes activos
     @GetMapping
     public String listarClientes(Model model) {
         List<Cliente> clientes = clienteService.findAllByEstadoActivo();
-        model.addAttribute("clientes", clientes);
+
+        List<Map<String, Object>> datosClientes = clientes.stream().map(cliente -> {
+            Map<String, Object> datos = new HashMap<>();
+            datos.put("codigo", cliente.getCodCliente());
+            datos.put("categoria", cliente.getCategoriaCliente().getNombre());
+
+            if (cliente instanceof ClienteNatural cn) {
+                datos.put("nombre", cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos());
+                datos.put("identificacion", cn.getPersona().getDni());
+                datos.put("telefono", cn.getPersona().getTelefono());
+                datos.put("direccion", cn.getPersona().getDireccion());
+                datos.put("tipo", "Natural");
+            } else if (cliente instanceof ClienteJuridico cj) {
+                datos.put("nombre", cj.getEmpresa().getRazonSocial());
+                datos.put("identificacion", cj.getEmpresa().getRuc());
+                datos.put("telefono", cj.getEmpresa().getTelefono());
+                datos.put("direccion", cj.getEmpresa().getDireccion());
+                datos.put("tipo", "Jurídico");
+            }
+
+            return datos;
+        }).toList();
+
+        model.addAttribute("clientes", datosClientes);
         model.addAttribute("active_page", "cliente");
         return "cliente/clientes";
     }
@@ -50,34 +93,93 @@ public class ClienteController {
             @RequestParam("dni") String dni,
             @RequestParam("telefono") String telefono,
             @RequestParam("direccion") String direccion,
-            @RequestParam("idCategoriaCliente") Integer idCategoria,
+            @RequestParam("idCategoriaCliente") Integer idCategoriaCliente,
             @RequestParam(value = "ruc", required = false) String ruc,
+            @RequestParam(value = "razonSocial", required = false) String razonSocial,
+            @RequestParam(value = "correo", required = false) String correo,
+            @RequestParam(value = "nombreComercial", required = false) String nombreComercial,
             RedirectAttributes redirectAttributes) {
 
         try {
-            CategoriaCliente categoria = categoriaClienteService.findById(idCategoria)
+            CategoriaCliente categoria = categoriaClienteService.findById(idCategoriaCliente)
                     .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
             Cliente cliente;
+
             if ("JURIDICO".equalsIgnoreCase(tipo)) {
+                // Validar RUC y Razón Social
+                Optional<Empresa> empresaOpt = empresaService.buscarPorRuc(ruc);
+                Empresa empresa;
+
+                if (empresaOpt.isPresent()) {
+                    empresa = empresaOpt.get();
+                    if (clienteService.existsByEmpresa(empresa)) {
+                        redirectAttributes.addFlashAttribute("error", "La empresa ya está registrada como cliente.");
+                        return "redirect:/cliente";
+                    }
+                    // Actualizar datos si han cambiado
+                    empresa.setRazonSocial(razonSocial);
+                    empresa.setDireccion(direccion);
+                    empresa.setTelefono(telefono);
+                    empresa.setCorreo(correo);
+                    empresa.setNombreComercial(nombreComercial);
+                } else {
+                    empresa = new Empresa();
+                    empresa.setRuc(ruc);
+                    empresa.setRazonSocial(razonSocial);
+                    empresa.setDireccion(direccion);
+                    empresa.setTelefono(telefono);
+                    empresa.setCorreo(correo);
+                    empresa.setNombreComercial(nombreComercial);
+                    empresa.setIdEstado(1);
+                }
+                empresaService.guardar(empresa);
+
                 ClienteJuridico cj = new ClienteJuridico();
-                cj.setRuc(ruc);
+                cj.setEmpresa(empresa);
                 cliente = cj;
+
             } else {
-                cliente = new ClienteNatural();
+                // Validar DNI
+                Optional<Persona> personaOpt = personaService.findByDni(dni);
+                Persona persona;
+
+                if (personaOpt.isPresent()) {
+                    persona = personaOpt.get();
+                    if (clienteService.existsByPersona(persona)) {
+                        redirectAttributes.addFlashAttribute("error", "La persona ya está registrada como cliente.");
+                        return "redirect:/cliente";
+                    }
+                    // Actualizar datos si han cambiado
+                    persona.setNombres(nombres);
+                    persona.setApellidos(apellidos);
+                    persona.setDireccion(direccion);
+                    persona.setTelefono(telefono);
+                    persona.setCorreo(correo);
+                } else {
+                    persona = new Persona();
+                    persona.setDni(dni);
+                    persona.setNombres(nombres);
+                    persona.setApellidos(apellidos);
+                    persona.setDireccion(direccion);
+                    persona.setTelefono(telefono);
+                    persona.setCorreo(correo);
+                    persona.setIdEstado(1);
+                }
+                personaService.save(persona);
+
+                ClienteNatural cn = new ClienteNatural();
+                cn.setPersona(persona);
+                cliente = cn;
             }
 
-            cliente.setCodigoCliente(generarCodigoCliente());
-            cliente.setNombres(nombres);
-            cliente.setApellidos(apellidos);
-            cliente.setDni(dni);
-            cliente.setTelefono(telefono);
-            cliente.setDireccion(direccion);
+            cliente.setCodCliente(generarCodigoCliente());
             cliente.setCategoriaCliente(categoria);
             cliente.setIdEstado(1);
 
             clienteService.save(cliente);
             redirectAttributes.addFlashAttribute("success", "Cliente registrado correctamente.");
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al registrar cliente: " + e.getMessage());
         }
@@ -87,7 +189,7 @@ public class ClienteController {
 
     // Editar cliente
     @GetMapping("/editar/{id}")
-    public String editarCliente(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+    public String editarCliente(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Cliente> clienteOpt = clienteService.findById(id);
         if (!clienteOpt.isPresent()) {
             redirectAttributes.addFlashAttribute("error", "Cliente no encontrado.");
@@ -102,17 +204,19 @@ public class ClienteController {
         return "cliente/editarCliente";
     }
 
-    // Actualizar cliente
     @PostMapping("/actualizar/{id}")
     public String actualizarCliente(
-            @PathVariable Integer id,
+            @PathVariable String id,
             @RequestParam("nombres") String nombres,
             @RequestParam("apellidos") String apellidos,
             @RequestParam("dni") String dni,
             @RequestParam("telefono") String telefono,
             @RequestParam("direccion") String direccion,
-            @RequestParam("idCategoriaCliente") Integer idCategoria,
+            @RequestParam("idCategoriaCliente") Integer idCategoriaCliente,
             @RequestParam(value = "ruc", required = false) String ruc,
+            @RequestParam(value = "razonSocial", required = false) String razonSocial,
+            @RequestParam(value = "correo", required = false) String correo,
+            @RequestParam(value = "nombreComercial", required = false) String nombreComercial,
             RedirectAttributes redirectAttributes) {
 
         try {
@@ -123,22 +227,36 @@ public class ClienteController {
             }
 
             Cliente cliente = clienteOpt.get();
-            CategoriaCliente categoria = categoriaClienteService.findById(idCategoria)
+            CategoriaCliente categoria = categoriaClienteService.findById(idCategoriaCliente)
                     .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
-
-            cliente.setNombres(nombres);
-            cliente.setApellidos(apellidos);
-            cliente.setDni(dni);
-            cliente.setTelefono(telefono);
-            cliente.setDireccion(direccion);
             cliente.setCategoriaCliente(categoria);
 
-            if (cliente instanceof ClienteJuridico && ruc != null) {
-                ((ClienteJuridico) cliente).setRuc(ruc);
+            // Cliente Jurídico
+            if (cliente instanceof ClienteJuridico) {
+                Empresa empresa = ((ClienteJuridico) cliente).getEmpresa();
+                empresa.setRuc(ruc);
+                empresa.setRazonSocial(razonSocial);
+                empresa.setDireccion(direccion);
+                empresa.setTelefono(telefono);
+                empresa.setCorreo(correo);
+                empresa.setNombreComercial(nombreComercial);
+                empresaService.guardar(empresa);
+            }
+            // Cliente Natural
+            else if (cliente instanceof ClienteNatural) {
+                Persona persona = ((ClienteNatural) cliente).getPersona();
+                persona.setNombres(nombres);
+                persona.setApellidos(apellidos);
+                persona.setDni(dni);
+                persona.setDireccion(direccion);
+                persona.setTelefono(telefono);
+                persona.setCorreo(correo);
+                personaService.save(persona);
             }
 
             clienteService.save(cliente);
             redirectAttributes.addFlashAttribute("success", "Cliente actualizado correctamente.");
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el cliente: " + e.getMessage());
         }
@@ -148,7 +266,7 @@ public class ClienteController {
 
     // Eliminar cliente (lógico)
     @PostMapping("/eliminar/{id}")
-    public String eliminarCliente(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String eliminarCliente(@PathVariable String id, RedirectAttributes redirectAttributes) {
         try {
             Optional<Cliente> clienteOpt = clienteService.findById(id);
             if (!clienteOpt.isPresent()) {
@@ -169,6 +287,6 @@ public class ClienteController {
     // Generador automático de código de cliente
     private String generarCodigoCliente() {
         long total = clienteService.countAll() + 1;
-        return String.format("CLI-%05d", total);
+        return String.format("CLI-%04d", total);
     }
 }

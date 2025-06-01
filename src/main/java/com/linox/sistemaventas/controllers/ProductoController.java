@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.linox.sistemaventas.models.CategoriaProducto;
 import com.linox.sistemaventas.models.Producto;
 import com.linox.sistemaventas.services.CategoriaProductoService;
 import com.linox.sistemaventas.services.ProductoService;
 import com.linox.sistemaventas.services.ProveedorService;
 import com.linox.sistemaventas.services.SucursalService;
 import com.linox.sistemaventas.services.UnidadMedidaService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/productos")
@@ -48,9 +53,25 @@ public class ProductoController {
 
     // Mostrar formulario de creación
     @GetMapping("/create")
-    public String mostrarFormularioCrear(Model model) {
+    public String mostrarFormularioCrear(Model model, HttpServletRequest request) {
         Producto producto = new Producto();
-        producto.setCodProducto(generarCodigoProducto()); // <== Aquí lo estás usando
+        producto.setCodProducto(generarCodigoProducto());
+        // Leer la cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("categoria_id".equals(cookie.getName())) {
+                    try {
+                        Integer categoriaId = Integer.parseInt(cookie.getValue());
+
+                        Optional<CategoriaProducto> categoria1 = categoriaProductoService.findById(categoriaId);
+                        producto.setCategoria(categoria1.get());
+                    } catch (NumberFormatException e) {
+                        // ignora si la cookie no es válida
+                    }
+                }
+            }
+        }
         model.addAttribute("producto", producto);
         model.addAttribute("unidades", unidadMedidaService.findAllActivos());
         model.addAttribute("active_page", "producto");
@@ -62,7 +83,7 @@ public class ProductoController {
     }
 
     @PostMapping("/save")
-    public String guardarProducto(@ModelAttribute Producto producto, Model model) {
+    public String guardarProducto(@ModelAttribute Producto producto, Model model, HttpServletResponse response) {
         List<Producto> existentes = productoService.findByCodProductoAndIdEstado(producto.getCodProducto(), 1);
 
         if (!existentes.isEmpty()) {
@@ -77,6 +98,14 @@ public class ProductoController {
         }
 
         producto.setIdEstado(1); // Activo
+
+        // Guardar cookie con la categoría seleccionada
+        if (producto.getCategoria() != null) {
+            Cookie categoriaCookie = new Cookie("categoria_id", producto.getCategoria().getId().toString());
+            categoriaCookie.setMaxAge(60 * 60); // 1 hora
+            categoriaCookie.setPath("/"); // visible para toda la app
+            response.addCookie(categoriaCookie);
+        }
         productoService.save(producto);
         return "redirect:/productos";
     }

@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.linox.sistemaventas.models.Cliente;
+import com.linox.sistemaventas.models.Empresa;
+import com.linox.sistemaventas.models.Persona;
+import com.linox.sistemaventas.repositories.ClienteJuridicoRepository;
+import com.linox.sistemaventas.repositories.ClienteNaturalRepository;
 import com.linox.sistemaventas.repositories.ClienteRepository;
 import com.linox.sistemaventas.services.ClienteService;
 
@@ -14,11 +18,13 @@ import com.linox.sistemaventas.services.ClienteService;
 public class ClienteServiceImpl implements ClienteService {
 
     @Autowired
-    private final ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
 
-    public ClienteServiceImpl(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
-    }
+    @Autowired
+    private ClienteJuridicoRepository clienteJuridicoRepository;
+
+    @Autowired
+    private ClienteNaturalRepository clienteNaturalRepository;
 
     @Override
     public List<Cliente> findAll() {
@@ -26,8 +32,8 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public Optional<Cliente> findById(Integer id) {
-        return clienteRepository.findById(id);
+    public Optional<Cliente> findById(String cod) {
+        return clienteRepository.findByCodCliente(cod);
     }
 
     @Override
@@ -36,7 +42,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(String id) {
         clienteRepository.deleteById(id);
     }
 
@@ -53,5 +59,15 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public List<Cliente> findAllActivos() {
         return clienteRepository.findByIdEstado(1);
+    }
+
+    @Override
+    public boolean existsByPersona(Persona persona) {
+        return clienteNaturalRepository.existsByPersona(persona);
+    }
+
+    @Override
+    public boolean existsByEmpresa(Empresa empresa) {
+        return clienteJuridicoRepository.existsByEmpresa(empresa);
     }
 }

@@ -36,7 +36,8 @@ public class VentaController {
                     Map<String, Object> datos = new HashMap<>();
                     datos.put("id", v.getIdVenta());
                     datos.put("numero", v.getCodVenta());
-                    datos.put("cliente", v.getCliente().getNombres() + " " + v.getCliente().getApellidos());
+                    // datos.put("cliente", v.getCliente().getNombres() + " " +
+                    // v.getCliente().getApellidos());
                     datos.put("tipo", "VENTA");
                     return datos;
                 })

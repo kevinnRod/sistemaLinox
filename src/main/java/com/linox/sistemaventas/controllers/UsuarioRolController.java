@@ -1,5 +1,6 @@
 package com.linox.sistemaventas.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import com.linox.sistemaventas.models.UsuarioRol;
 import com.linox.sistemaventas.services.RolService;
 import com.linox.sistemaventas.services.UsuarioRolService;
 import com.linox.sistemaventas.services.UsuarioService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/usuarioRol")
@@ -33,7 +36,18 @@ public class UsuarioRolController {
     public String asignarRol(
             @RequestParam("idUsuario") Integer idUsuario,
             @RequestParam("idRol") Integer idRol,
+            HttpSession session, // <- inyecta la sesión aquí
             RedirectAttributes redirectAttributes) {
+
+        // Obtenemos roles de la sesión
+        @SuppressWarnings("unchecked")
+        List<String> roles = (List<String>) session.getAttribute("roles");
+
+        // Validamos que el usuario tenga rol ADMIN
+        if (roles == null || !roles.contains("ADMIN")) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para realizar esta acción.");
+            return "redirect:/usuario/editar/" + idUsuario; // o la ruta que uses para acceso denegado
+        }
 
         if (idUsuario == null || idRol == null || idUsuario <= 0 || idRol <= 0) {
             redirectAttributes.addFlashAttribute("error", "Parámetros inválidos.");
@@ -81,7 +95,18 @@ public class UsuarioRolController {
     public String eliminarRolAsignado(
             @RequestParam("idUsuario") Integer idUsuario,
             @RequestParam("idRol") Integer idRol,
+            HttpSession session, // <- inyecta la sesión aquí
             RedirectAttributes redirectAttributes) {
+
+        // Obtenemos roles de la sesión
+        @SuppressWarnings("unchecked")
+        List<String> roles = (List<String>) session.getAttribute("roles");
+
+        // Validamos que el usuario tenga rol ADMIN
+        if (roles == null || !roles.contains("ADMIN")) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para realizar esta acción.");
+            return "redirect:/usuario/editar/" + idUsuario; // o la ruta que uses para acceso denegado
+        }
 
         if (idUsuario == null || idRol == null || idUsuario <= 0 || idRol <= 0) {
             redirectAttributes.addFlashAttribute("error", "Parámetros inválidos.");
