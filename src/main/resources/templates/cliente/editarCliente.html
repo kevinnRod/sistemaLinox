@@ -18,7 +18,7 @@
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
             <form th:action="@{'/cliente/actualizar/' + ${cliente.codCliente}}" method="post">
-                <div th:switch="${cliente.getClass().getSimpleName()}">
+                <div th:switch="${cliente.getClass().getSimpleName}">
                     <!-- Cliente Natural -->
                     <div th:case="'ClienteNatural'">
                         <input type="hidden" name="tipo" value="NATURAL" />
@@ -94,9 +94,8 @@
                 <div class="mb-3">
                     <label>Categoría</label>
                     <select name="idCategoriaCliente" class="form-select" required>
-                        <option th:each="cat : ${categorias}" th:value="${cat.idCategoriaCliente}"
-                            th:text="${cat.descripcion}"
-                            th:selected="${cliente.categoriaCliente.idCategoriaCliente == cat.idCategoriaCliente}">
+                        <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}" th:text="${cat.nombre}"
+                            th:selected="${cliente.categoriaCliente.idCategoria == cat.idCategoria}">
                         </option>
                     </select>
                 </div>

@@ -207,16 +207,17 @@ public class ClienteController {
     @PostMapping("/actualizar/{id}")
     public String actualizarCliente(
             @PathVariable String id,
-            @RequestParam("nombres") String nombres,
-            @RequestParam("apellidos") String apellidos,
-            @RequestParam("dni") String dni,
-            @RequestParam("telefono") String telefono,
-            @RequestParam("direccion") String direccion,
-            @RequestParam("idCategoriaCliente") Integer idCategoriaCliente,
+            @RequestParam(value = "nombres", required = false) String nombres,
+            @RequestParam(value = "apellidos", required = false) String apellidos,
+            @RequestParam(value = "dni", required = false) String dni,
+            @RequestParam(value = "telefono", required = false) String telefono,
+            @RequestParam(value = "direccion", required = false) String direccion,
+            @RequestParam(value = "idCategoriaCliente", required = false) Integer idCategoriaCliente,
             @RequestParam(value = "ruc", required = false) String ruc,
             @RequestParam(value = "razonSocial", required = false) String razonSocial,
             @RequestParam(value = "correo", required = false) String correo,
             @RequestParam(value = "nombreComercial", required = false) String nombreComercial,
+
             RedirectAttributes redirectAttributes) {
 
         try {
