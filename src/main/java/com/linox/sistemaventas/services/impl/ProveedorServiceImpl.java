@@ -1,5 +1,6 @@
 package com.linox.sistemaventas.services.impl;
 
+import com.linox.sistemaventas.models.Empresa;
 import com.linox.sistemaventas.models.Proveedor;
 import com.linox.sistemaventas.repositories.ProveedorRepository;
 import com.linox.sistemaventas.services.ProveedorService;
@@ -38,5 +39,10 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     public void deleteById(Integer id) {
         proveedorRepository.deleteById(id); // o eliminación lógica si se prefiere
+    }
+
+    @Override
+    public boolean existsByEmpresa(Empresa empresa) {
+        return proveedorRepository.existsByEmpresa(empresa);
     }
 }

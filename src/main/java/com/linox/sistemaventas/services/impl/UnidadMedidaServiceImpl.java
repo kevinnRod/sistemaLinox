@@ -39,4 +39,14 @@ public class UnidadMedidaServiceImpl implements UnidadMedidaService {
     public void deleteById(Integer id) {
         unidadMedidaRepository.deleteById(id); // O eliminación lógica si prefieres
     }
+
+    @Override
+    public boolean existsByDescripcion(String descripcion) {
+        return unidadMedidaRepository.existsByDescripcion(descripcion);
+    }
+
+    @Override
+    public boolean existsBySimbolo(String simbolo) {
+        return unidadMedidaRepository.existsBySimbolo(simbolo);
+    }
 }

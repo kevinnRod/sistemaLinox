@@ -1,17 +1,19 @@
 package com.linox.sistemaventas.models;
 
+import java.io.Serializable;
+
+import groovy.transform.EqualsAndHashCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class UsuarioRolId implements Serializable {
 
     @Column(name = "id_usuario")

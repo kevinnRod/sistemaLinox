@@ -12,6 +12,8 @@ public interface ProductoService {
 
     Optional<Producto> findById(Integer id);
 
+    Optional<Producto> findProductoById(Integer id);
+
     Producto save(Producto producto);
 
     void deleteById(Integer id);

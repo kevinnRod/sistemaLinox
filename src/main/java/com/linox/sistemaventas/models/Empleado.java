@@ -6,11 +6,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn; // Importar esta
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor; // Opcional, si quieres un constructor con todos los campos
-import lombok.ToString; // Opcional
 import lombok.EqualsAndHashCode; // Opcional, pero considera cómo lo usarás con la herencia
+import lombok.Getter;
+import lombok.NoArgsConstructor; // Opcional, si quieres un constructor con todos los campos
+import lombok.Setter;
+import lombok.ToString; // Opcional
 
 @Entity
 @Table(name = "empleado")

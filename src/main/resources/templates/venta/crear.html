@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Registrar Venta</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+        <style>
+            .card {
+                border-radius: 1rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .form-label i {
+                margin-right: 5px;
+            }
+
+            .btn-primary,
+            .btn-danger,
+            .btn-success {
+                border-radius: 1.5rem;
+            }
+
+            #tabla-productos th,
+            #tabla-productos td {
+                vertical-align: middle;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="">
+        <div class="card p-2">
+            <h2 class="mb-4 text-center text-primary">
+                <i class="bi bi-cart-plus-fill fs-2 me-2"></i> Registrar Nueva Venta
+            </h2>
+
+            <form th:action="@{/ventas/guardar}" method="post" th:object="${venta}">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="bi bi-person-badge-fill"></i> Empleado</label>
+                        <select name="empleado.id" class="form-select">
+                            <option th:each="e : ${empleados}" th:value="${e.idPersona}" th:text="${e.nombres}">
+                            </option>
+                        </select>
+
+                        <label class="form-label mt-3"><i class="bi bi-calendar-event-fill"></i> Fecha</label>
+                        <input type="text" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}"
+                            class="form-control bg-light" disabled />
+
+                        <label class="form-label mt-3"><i class="bi bi-receipt-cutoff"></i> Nro Venta</label>
+                        <input type="text" th:value="${venta.codVenta}" name="codVenta" class="form-control bg-light"
+                            readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="bi bi-people-fill"></i> Cliente</label>
+                        <select name="codCliente" class="form-select" required>
+                            <option value="">-- Seleccione un cliente --</option>
+                            <option th:each="c : ${clientes}" th:value="${c.codCliente}"
+                                th:text="${c.getClass().getSimpleName == 'ClienteNatural' ? c.persona.nombres + ' ' + c.persona.apellidos : c.empresa.razonSocial}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- AGREGAR PRODUCTOS -->
+                <div class="mb-4">
+                    <h4 class="text-success"><i class="bi bi-box-seam"></i> Agregar Productos</h4>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <select id="producto-select" class="form-select">
+                                <option th:each="p : ${productos}" th:value="${p.id}"
+                                    th:text="${p.nombreProducto + ' - S/' + p.precioUnitario}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1"
+                                class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">
+                                <i class="bi bi-plus-circle-fill"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA -->
+                <div class="table-responsive mb-4">
+                    <table id="tabla-productos" class="table table-bordered table-striped align-middle">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-productos"></tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" class="text-end">TOTAL:</th>
+                                <th class="text-center" id="total-general">S/0.00</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Inputs ocultos -->
+                <div id="contenedor-inputs"></div>
+
+                <div class="text-end d-flex justify-content-end gap-2">
+                    <a th:href="@{/ventas}" class="btn btn-danger btn-lg">
+                        <i class="bi bi-x-circle-fill"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-save2-fill"></i> Guardar Venta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <th:block layout:fragment="js">
+        <script th:inline="javascript">
+            const productosSeleccionados = {};
+
+            function agregarProducto() {
+                const select = document.getElementById('producto-select');
+                const cantidadInput = document.getElementById('cantidad');
+                const cantidad = parseInt(cantidadInput.value);
+                const productoId = select.value;
+                const productoNombre = select.options[select.selectedIndex].text;
+                const precio = parseFloat(productoNombre.split('S/')[1]);
+
+                if (!productoId || isNaN(cantidad) || cantidad < 1) {
+                    alert('Producto o cantidad inválida');
+                    return;
+                }
+
+                const tbody = document.querySelector('#tabla-productos tbody');
+                const contenedor = document.getElementById('contenedor-inputs');
+
+                if (productosSeleccionados[productoId]) {
+                    const fila = document.getElementById('fila-' + productoId);
+                    const nuevaCantidad = productosSeleccionados[productoId].cantidad + cantidad;
+                    const nuevoSubtotal = (nuevaCantidad * precio).toFixed(2);
+                    fila.querySelector('.cantidad').innerText = nuevaCantidad;
+                    fila.querySelector('.subtotal').innerText = 'S/' + nuevoSubtotal;
+
+                    document.getElementById('input-cantidad-' + productoId).value = nuevaCantidad;
+                    productosSeleccionados[productoId].cantidad = nuevaCantidad;
+                } else {
+                    const fila = document.createElement('tr');
+                    fila.id = 'fila-' + productoId;
+                    fila.innerHTML = `
+                        <td>${productoNombre}</td>
+                        <td class="cantidad text-center">${cantidad}</td>
+                        <td class="subtotal text-center">S/${(cantidad * precio).toFixed(2)}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto('${productoId}')">
+                                <i class="bi bi-trash-fill"></i> Eliminar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(fila);
+
+                    contenedor.innerHTML += `
+                        <input type="hidden" name="productoIds" value="${productoId}" id="input-id-${productoId}" />
+                        <input type="hidden" name="cantidades" value="${cantidad}" id="input-cantidad-${productoId}" />
+                    `;
+
+                    productosSeleccionados[productoId] = { cantidad };
+                }
+
+                cantidadInput.value = 1;
+                actualizarTotal();
+            }
+
+            function eliminarProducto(productoId) {
+                document.getElementById('fila-' + productoId).remove();
+                document.getElementById('input-id-' + productoId).remove();
+                document.getElementById('input-cantidad-' + productoId).remove();
+                delete productosSeleccionados[productoId];
+                actualizarTotal();
+            }
+            function actualizarTotal() {
+                let total = 0;
+                for (const id in productosSeleccionados) {
+                    const fila = document.getElementById('fila-' + id);
+                    const subtotalText = fila.querySelector('.subtotal').innerText.replace('S/', '');
+                    total += parseFloat(subtotalText);
+                }
+                document.getElementById('total-general').innerText = 'S/' + total.toFixed(2);
+            }
+        </script>
+    </th:block>
+</body>
+
+</html>

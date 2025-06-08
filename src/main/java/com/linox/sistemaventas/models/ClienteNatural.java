@@ -1,6 +1,7 @@
 package com.linox.sistemaventas.models;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -8,6 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cliente_natural")
+@DiscriminatorValue("natural")
 public class ClienteNatural extends Cliente {
 
     @OneToOne(cascade = CascadeType.ALL)

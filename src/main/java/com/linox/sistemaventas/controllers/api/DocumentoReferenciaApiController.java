@@ -18,7 +18,7 @@ public class DocumentoReferenciaApiController {
 
     @GetMapping("/ventas")
     public List<Map<String, Object>> listarVentas() {
-        return ventaService.findAllActivas().stream()
+        return ventaService.findAllActiveVentas().stream()
                 .map(v -> {
                     Map<String, Object> datos = new HashMap<>();
                     datos.put("id", v.getIdVenta()); // ✅ correcto

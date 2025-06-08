@@ -32,6 +32,11 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
+    public Optional<Producto> findProductoById(Integer id) {
+        return productoRepository.findById(id);
+    }
+
+    @Override
     public Producto save(Producto producto) {
         return productoRepository.save(producto);
     }

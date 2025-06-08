@@ -31,6 +31,12 @@ public class TipoMovimientoServiceImpl implements TipoMovimientoService {
     }
 
     @Override
+    public Optional<TipoMovimiento> findByCodigo(String codigo){
+        return tipoMovimientoRepository.findByCodigo(codigo);
+    }
+    
+
+    @Override
     public TipoMovimiento save(TipoMovimiento tipoMovimiento) {
         return tipoMovimientoRepository.save(tipoMovimiento);
     }

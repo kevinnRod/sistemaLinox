@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
 
 <head>
     <th:block layout:fragment="head">
@@ -10,51 +9,51 @@
 </head>
 
 <body>
-<div layout:fragment="content" class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Unidad de Medida</h4>
-                </div>
-                <div class="card-body">
-                    <form th:action="@{'/unidadMedida/actualizar/' + ${unidad.id}}" method="post">
-                        <div class="mb-3">
-                            <label for="descripcion" class="form-label">Descripción de la Unidad</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="descripcion"
-                                   name="descripcion"
-                                   th:value="${unidad.descripcion}"
-                                   placeholder="Ej. Litro, Metro, Caja..."
-                                   required>
-                        </div>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Unidad de Medida</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{'/unidadMedida/actualizar/' + ${unidad.id}}" method="post">
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción de la Unidad</label>
+                                <input type="text" class="form-control" id="descripcion" name="descripcion"
+                                    th:value="${unidad.descripcion}" placeholder="Ej. Litro, Metro, Caja..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="simbolo" class="form-label">Simbolo de la Unidad</label>
+                                <input type="text" class="form-control" id="simbolo" name="simbolo"
+                                    th:value="${unidad.simbolo}" placeholder="Ej. und, kg, m..." required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="idEstado" class="form-label">Estado</label>
-                            <select class="form-select" id="idEstado" name="idEstado" required>
-                                <option value="1" th:selected="${unidad.idEstado == 1}">Activo</option>
-                                <option value="0" th:selected="${unidad.idEstado == 0}">Inactivo</option>
-                            </select>
-                        </div>
+                            <div class="mb-3">
+                                <label for="idEstado" class="form-label">Estado</label>
+                                <select class="form-select" id="idEstado" name="idEstado" required>
+                                    <option value="1" th:selected="${unidad.idEstado == 1}">Activo</option>
+                                    <option value="0" th:selected="${unidad.idEstado == 0}">Inactivo</option>
+                                </select>
+                            </div>
 
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-arrow-repeat"></i> Actualizar
-                            </button>
-                            <a th:href="@{/unidadMedida}" class="btn btn-secondary">
-                                <i class="bi bi-x-circle"></i> Cancelar
-                            </a>
-                        </div>
-                    </form>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-arrow-repeat"></i> Actualizar
+                                </button>
+                                <a th:href="@{/unidadMedida}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<th:block layout:fragment="js">
-</th:block>
+    <th:block layout:fragment="js">
+    </th:block>
 </body>
 
 </html>

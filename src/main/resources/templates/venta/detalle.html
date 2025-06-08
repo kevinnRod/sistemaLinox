@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Detalle de Venta</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Detalle de Venta -
+                    <span th:text="${venta.codVenta}">Código</span>
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Cliente:</strong> <span th:text="${nombre}">Nombre cliente</span></p>
+                        <p><strong>Identificación:</strong> <span th:text="${identificacion}">Identificación</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Empleado:</strong>
+                            <span th:text="${venta.empleado.nombres + ' ' + venta.empleado.apellidos}">Empleado</span>
+                        </p>
+                        <p><strong>Fecha:</strong> <span th:text="${venta.fechaV?.toLocalDate()}">Fecha</span></p>
+                        <p><strong>Total:</strong> <strong class="text-success">S/ <span
+                                    th:text="${venta.total}">Total</span></strong></p>
+                    </div>
+                </div>
+
+                <h5 class="mt-4">Productos</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="detalle : ${venta.detallesVenta}">
+                                <td th:text="${detalle.producto.nombreProducto}">Nombre producto</td>
+                                <td th:text="${detalle.cantidad}">1</td>
+                                <td th:text="'S/ ' + ${detalle.producto.precioUnitario}">S/ 0.00</td>
+                                <td th:text="'S/ ' + ${detalle.subtotal}">S/ 0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-end">
+                    <a th:href="@{/ventas}" class="btn btn-outline-secondary mt-3">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Asegúrate de incluir Bootstrap Icons si se usan -->
+
+    </th:block>
+</body>
+
+</html>

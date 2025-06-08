@@ -13,6 +13,8 @@ public interface TipoMovimientoService {
 
     Optional<TipoMovimiento> findById(Integer id);
 
+    Optional<TipoMovimiento> findByCodigo(String codigo);
+
     TipoMovimiento save(TipoMovimiento tipoMovimiento);
 
     void deleteById(Integer id);

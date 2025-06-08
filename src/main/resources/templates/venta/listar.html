@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Ventas</title>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Gestión de Ventas</h2>
+                <a th:href="@{/ventas/crear}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Nueva Venta
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Número</th>
+                            <th>Cliente</th>
+                            <th>Identificación</th>
+                            <th>Empleado</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody th:if="${ventas != null and !ventas.isEmpty()}">
+                        <tr th:each="venta : ${ventas}">
+                            <td class="text-center" th:text="${venta['codigo']}"></td>
+                            <td th:text="${venta['nombre']}"></td>
+                            <td th:text="${venta['identificacion']}"></td>
+                            <td th:text="${venta['empleado']}">Nombre empleado</td>
+                            <td class="text-center" th:text="${venta['fecha']}">01/06/2025</td>
+                            <td class="text-center" th:text="'S/ ' + ${venta['total']}">S/ 250.00</td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{'/ventas/' + ${venta.codigo}}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> Ver </a>
+                                    <form th:action="@{/ventas/eliminar/{id}(id=${venta.codigo})}" method="post"
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta venta?');">
+                                        <input type="hidden" name="_method" value="delete" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody th:unless="${ventas != null and !ventas.isEmpty()}">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No hay ventas registradas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="js">
+        <!-- Bootstrap Icons si no están en layout -->
+    </th:block>
+</body>
+
+</html>

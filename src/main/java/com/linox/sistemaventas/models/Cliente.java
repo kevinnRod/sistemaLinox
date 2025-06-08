@@ -1,11 +1,26 @@
 package com.linox.sistemaventas.models;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.Proxy;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "cliente")
+@DiscriminatorColumn(name = "tipo_cliente")
+@Proxy(lazy = false) // Esto desactiva los proxies de Hibernate
 public abstract class Cliente {
 
     @Id

@@ -1,10 +1,24 @@
 package com.linox.sistemaventas.models;
 
-import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import com.linox.sistemaventas.utils.DocumentoReferenciaConverter;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "kardex")
@@ -29,18 +43,16 @@ public class Kardex {
     @JoinColumn(name = "id_producto")
     private Producto producto;
 
-    @Column(precision = 10, scale = 3)
-    private BigDecimal cantidad;
+    private Integer cantidad;
 
-    @Column(name = "stock_resultante", precision = 10, scale = 3)
-    private BigDecimal stockResultante;
+    @Column(name = "stock_resultante")
+    private Integer stockResultante;
 
     @Column(name = "precio_unitario", precision = 10, scale = 2)
     private BigDecimal precioUnitario;
 
-    @Convert(converter = DocumentoReferenciaConverter.class)
-    @Column(name = "documento_referencia", columnDefinition = "json")
-    private DocumentoReferencia documentoReferencia;
+    @Column(name = "documento_referencia", length = 30)
+    private String documentoReferencia;
 
     @Column(length = 100)
     private String observaciones;
@@ -63,10 +75,6 @@ public class Kardex {
 
     @Column(name = "id_estado")
     private Integer idEstado;
-
-    @ManyToOne
-    @JoinColumn(name = "id_productoE")
-    private Producto productoEnsamblado;
 
     @PrePersist
     protected void onCreate() {

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "cliente_juridico")
+@DiscriminatorValue("juridico")
 public class ClienteJuridico extends Cliente {
 
     @OneToOne(cascade = CascadeType.ALL)

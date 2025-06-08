@@ -45,7 +45,7 @@ public class KardexController {
         model.addAttribute("tiposMovimiento", tipoMovimientoService.findAllActivos());
         model.addAttribute("sucursales", sucursalService.findAllActivos());
         model.addAttribute("active_page", "kardex");
-        model.addAttribute("ventas", ventaService.findAllActivas());
+        model.addAttribute("ventas", ventaService.findAllActiveVentas());
         model.addAttribute("pedidos", pedidoService.findAllActivos());
 
         return "kardex/crear";

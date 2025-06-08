@@ -1,17 +1,32 @@
 
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.models.Venta;
-import com.linox.sistemaventas.services.*;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.List;
-import java.util.Map;
+import com.linox.sistemaventas.models.Cliente;
+import com.linox.sistemaventas.models.ClienteJuridico;
+import com.linox.sistemaventas.models.ClienteNatural;
+import com.linox.sistemaventas.models.Empleado;
+import com.linox.sistemaventas.models.Venta;
+import com.linox.sistemaventas.services.ClienteService;
+import com.linox.sistemaventas.services.EmpleadoService;
+import com.linox.sistemaventas.services.ProductoService;
+import com.linox.sistemaventas.services.VentaService;
 
 @Controller
 @RequestMapping("/ventas")
@@ -21,78 +36,132 @@ public class VentaController {
     private VentaService ventaService;
 
     @Autowired
-    private SucursalService sucursalService;
-
-    @Autowired
-    private PersonaService personaService;
-
-    @Autowired
     private ClienteService clienteService;
 
-    @GetMapping("/ventas")
-    public List<Map<String, Object>> listarVentas() {
-        return ventaService.findAllActivas().stream()
-                .map(v -> {
-                    Map<String, Object> datos = new HashMap<>();
-                    datos.put("id", v.getIdVenta());
-                    datos.put("numero", v.getCodVenta());
-                    // datos.put("cliente", v.getCliente().getNombres() + " " +
-                    // v.getCliente().getApellidos());
-                    datos.put("tipo", "VENTA");
-                    return datos;
-                })
-                .toList();
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private ProductoService productoService;
+
+    // 3. Mostrar listado
+    @GetMapping()
+    public String listarVentas(Model model) {
+        List<Venta> ventas = ventaService.findAllActiveVentas();
+
+        List<Map<String, Object>> datosVentas = ventas.stream().map(venta -> {
+            Map<String, Object> datos = new HashMap<>();
+            datos.put("codigo", venta.getCodVenta());
+            datos.put("id", venta.getIdVenta());
+            datos.put("total", venta.getTotal());
+            datos.put("fecha", venta.getFechaV().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            datos.put("empleado", venta.getEmpleado().getNombres());
+            Cliente cliente = clienteService.findById(venta.getCliente().getCodCliente())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Cliente no encontrado con ID: " + venta.getCliente().getCodCliente()));
+            if (cliente instanceof ClienteNatural cn) {
+                datos.put("nombre", cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos());
+                datos.put("identificacion", cn.getPersona().getDni());
+            } else if (cliente instanceof ClienteJuridico cj) {
+                datos.put("nombre", cj.getEmpresa().getRazonSocial());
+                datos.put("identificacion", cj.getEmpresa().getRuc());
+            }
+
+            return datos;
+        }).toList();
+
+        model.addAttribute("ventas", datosVentas);
+        model.addAttribute("active_page", "listarventa");
+        return "venta/listar";
     }
 
     // Mostrar formulario de creación
-    @GetMapping("/create")
-    public String mostrarFormularioCrear(Model model) {
-        model.addAttribute("venta", new Venta());
-        model.addAttribute("sucursales", sucursalService.findAllActivos());
-        model.addAttribute("personas", personaService.findAllActivos());
+    @GetMapping("/crear")
+    public String mostrarFormulario(Model model) {
+        Venta venta = new Venta();
+        venta.setCodVenta(generarCodigoVenta());
+        model.addAttribute("venta", venta);
         model.addAttribute("clientes", clienteService.findAllActivos());
-        model.addAttribute("active_page", "ventas");
-        return "ventas/crear";
+        model.addAttribute("empleados", empleadoService.listarTodos());
+        model.addAttribute("productos", productoService.findAllActivos());
+        model.addAttribute("active_page", "listarventa");
+        return "venta/crear";
     }
 
-    // Guardar nueva venta
-    @PostMapping("/save")
-    public String guardar(@ModelAttribute Venta venta) {
-        venta.setIdEstado(1);
-        ventaService.save(venta);
-        return "redirect:/ventas";
+    @PostMapping("/guardar")
+    public String guardarVenta(@ModelAttribute Venta venta,
+            @RequestParam("productoIds") List<Integer> productoIds,
+            @RequestParam("cantidades") List<Integer> cantidades,
+            @RequestParam("codCliente") String codCliente,
+            @RequestParam("empleado.id") Integer empleadoId,
+            RedirectAttributes redirectAttrs) {
+        Optional<Cliente> optionalCliente = clienteService.findById(codCliente);
+        Optional<Empleado> optionalEmpleado = empleadoService.findById(empleadoId);
+
+        if (optionalCliente.isPresent() && optionalEmpleado.isPresent()) {
+            Cliente cliente = optionalCliente.get();
+            Empleado empleado = optionalEmpleado.get();
+
+            venta.setCliente(cliente);
+            venta.setEmpleado(empleado);
+
+            ventaService.guardarVentaConDetalles(venta, productoIds, cantidades);
+            return "redirect:/ventas";
+        } else {
+            redirectAttrs.addFlashAttribute("error", "Cliente o empleado no encontrado.");
+            return "redirect:/ventas/crear";
+        }
+
     }
 
     // Mostrar formulario de edición
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEditar(@PathVariable Integer id, Model model) {
-        Optional<Venta> ventaOpt = ventaService.findById(id);
-        if (ventaOpt.isPresent()) {
-            model.addAttribute("venta", ventaOpt.get());
-            model.addAttribute("sucursales", sucursalService.findAllActivos());
-            model.addAttribute("personas", personaService.findAllActivos());
-            model.addAttribute("clientes", clienteService.findAllActivos());
-            model.addAttribute("active_page", "ventas");
-            return "ventas/editar";
-        }
-        return "redirect:/ventas";
-    }
 
     // Actualizar venta
     @PostMapping("/update")
     public String actualizar(@ModelAttribute Venta venta) {
-        Optional<Venta> original = ventaService.findById(venta.getIdVenta());
+        Optional<Venta> original = ventaService.findVentaById(venta.getIdVenta());
         if (original.isPresent()) {
             venta.setCreatedAt(original.get().getCreatedAt());
-            ventaService.save(venta);
+            ventaService.saveVenta(venta);
         }
         return "redirect:/ventas";
     }
 
     // Eliminación lógica
     @PostMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Integer id) {
-        ventaService.deleteLogico(id);
+    public String eliminar(@PathVariable String id) {
+        ventaService.softDeleteVenta(id);
         return "redirect:/ventas";
+    }
+
+    @GetMapping("/{codigo}")
+    public String verDetalleVenta(@PathVariable("codigo") String codigo, Model model) {
+        // Buscar la venta por código, con su detalle (productos, cantidades, precios,
+        // etc.)
+        Optional<Venta> venta = ventaService.findByCodVenta(codigo);
+
+        if (venta.isPresent() == false) {
+            // Manejar error o redirigir
+            return "redirect:/ventas";
+        }
+        Cliente cliente = clienteService.findById(venta.get().getCliente().getCodCliente())
+                .orElseThrow(() -> new RuntimeException(
+                        "Cliente no encontrado con ID: " + venta.get().getCliente().getCodCliente()));
+        if (cliente instanceof ClienteNatural cn) {
+            model.addAttribute("nombre", cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos());
+            model.addAttribute("identificacion", cn.getPersona().getDni());
+        } else if (cliente instanceof ClienteJuridico cj) {
+            model.addAttribute("nombre", cj.getEmpresa().getRazonSocial());
+            model.addAttribute("identificacion", cj.getEmpresa().getRuc());
+        }
+
+        model.addAttribute("venta", venta.get());
+        model.addAttribute("active_page", "listarventa");
+        return "venta/detalle"; // nombre del template para detalle
+    }
+
+    private String generarCodigoVenta() {
+        long total = ventaService.count() + 1;
+        return String.format("RRD01-%05d", total);
     }
 }
