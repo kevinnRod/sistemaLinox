@@ -74,7 +74,8 @@
                     <div class="row g-2">
                         <div class="col-md-6">
                             <select id="producto-select" class="form-select">
-                                <option th:each="p : ${productos}" th:value="${p.id}"
+                                <option th:value="${null}" th:text="'Seleccione un producto'"></option>
+                                <option th:each="p : ${productos}" th:value="${p.id}" th:data-stock="${p.stock}"
                                     th:text="${p.nombreProducto + ' - S/' + p.precioUnitario}">
                                 </option>
                             </select>
@@ -83,6 +84,11 @@
                             <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1"
                                 class="form-control" />
                         </div>
+                        <div class="col-md-3">
+                            <input type="text" id="stock-disponible" class="form-control bg-light" readonly
+                                placeholder="Stock disponible" />
+                        </div>
+
                         <div class="col-md-3">
                             <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">
                                 <i class="bi bi-plus-circle-fill"></i> Agregar
@@ -132,6 +138,7 @@
     <th:block layout:fragment="js">
         <script th:inline="javascript">
             const productosSeleccionados = {};
+            const stockOriginal = {};
 
             function agregarProducto() {
                 const select = document.getElementById('producto-select');
@@ -143,6 +150,12 @@
 
                 if (!productoId || isNaN(cantidad) || cantidad < 1) {
                     alert('Producto o cantidad inválida');
+                    return;
+                }
+
+                const stockDisponible = stockOriginal[productoId] - (productosSeleccionados[productoId]?.cantidad || 0);
+                if (cantidad > stockDisponible) {
+                    alert('Cantidad excede el stock disponible.');
                     return;
                 }
 
@@ -162,24 +175,28 @@
                     const fila = document.createElement('tr');
                     fila.id = 'fila-' + productoId;
                     fila.innerHTML = `
-                        <td>${productoNombre}</td>
-                        <td class="cantidad text-center">${cantidad}</td>
-                        <td class="subtotal text-center">S/${(cantidad * precio).toFixed(2)}</td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto('${productoId}')">
-                                <i class="bi bi-trash-fill"></i> Eliminar
-                            </button>
-                        </td>
-                    `;
+            <td>${productoNombre}</td>
+            <td class="cantidad text-center">${cantidad}</td>
+            <td class="subtotal text-center">S/${(cantidad * precio).toFixed(2)}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto('${productoId}')">
+                    <i class="bi bi-trash-fill"></i> Eliminar
+                </button>
+            </td>
+        `;
                     tbody.appendChild(fila);
 
                     contenedor.innerHTML += `
-                        <input type="hidden" name="productoIds" value="${productoId}" id="input-id-${productoId}" />
-                        <input type="hidden" name="cantidades" value="${cantidad}" id="input-cantidad-${productoId}" />
-                    `;
+            <input type="hidden" name="productoIds" value="${productoId}" id="input-id-${productoId}" />
+            <input type="hidden" name="cantidades" value="${cantidad}" id="input-cantidad-${productoId}" />
+        `;
 
                     productosSeleccionados[productoId] = { cantidad };
                 }
+
+                // ✅ ACTUALIZAR STOCK VISIBLE
+                const nuevoDisponible = stockOriginal[productoId] - productosSeleccionados[productoId].cantidad;
+                document.getElementById('stock-disponible').value = nuevoDisponible;
 
                 cantidadInput.value = 1;
                 actualizarTotal();
@@ -201,6 +218,18 @@
                 }
                 document.getElementById('total-general').innerText = 'S/' + total.toFixed(2);
             }
+
+            document.getElementById('producto-select').addEventListener('change', function () {
+                const option = this.options[this.selectedIndex];
+                const productoId = this.value;
+                const stock = parseInt(option.getAttribute('data-stock'));
+                stockOriginal[productoId] = stock;
+
+                // Si el producto ya fue agregado, restar lo agregado
+                const usado = productosSeleccionados[productoId]?.cantidad || 0;
+                const stockDisponible = stock - usado;
+                document.getElementById('stock-disponible').value = stockDisponible;
+            });
         </script>
     </th:block>
 </body>

@@ -1,5 +1,6 @@
 package com.linox.sistemaventas.controllers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,14 +91,36 @@ public class ProductoController {
             model.addAttribute("error", "Ya existe un producto activo con ese código.");
             model.addAttribute("producto", producto);
             model.addAttribute("unidades", unidadMedidaService.findAllActivos());
-            model.addAttribute("sucursales", sucursalService.findAllActivos());
-
             model.addAttribute("active_page", "producto");
+            model.addAttribute("sucursales", sucursalService.findAllActivos());
+            model.addAttribute("categorias", categoriaProductoService.findAllActivos());
+            model.addAttribute("proveedores", proveedorService.findAllActivos());
 
             return "productos/crear";
         }
 
         producto.setIdEstado(1); // Activo
+        if (producto.getStock() < 0) {
+            model.addAttribute("error", "stock no puede ser menor a cero.");
+            model.addAttribute("producto", producto);
+            model.addAttribute("unidades", unidadMedidaService.findAllActivos());
+            model.addAttribute("active_page", "producto");
+            model.addAttribute("sucursales", sucursalService.findAllActivos());
+            model.addAttribute("categorias", categoriaProductoService.findAllActivos());
+            model.addAttribute("proveedores", proveedorService.findAllActivos());
+            return "productos/crear";
+        }
+
+        if (producto.getPrecioUnitario().compareTo(BigDecimal.ZERO) <= 0) {
+            model.addAttribute("error", "Precio unitario no puede ser cero o menor a cero.");
+            model.addAttribute("producto", producto);
+            model.addAttribute("unidades", unidadMedidaService.findAllActivos());
+            model.addAttribute("active_page", "producto");
+            model.addAttribute("sucursales", sucursalService.findAllActivos());
+            model.addAttribute("categorias", categoriaProductoService.findAllActivos());
+            model.addAttribute("proveedores", proveedorService.findAllActivos());
+            return "productos/crear";
+        }
 
         // Guardar cookie con la categoría seleccionada
         if (producto.getCategoria() != null) {
