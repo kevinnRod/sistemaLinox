@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,6 +84,7 @@ public class RolController {
         model.addAttribute("rol", rolExistente);
         model.addAttribute("active_page", "rol");
         return "rol/editarRol"; // Vuelve a la vista usuario/crear.html
+
     }
 
     @PostMapping("/actualizar/{id}")
@@ -92,6 +94,7 @@ public class RolController {
             @RequestParam("idEstado") Integer idEstado) {
         try {
             Optional<Rol> rolOpt = rolService.findById(id);
+
 
             if (!rolOpt.isPresent()) {
                 redirectAttributes.addFlashAttribute("error", "El rol no fue encontrado.");
@@ -109,6 +112,7 @@ public class RolController {
         return "redirect:/rol";
     }
 
+    @SuppressWarnings("deprecation")
     @PostMapping("/eliminar/{id}")
     public String eliminarRol(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
@@ -127,6 +131,7 @@ public class RolController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el rol: " + e.getMessage());
         }
+
 
         return "redirect:/rol";
     }
