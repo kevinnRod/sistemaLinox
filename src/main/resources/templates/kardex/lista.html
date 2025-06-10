@@ -5,19 +5,81 @@
 <head>
     <th:block layout:fragment="head">
         <title>Listado de Movimientos Kardex</title>
+        <style>
+            :root {
+                --primary-color: #d32f2f;
+                --secondary-color: #ffffff;
+                --hover-color: #b71c1c;
+            }
+
+            .table-puma {
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .table-puma thead th {
+                background-color: var(--primary-color);
+                color: var(--secondary-color);
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                transition: background-color 0.3s;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .table-puma tbody tr {
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .table-puma tbody tr:hover {
+                transform: scale(1.03);
+                background-color: rgba(211, 47, 47, 0.1);
+            }
+
+            .table-puma td {
+                padding: 10px;
+                text-align: center;
+            }
+
+            .puma-logo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                font-size: 4rem;
+            }
+
+            .puma-logo::before {
+                content: '\1F406';
+                font-size: 4rem;
+                color: black;
+                filter: drop-shadow(0 0 2px red) drop-shadow(0 0 6px red);
+                animation: runPaws 0.8s steps(2) infinite;
+            }
+
+            @keyframes runPaws {
+                0% { transform: translateY(0) rotate(0deg); }
+                25% { transform: translateY(-5px) rotate(-2deg); }
+                50% { transform: translateY(0) rotate(2deg); }
+                75% { transform: translateY(-5px) rotate(-2deg); }
+                100% { transform: translateY(0) rotate(0deg); }
+            }
+        </style>
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content" class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0"><i class="bi bi-list-columns"></i> Kardex</h2>
-
+        <div class="d-flex justify-content-center align-items-center mb-4">
+            <h2 class="mb-0 puma-logo">Kardex</h2>
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-dark text-center">
+            <table class="table table-hover table-bordered align-middle table-puma">
+                <thead>
                     <tr>
                         <th>ID</th>
                         <th>Producto</th>
@@ -33,16 +95,15 @@
                 </thead>
                 <tbody th:if="${kardex != null and !kardex.isEmpty()}">
                     <tr th:each="k : ${kardex}">
-                        <td class="text-center" th:text="${k.idKardex}"></td>
+                        <td th:text="${k.idKardex}"></td>
                         <td th:text="${k.producto?.nombreProducto}"></td>
                         <td th:text="${k.tipoMovimiento?.nombre}"></td>
-                        <td class="text-end" th:text="${k.cantidad}"></td>
-                        <td class="text-end" th:text="${k.stockResultante}"></td>
-                        <td class="text-end" th:text="${k.precioUnitario}"></td>
+                        <td th:text="${k.cantidad}"></td>
+                        <td th:text="${k.stockResultante}"></td>
+                        <td th:text="${k.precioUnitario}"></td>
                         <td th:text="${k.documentoReferencia}"></td>
                         <td th:text="${k.sucursal?.nombreSucursal}"></td>
-                        <td class="text-center" th:text="${#temporals.format(k.fechaMovimiento, 'dd/MM/yyyy HH:mm')}">
-                        </td>
+                        <td th:text="${#temporals.format(k.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${k.observaciones}"></td>
                     </tr>
                 </tbody>

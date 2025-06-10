@@ -186,6 +186,9 @@ public class ProductoController {
         return "redirect:/productos";
     }
 
+
+    
+
     private String generarCodigoProducto() {
         long numero = productoService.count() + 1;
         return String.format("PRD-%05d", numero);
