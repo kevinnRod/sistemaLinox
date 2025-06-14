@@ -153,20 +153,20 @@ public class SucursalController {
     }
 
     @PostMapping("/eliminar/{id}")
-    public String eliminarSucursal(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String eliminarSucursal(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {
             Optional<Sucursal> sucursalOpt = sucursalService.findById(id);
-            if (!sucursalOpt.isPresent()) {
+            if (sucursalOpt.isPresent()) {
+                Sucursal sucursal = sucursalOpt.get();
+                sucursal.setIdEstado(0); // Baja lógica
+                sucursal.setUpdatedAt(LocalDateTime.now());
+                sucursalService.save(sucursal);
+                redirectAttributes.addFlashAttribute("success", "Sucursal eliminada correctamente.");
+            } else {
                 redirectAttributes.addFlashAttribute("error", "La sucursal no fue encontrada.");
-                return "redirect:/sucursal";
             }
-            Sucursal sucursal = sucursalOpt.get();
-            sucursal.setIdEstado(0); // Marcar como inactiva
-            sucursal.setUpdatedAt(LocalDateTime.now());
-            sucursalService.save(sucursal);
-            redirectAttributes.addFlashAttribute("success", "Sucursal eliminada correctamente.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al eliminar la sucursal: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Ocurrió un error al eliminar la sucursal.");
         }
         return "redirect:/sucursal";
     }

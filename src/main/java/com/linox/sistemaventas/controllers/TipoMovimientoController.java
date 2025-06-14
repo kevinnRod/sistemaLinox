@@ -1,15 +1,20 @@
 package com.linox.sistemaventas.controllers;
 
-import com.linox.sistemaventas.models.TipoMovimiento;
-import com.linox.sistemaventas.services.TipoMovimientoService;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Optional;
+import com.linox.sistemaventas.models.TipoMovimiento;
+import com.linox.sistemaventas.services.TipoMovimientoService;
 
 @Controller
 @RequestMapping("/tipoMovimiento")
@@ -39,6 +44,11 @@ public class TipoMovimientoController {
             RedirectAttributes redirectAttributes) {
 
         try {
+            if (codigo == null || codigo.trim().isEmpty() ||
+                    nombre == null || nombre.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Los campos no pueden estar vacíos.");
+                return "redirect:/tipoMovimiento";
+            }
             TipoMovimiento tipo = new TipoMovimiento();
             tipo.setCodigo(codigo);
             tipo.setNombre(nombre);

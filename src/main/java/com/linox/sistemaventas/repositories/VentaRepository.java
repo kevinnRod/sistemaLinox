@@ -12,7 +12,4 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
 
     Optional<Venta> findByCodVenta(String codVenta);
 
-    // List<Venta> findByClienteCodCliente(String codCliente);
-    // List<Venta> findByFechaVBetween(LocalDateTime startDate, LocalDateTime
-    // endDate);
 }

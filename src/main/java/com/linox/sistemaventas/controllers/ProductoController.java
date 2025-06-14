@@ -159,7 +159,7 @@ public class ProductoController {
             model.addAttribute("error", "Ya existe otro producto activo con ese código.");
             model.addAttribute("producto", producto);
             model.addAttribute("unidades", unidadMedidaService.findAllActivos());
-            model.addAttribute("sucursales", sucursalService.findAllActivos()); // ✅ Faltaba aquí
+            model.addAttribute("sucursales", sucursalService.findAllActivos());
             model.addAttribute("active_page", "producto");
             return "productos/editar";
         }
