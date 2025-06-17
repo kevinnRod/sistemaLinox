@@ -24,4 +24,10 @@ public interface VentaService {
 
     long count();
 
+    List<Object[]> obtenerVentasPorMes();
+
+    List<Object[]> obtenerTop10ProductosMasVendidosDelMes();
+
+    List<Object[]> obtenerProductosConMayorImporteUltimoMes();
+
 }

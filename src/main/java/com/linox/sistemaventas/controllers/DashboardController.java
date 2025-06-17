@@ -1,6 +1,11 @@
 package com.linox.sistemaventas.controllers;
 
+import java.math.BigDecimal;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,6 +20,7 @@ import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.models.UsuarioRol;
 import com.linox.sistemaventas.repositories.UsuarioRepository;
 import com.linox.sistemaventas.services.UsuarioRolService;
+import com.linox.sistemaventas.services.VentaService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -26,6 +32,9 @@ public class DashboardController {
 
     @Autowired
     private UsuarioRolService usuarioRolService;
+
+    @Autowired
+    private VentaService ventaService;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -54,8 +63,52 @@ public class DashboardController {
 
     @GetMapping("/inicio")
     public String inicio(Model model) {
-
         model.addAttribute("active_page", "inicio");
+
+        List<Object[]> ventasPorMes = ventaService.obtenerVentasPorMes();
+
+        List<String> meses = new ArrayList<>();
+        List<BigDecimal> totales = new ArrayList<>();
+
+        for (Object[] fila : ventasPorMes) {
+            Integer mes = (Integer) fila[0]; // número de mes: 1 = Enero
+            BigDecimal total = (BigDecimal) fila[1];
+
+            // Convertimos el número de mes a su nombre en español
+            String nombreMes = Month.of(mes).getDisplayName(TextStyle.FULL, new Locale("es"));
+            meses.add(nombreMes);
+            totales.add(total);
+        }
+
+        // Top 10 productos más vendidos del mes
+        List<Object[]> topProductos = ventaService.obtenerTop10ProductosMasVendidosDelMes();
+        List<String> nombresProductos = new ArrayList<>();
+        List<Integer> cantidadesVendidas = new ArrayList<>();
+
+        for (Object[] fila : topProductos) {
+            nombresProductos.add((String) fila[0]);
+            cantidadesVendidas.add(((Number) fila[1]).intValue());
+        }
+
+        List<Object[]> productosConMayorImporte = ventaService.obtenerProductosConMayorImporteUltimoMes();
+
+        List<String> nombresImporte = new ArrayList<>();
+        List<Double> importes = new ArrayList<>();
+
+        for (Object[] fila : productosConMayorImporte) {
+            nombresImporte.add((String) fila[0]);
+            importes.add(((Number) fila[1]).doubleValue());
+        }
+
+        model.addAttribute("nombresImporte", nombresImporte);
+        model.addAttribute("importes", importes);
+
+        model.addAttribute("nombresProductos", nombresProductos);
+        model.addAttribute("cantidadesVendidas", cantidadesVendidas);
+
+        model.addAttribute("meses", meses);
+        model.addAttribute("totales", totales);
+
         return "hola";
     }
 

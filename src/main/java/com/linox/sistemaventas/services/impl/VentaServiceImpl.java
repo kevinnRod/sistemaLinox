@@ -17,6 +17,7 @@ import com.linox.sistemaventas.models.Producto;
 import com.linox.sistemaventas.models.TipoMovimiento;
 import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.models.Venta;
+import com.linox.sistemaventas.repositories.DetalleVentaRepository;
 import com.linox.sistemaventas.repositories.VentaRepository;
 import com.linox.sistemaventas.services.DetalleVentaService;
 import com.linox.sistemaventas.services.KardexService;
@@ -41,6 +42,9 @@ public class VentaServiceImpl implements VentaService {
 
     @Autowired
     private TipoMovimientoService tipoMovimientoService;
+
+    @Autowired
+    private DetalleVentaRepository detalleVentaRepository;
 
     @Autowired
     private DetalleVentaService detalleVentaService;
@@ -181,4 +185,18 @@ public class VentaServiceImpl implements VentaService {
         return ventaRepository.findByCodVenta(codVenta);
     }
 
+    @Override
+    public List<Object[]> obtenerVentasPorMes() {
+        return ventaRepository.obtenerVentasPorMes();
+    }
+
+    @Override
+    public List<Object[]> obtenerTop10ProductosMasVendidosDelMes() {
+        return detalleVentaRepository.obtenerTop10ProductosMasVendidosDelMes();
+    }
+
+    @Override
+    public List<Object[]> obtenerProductosConMayorImporteUltimoMes() {
+        return detalleVentaRepository.obtenerProductosConMayorImporteUltimoMes();
+    }
 }
