@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -197,6 +198,12 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     public List<Object[]> obtenerProductosConMayorImporteUltimoMes() {
-        return detalleVentaRepository.obtenerProductosConMayorImporteUltimoMes();
+        return detalleVentaRepository.obtenerProductosConMayorImporteUltimoMes(PageRequest.of(0, 5));
     }
+
+    @Override
+    public List<Object[]> obtenerTotalesPorMes(Integer idEmpleado) {
+        return ventaRepository.obtenerTotalesPorMes(idEmpleado);
+    }
+
 }

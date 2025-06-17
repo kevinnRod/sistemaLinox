@@ -59,6 +59,9 @@
                                         class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
+                                    <a th:href="@{'/empleado/detalle/' + ${empleado.idPersona}}"
+                                        class="btn btn-sm btn-info text-white">
+                                        <i class="bi bi-eye"></i> Ver </a>
                                     <form th:action="@{'/empleado/eliminar/' + ${empleado.idPersona}}" method="post"
                                         onsubmit="return confirm('¿Está seguro que desea eliminar este empleado?');">
                                         <input type="hidden" name="_method" value="delete" />

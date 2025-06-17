@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Detalle Empleado</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-4">
+            <div class="row g-4">
+                <!-- Columna izquierda: Detalles del empleado -->
+                <div class="col-md-6 d-flex">
+                    <div class="card shadow rounded-4 w-100" style="min-height: 380px;">
+                        <div class="card-header bg-primary text-white rounded-top-4 py-2">
+                            <h5 class="mb-0 fs-6">Detalle del Empleado</h5>
+                        </div>
+                        <div class="card-body py-3 fs-6">
+                            <p><strong>Código:</strong> <span th:text="${empleado.codEmpleado}"></span></p>
+                            <p><strong>DNI:</strong> <span th:text="${empleado.dni}"></span></p>
+                            <p><strong>Nombre Completo:</strong> <span
+                                    th:text="${empleado.nombres + ' ' + empleado.apellidos}"></span></p>
+                            <p><strong>Correo:</strong> <span th:text="${empleado.correo}"></span></p>
+                            <p><strong>Cargo:</strong> <span th:text="${empleado.cargo.nombreCargo}"></span></p>
+                            <p><strong>Sucursal:</strong> <span th:text="${empleado.sucursal.nombreSucursal}"></span>
+                            </p>
+                            <p><strong>Estado:</strong>
+                                <span th:classappend="${empleado.idEstado == 1} ? 'text-success' : 'text-danger'"
+                                    th:text="${empleado.idEstado == 1 ? 'Activo' : 'Inactivo'}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha: Gráfico -->
+                <div class="col-md-6 d-flex">
+                    <div class="card shadow rounded-4 w-100" style="min-height: 380px;">
+                        <div class="card-header bg-success text-white rounded-top-4 py-2">
+                            <h5 class="mb-0 fs-6">Reporte de Ventas por Mes</h5>
+                        </div>
+                        <div class="card-body py-3 d-flex justify-content-center align-items-center">
+                            <canvas id="graficoVentas" height="220"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Volver -->
+            <div class="text-end mt-3">
+                <a th:href="@{/empleado}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <th:block layout:fragment="js">
+        <script th:inline="javascript">
+            let meses = /*[[${meses}]]*/[];
+            let montos = /*[[${montos}]]*/[];
+
+            const ctx = document.getElementById('graficoVentas').getContext('2d');
+            const graficoVentas = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Importe de Ventas (S/)',
+                        data: montos,
+                        fill: true,
+                        tension: 0.4, // curva suave
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5,
+                        pointHoverRadius: 6,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return 'S/ ' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mes'
+                            },
+                            grid: {
+                                color: '#f0f0f0'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Importe (S/.)'
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return 'S/ ' + value.toLocaleString();
+                                }
+                            },
+                            grid: {
+                                color: '#eaeaea'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+
+
+    </th:block>
+</body>
+
+</html>

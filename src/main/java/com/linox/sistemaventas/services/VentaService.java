@@ -30,4 +30,6 @@ public interface VentaService {
 
     List<Object[]> obtenerProductosConMayorImporteUltimoMes();
 
+    List<Object[]> obtenerTotalesPorMes(Integer idEmpleado);
+
 }
