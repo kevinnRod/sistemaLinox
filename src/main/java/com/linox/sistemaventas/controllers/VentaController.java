@@ -18,15 +18,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.linox.sistemaventas.models.Cliente;
 import com.linox.sistemaventas.models.ClienteJuridico;
 import com.linox.sistemaventas.models.ClienteNatural;
+import com.linox.sistemaventas.models.DetalleVenta;
 import com.linox.sistemaventas.models.Empleado;
 import com.linox.sistemaventas.models.Venta;
 import com.linox.sistemaventas.services.ClienteService;
 import com.linox.sistemaventas.services.EmpleadoService;
 import com.linox.sistemaventas.services.ProductoService;
 import com.linox.sistemaventas.services.VentaService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/ventas")
@@ -160,8 +168,70 @@ public class VentaController {
         return "venta/detalle"; // nombre del template para detalle
     }
 
+    @GetMapping("/{codigo}/comprobante")
+    public void generarComprobante(@PathVariable("codigo") String codigo, HttpServletResponse response)
+            throws Exception {
+        Optional<Venta> ventaOpt = ventaService.findByCodVenta(codigo);
+        if (!ventaOpt.isPresent()) {
+            response.sendRedirect("/ventas");
+            return;
+        }
+
+        Venta venta = ventaOpt.get();
+
+        // Establecer respuesta
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=comprobante_" + codigo + ".pdf");
+
+        // Crear PDF
+        Document document = new Document();
+        PdfWriter.getInstance(document, response.getOutputStream());
+        document.open();
+
+        // Título
+        document.add(new Paragraph("Comprobante de Venta", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
+        document.add(new Paragraph("Código: " + venta.getCodVenta()));
+        document.add(new Paragraph("Fecha: " + venta.getFechaV().toLocalDate()));
+        Cliente cliente = clienteService.findById(venta.getCliente().getCodCliente())
+                .orElseThrow(() -> new RuntimeException(
+                        "Cliente no encontrado con ID: " + venta.getCliente().getCodCliente()));
+        if (cliente instanceof ClienteNatural cn) {
+            document.add(
+                    new Paragraph("Cliente: " + cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos()));
+        } else if (cliente instanceof ClienteJuridico cj) {
+            document.add(new Paragraph("Cliente: " + cj.getEmpresa().getRazonSocial()));
+        }
+
+        document.add(new Paragraph(
+                "Empleado: " + venta.getEmpleado().getNombres() + " " + venta.getEmpleado().getApellidos()));
+        document.add(new Paragraph(" ")); // Espacio
+
+        // Tabla de productos
+        PdfPTable table = new PdfPTable(4);
+        table.setWidthPercentage(100);
+        table.addCell("Producto");
+        table.addCell("Cantidad");
+        table.addCell("Precio");
+        table.addCell("Subtotal");
+
+        for (DetalleVenta d : venta.getDetallesVenta()) {
+            table.addCell(d.getProducto().getNombreProducto());
+            table.addCell(String.valueOf(d.getCantidad()));
+            table.addCell("S/ " + d.getProducto().getPrecioUnitario());
+            table.addCell("S/ " + d.getSubtotal());
+        }
+
+        document.add(table);
+
+        // Total
+        document.add(new Paragraph("\nTotal: S/ " + venta.getTotal()));
+
+        document.close();
+    }
+
     private String generarCodigoVenta() {
         long total = ventaService.count() + 1;
         return String.format("RRD01-%05d", total);
     }
+
 }
