@@ -1,6 +1,7 @@
 
 package com.linox.sistemaventas.controllers;
 
+import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -28,13 +29,40 @@ import com.linox.sistemaventas.models.ClienteJuridico;
 import com.linox.sistemaventas.models.ClienteNatural;
 import com.linox.sistemaventas.models.DetalleVenta;
 import com.linox.sistemaventas.models.Empleado;
+import com.linox.sistemaventas.models.EmpresaAnfitrion;
 import com.linox.sistemaventas.models.Venta;
 import com.linox.sistemaventas.services.ClienteService;
 import com.linox.sistemaventas.services.EmpleadoService;
+import com.linox.sistemaventas.services.EmpresaAnfitrionService;
 import com.linox.sistemaventas.services.ProductoService;
 import com.linox.sistemaventas.services.VentaService;
 
 import jakarta.servlet.http.HttpServletResponse;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.Color; 
+import java.util.stream.Stream;
+import java.text.DecimalFormat;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Image;
+import java.io.File;
+
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 
 @Controller
 @RequestMapping("/ventas")
@@ -51,6 +79,10 @@ public class VentaController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private EmpresaAnfitrionService empresaAnfitrionService;
+
 
     // 3. Mostrar listado
     @GetMapping()
@@ -169,65 +201,158 @@ public class VentaController {
     }
 
     @GetMapping("/{codigo}/comprobante")
-    public void generarComprobante(@PathVariable("codigo") String codigo, HttpServletResponse response)
-            throws Exception {
+    public void generarComprobante(@PathVariable("codigo") String codigo, HttpServletResponse response) throws Exception {
         Optional<Venta> ventaOpt = ventaService.findByCodVenta(codigo);
         if (!ventaOpt.isPresent()) {
             response.sendRedirect("/ventas");
             return;
         }
-
+    
         Venta venta = ventaOpt.get();
-
-        // Establecer respuesta
+        Cliente cliente = clienteService.findById(venta.getCliente().getCodCliente())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+    
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline; filename=comprobante_" + codigo + ".pdf");
-
-        // Crear PDF
-        Document document = new Document();
+    
+        Document document = new Document(PageSize.A4, 40, 40, 40, 40);
         PdfWriter.getInstance(document, response.getOutputStream());
         document.open();
+    
+        // Fuentes y formatos
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+        Font subFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        DecimalFormat df = new DecimalFormat("0.00");
+    
+        // 1. Obtener empresa anfitriona
+        EmpresaAnfitrion empresa = empresaAnfitrionService.getEmpresaUnica()
+                .orElseThrow(() -> new RuntimeException("No hay empresa anfitriona configurada"));
 
-        // Título
-        document.add(new Paragraph("Comprobante de Venta", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-        document.add(new Paragraph("Código: " + venta.getCodVenta()));
-        document.add(new Paragraph("Fecha: " + venta.getFechaV().toLocalDate()));
-        Cliente cliente = clienteService.findById(venta.getCliente().getCodCliente())
-                .orElseThrow(() -> new RuntimeException(
-                        "Cliente no encontrado con ID: " + venta.getCliente().getCodCliente()));
-        if (cliente instanceof ClienteNatural cn) {
-            document.add(
-                    new Paragraph("Cliente: " + cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos()));
-        } else if (cliente instanceof ClienteJuridico cj) {
-            document.add(new Paragraph("Cliente: " + cj.getEmpresa().getRazonSocial()));
+        // 2. Logo
+        try {
+            String logoUrl = empresa.getLogoUrl(); // Ej: /uploads/empresa/imagen.jpg
+        
+            // Ruta absoluta al archivo dentro del proyecto
+            String relativePath = logoUrl.replaceFirst("/uploads", "uploads"); // quita la primera "/"
+            File logoFile = new File(relativePath);
+        
+            if (logoFile.exists()) {
+                BufferedImage bufferedImage = ImageIO.read(logoFile);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(bufferedImage, "jpg", baos);
+                baos.flush();
+                Image logo = Image.getInstance(baos.toByteArray());
+                logo.scaleToFit(80, 80);
+                logo.setAlignment(Element.ALIGN_CENTER);
+                document.add(logo);
+            } else {
+                System.err.println("Logo no encontrado: " + logoFile.getAbsolutePath());
+            }
+        
+        } catch (Exception e) {
+            System.err.println("No se pudo cargar el logo: " + e.getMessage());
         }
+        
+        
+    
+        // 3. Nombre y datos de la empresa
+        Paragraph nombreEmpresa = new Paragraph(empresa.getNombreComercial(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16));
+        nombreEmpresa.setAlignment(Element.ALIGN_CENTER);
+        document.add(nombreEmpresa);
 
-        document.add(new Paragraph(
-                "Empleado: " + venta.getEmpleado().getNombres() + " " + venta.getEmpleado().getApellidos()));
-        document.add(new Paragraph(" ")); // Espacio
-
-        // Tabla de productos
-        PdfPTable table = new PdfPTable(4);
-        table.setWidthPercentage(100);
-        table.addCell("Producto");
-        table.addCell("Cantidad");
-        table.addCell("Precio");
-        table.addCell("Subtotal");
-
+        Paragraph datosEmpresa = new Paragraph(
+                "RUC: " + empresa.getRuc() + "\n" +
+                empresa.getDireccion() + "\n" +
+                "Tel: " + empresa.getTelefono() + " - " + empresa.getCorreo(),
+                FontFactory.getFont(FontFactory.HELVETICA, 10)
+        );
+        datosEmpresa.setAlignment(Element.ALIGN_CENTER);
+        datosEmpresa.setSpacingAfter(15);
+        document.add(datosEmpresa);
+    
+        // 3. INFORMACIÓN DE VENTA Y CLIENTE
+        PdfPTable info = new PdfPTable(2);
+        info.setWidthPercentage(100);
+        info.setWidths(new float[]{3, 3});
+        info.setSpacingBefore(10);
+        info.setSpacingAfter(10);
+    
+        String nombreCliente = (cliente instanceof ClienteNatural cn)
+                ? cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos()
+                : ((ClienteJuridico) cliente).getEmpresa().getRazonSocial();
+    
+        info.addCell(getCell("Cliente:", boldFont));
+        info.addCell(getCell(nombreCliente, normalFont));
+    
+        info.addCell(getCell("Código de Venta:", boldFont));
+        info.addCell(getCell(venta.getCodVenta(), normalFont));
+    
+        info.addCell(getCell("Fecha:", boldFont));
+        info.addCell(getCell(venta.getFechaV().toLocalDate().toString(), normalFont));
+    
+        info.addCell(getCell("Empleado:", boldFont));
+        info.addCell(getCell(venta.getEmpleado().getNombres() + " " + venta.getEmpleado().getApellidos(), normalFont));
+    
+        document.add(info);
+    
+        // 4. TABLA DE DETALLES
+        PdfPTable tabla = new PdfPTable(4);
+        tabla.setWidthPercentage(100);
+        tabla.setWidths(new float[]{4, 1, 2, 2});
+    
+        String[] headers = {"Producto", "Cantidad", "Precio", "Subtotal"};
+        for (String h : headers) {
+            PdfPCell cell = new PdfPCell(new Phrase(h, boldFont));
+            cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setPadding(5);
+            tabla.addCell(cell);
+        }
+    
         for (DetalleVenta d : venta.getDetallesVenta()) {
-            table.addCell(d.getProducto().getNombreProducto());
-            table.addCell(String.valueOf(d.getCantidad()));
-            table.addCell("S/ " + d.getProducto().getPrecioUnitario());
-            table.addCell("S/ " + d.getSubtotal());
+            tabla.addCell(getCell(d.getProducto().getNombreProducto(), normalFont, Element.ALIGN_LEFT));
+            tabla.addCell(getCell(String.valueOf(d.getCantidad()), normalFont, Element.ALIGN_CENTER));
+            tabla.addCell(getCell("S/ " + df.format(d.getProducto().getPrecioUnitario()), normalFont, Element.ALIGN_RIGHT));
+            tabla.addCell(getCell("S/ " + df.format(d.getSubtotal()), normalFont, Element.ALIGN_RIGHT));
         }
-
-        document.add(table);
-
-        // Total
-        document.add(new Paragraph("\nTotal: S/ " + venta.getTotal()));
-
+    
+        document.add(tabla);
+    
+        // 5. TOTAL
+        PdfPTable totalTable = new PdfPTable(2);
+        totalTable.setWidths(new float[]{6, 2});
+        totalTable.setWidthPercentage(100);
+        totalTable.setSpacingBefore(10);
+    
+        totalTable.addCell(getCell("TOTAL:", boldFont, Element.ALIGN_RIGHT));
+        totalTable.addCell(getCell("S/ " + df.format(venta.getTotal()), boldFont, Element.ALIGN_RIGHT));
+        document.add(totalTable);
+    
+        // 6. NOTA FINAL
+        Paragraph gracias = new Paragraph("\nGracias por su compra. ¡Vuelva pronto!", normalFont);
+        gracias.setAlignment(Element.ALIGN_CENTER);
+        gracias.setSpacingBefore(20);
+        document.add(gracias);
+    
         document.close();
     }
+    
+    private PdfPCell getCell(String text, Font font) {
+        return getCell(text, font, Element.ALIGN_LEFT);
+    }
+    
+    private PdfPCell getCell(String text, Font font, int alignment) {
+        PdfPCell cell = new PdfPCell(new Phrase(text, font));
+        cell.setPadding(5);
+        cell.setHorizontalAlignment(alignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setBorderWidth(0.5f);
+        return cell;
+    }
+    
+
 
     private String generarCodigoVenta() {
         long total = ventaService.count() + 1;

@@ -12,4 +12,6 @@ public interface EmpresaAnfitrionService {
     EmpresaAnfitrion save(EmpresaAnfitrion empresaAnfitrion);
 
     void deleteById(Integer id);
+    Optional<EmpresaAnfitrion> getEmpresaUnica();
+
 }

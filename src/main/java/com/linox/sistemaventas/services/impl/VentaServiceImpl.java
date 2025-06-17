@@ -140,10 +140,13 @@ public class VentaServiceImpl implements VentaService {
             productoService.save(producto);
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String username = auth.getName();
-            Usuario usuario = usuarioService.findByUsuario(username).get();
-
+            Usuario usuario = usuarioService.findByUsuario(username)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+        
             Kardex kardex = new Kardex();
-            TipoMovimiento tipoMovimiento = tipoMovimientoService.findByCodigo("SAL").get();
+            TipoMovimiento tipoMovimiento = tipoMovimientoService.findByCodigo("SAL")
+            .orElseThrow(() -> new RuntimeException("Tipo de movimiento 'SAL' no encontrado"));
+
             kardex.setTipoMovimiento(tipoMovimiento);
             kardex.setProducto(producto);
             kardex.setCantidad(cantidad);
