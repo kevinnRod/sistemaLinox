@@ -35,4 +35,9 @@ public class EmpresaAnfitrionServiceImpl implements EmpresaAnfitrionService {
     public void deleteById(Integer id) {
         empresaAnfitrionRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<EmpresaAnfitrion> getEmpresaUnica() {
+        return empresaAnfitrionRepository.findFirstByOrderByIdEmpresaAsc();
+    }
 }
