@@ -1,5 +1,6 @@
 package com.linox.sistemaventas.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ import com.linox.sistemaventas.models.EmpresaAnfitrion;
 @Repository
 public interface EmpresaAnfitrionRepository extends JpaRepository<EmpresaAnfitrion, Integer> {
     Optional<EmpresaAnfitrion> findFirstByOrderByIdEmpresaAsc();
+
+    List<EmpresaAnfitrion> findByidEstado(int estado);
 }

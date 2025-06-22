@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="head">
+        <title>Dashboard Inventario</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            .chart-container {
+                position: relative;
+                height: 260px;
+                width: 100%;
+            }
+
+            .card-title {
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            @media (max-width: 768px) {
+                .chart-container {
+                    height: 200px;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content" class="container-fluid px-3 py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">📦 Inventario General</h2>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary shadow text-center rounded-3">
+                    <div class="card-body py-4">
+                        <h6 class="text-uppercase">Total Productos</h6>
+                        <h2 th:text="${totalProductos}">--</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-danger shadow text-center rounded-3">
+                    <div class="card-body py-4">
+                        <h6 class="text-uppercase">Bajo Stock</h6>
+                        <h2 th:text="${productosBajoStock}">--</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success shadow text-center rounded-3">
+                    <div class="card-body py-4">
+                        <h6 class="text-uppercase">Sucursales</h6>
+                        <h2 th:text="${sucursales.size()}">--</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row g-4 mb-5">
+            <!-- Gráfico por Sucursal -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">🏪 Productos por Sucursal</h5>
+                        <div class="chart-container">
+                            <canvas id="sucursalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtro + Gráfico Bajo Stock -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">📉 Bajo Stock por Sucursal</h5>
+                        <div class="mb-3">
+                            <label for="sucursalSelect" class="form-label">Selecciona una sucursal:</label>
+                            <select class="form-select form-select-sm" id="sucursalSelect">
+                                <option value="TODAS">Todas las Sucursales</option>
+                                <option th:each="s : ${sucursalNombres}" th:value="${s}" th:text="${s}"></option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="bajoStockChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Detalle -->
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">🔎 Detalle de Productos con Bajo Stock</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Sucursal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaBajoStock">
+                            <tr th:each="producto : ${bajoStock}">
+                                <td th:text="${producto.codProducto}">P001</td>
+                                <td th:text="${producto.nombreProducto}">Producto A</td>
+                                <td th:text="${producto.stock}">10</td>
+                                <td th:text="${producto.sucursal.nombreSucursal}">Sucursal Lima</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <th:block layout:fragment="js">
+        <script th:inline="javascript">
+            const nombres = /*[[${nombres}]]*/[];
+            const stocks = /*[[${stocks}]]*/[];
+            const sucursales = /*[[${sucursalNombres}]]*/[];
+            const cantidades = /*[[${sucursalCantidades}]]*/[];
+            const bajoStockPorSucursal = /*[[${bajoStockPorSucursal}]]*/{};
+
+            // Gráfico: Productos por Sucursal
+            new Chart(document.getElementById('sucursalChart'), {
+                type: 'bar',
+                data: {
+                    labels: sucursales,
+                    datasets: [{
+                        label: 'Productos por Sucursal',
+                        data: cantidades,
+                        backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                        borderColor: 'rgba(39, 174, 96, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad de Productos'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Inicializar gráfico bajo stock
+            const ctxStock = document.getElementById('bajoStockChart').getContext('2d');
+            const bajoStockChart = new Chart(ctxStock, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Stock Disponible',
+                        data: [],
+                        backgroundColor: 'rgba(231, 76, 60, 0.6)',
+                        borderColor: 'rgba(192, 57, 43, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Unidades'
+                            }
+                        }
+                    }
+                }
+            });
+
+            function actualizarGraficoYTabla(sucursal) {
+                const productos = [];
+                const stocks = [];
+                const tbody = document.getElementById('tablaBajoStock');
+                tbody.innerHTML = '';
+
+                const productosSucursal = bajoStockPorSucursal[sucursal] || [];
+
+                productosSucursal.forEach(p => {
+                    productos.push(p.nombreProducto);
+                    stocks.push(p.stock);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${p.codProducto}</td>
+                    <td>${p.nombreProducto}</td>
+                    <td>${p.stock}</td>
+                    <td>${p.sucursal.nombreSucursal}</td>
+                `;
+                    tbody.appendChild(tr);
+                });
+
+                bajoStockChart.data.labels = productos;
+                bajoStockChart.data.datasets[0].data = stocks;
+                bajoStockChart.update();
+            }
+
+            document.getElementById('sucursalSelect').addEventListener('change', function () {
+                actualizarGraficoYTabla(this.value);
+            });
+
+            // Inicializar con "TODAS"
+            actualizarGraficoYTabla("TODAS");
+        </script>
+    </th:block>
+</body>
+
+</html>

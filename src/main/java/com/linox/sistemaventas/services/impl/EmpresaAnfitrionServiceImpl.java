@@ -18,7 +18,7 @@ public class EmpresaAnfitrionServiceImpl implements EmpresaAnfitrionService {
 
     @Override
     public List<EmpresaAnfitrion> findAll() {
-        return empresaAnfitrionRepository.findAll();
+        return empresaAnfitrionRepository.findByidEstado(1);
     }
 
     @Override

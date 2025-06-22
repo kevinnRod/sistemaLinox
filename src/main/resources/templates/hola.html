@@ -11,6 +11,8 @@
 
 <body>
     <div layout:fragment="content">
+        <!-- Dentro del layout:fragment="content" -->
+
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-10">
@@ -23,22 +25,24 @@
                                 Sesión iniciada como <strong><span
                                         sec:authentication="principal.usuario"></span></strong>
                             </p>
-                            <div th:if="${session.roles != null}">
+
+                            <!-- Mostrar roles -->
+                            <div sec:authorize="isAuthenticated()">
                                 <div class="d-flex justify-content-center flex-wrap gap-2">
                                     <span class="badge bg-light text-dark px-3 py-1" th:each="rol : ${session.roles}"
                                         th:text="${rol}"></span>
                                 </div>
                             </div>
-                            <div th:if="${session.roles == null}">
-                                <span class="fst-italic text-light">Sin roles asignados.</span>
-                            </div>
+
                             <p class="mt-3 small fst-italic text-light mb-0">Navega con el menú lateral para comenzar.
                             </p>
                         </div>
                     </div>
 
+                    <!-- GRÁFICOS DEL DASHBOARD -->
+
                     <div class="row g-3">
-                        <!-- Ventas por Mes -->
+                        <!-- Mostrar a todos -->
                         <div class="col-md-7">
                             <div class="card shadow-sm rounded-3 h-100" style="background-color: #f8f9fa;">
                                 <div class="card-body p-3">
@@ -48,9 +52,9 @@
                             </div>
                         </div>
 
-                        <!-- Top Productos + Importe -->
+                        <!-- Mostrar a todos -->
                         <div class="col-md-5 d-flex flex-column gap-3">
-                            <!-- Top 10 Productos -->
+                            <!-- Top productos vendidos -->
                             <div class="card shadow-sm rounded-3" style="background-color: #e9f7ef;">
                                 <div class="card-body p-3">
                                     <h6 class="text-center text-dark mb-3">Productos Más Vendidos</h6>
@@ -58,146 +62,148 @@
                                 </div>
                             </div>
 
-                            <!-- Mayor Importe -->
-                            <div class="card shadow-sm rounded-3" style="background-color: #fef9e7;">
+                            <!-- Productos con mayor Importe del Mes (solo para ADMIN) -->
+                            <div class="card shadow-sm rounded-3" style="background-color: #fef9e7;"
+                                th:if="${session.roles != null and #lists.contains(session.roles, 'ADMIN')}">
                                 <div class="card-body p-3">
                                     <h6 class="text-center text-dark mb-3">Productos con mayor Importe del Mes</h6>
                                     <canvas id="productosImporteChart" height="140"></canvas>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
+                        </div>
+
+                    </div>
                 </div>
             </div>
+
         </div>
-    </div>
+        <!-- -->
+        <th:block layout:fragment="js">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <th:block layout:fragment="js">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Ventas por mes -->
+            <script th:inline="javascript">
+                const labels = /*[[${meses}]]*/[];
+                const data = /*[[${totales}]]*/[];
 
-        <!-- Ventas por mes -->
-        <script th:inline="javascript">
-            const labels = /*[[${meses}]]*/[];
-            const data = /*[[${totales}]]*/[];
-
-            const ctx = document.getElementById('ventasMesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total de Ventas (S/)',
-                        data: data,
-                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                        borderColor: 'rgba(41, 128, 185, 1)',
-                        pointBackgroundColor: 'rgba(41, 128, 185, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return `S/ ${context.parsed.y}`;
+                const ctx = document.getElementById('ventasMesChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total de Ventas (S/)',
+                            data: data,
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(41, 128, 185, 1)',
+                            pointBackgroundColor: 'rgba(41, 128, 185, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `S/ ${context.parsed.y}`;
+                                    }
                                 }
                             }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Monto en S/' }
                         },
-                        x: {
-                            title: { display: true, text: 'Mes' }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Monto en S/' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Mes' }
+                            }
                         }
                     }
-                }
-            });
-        </script>
+                });
+            </script>
 
-        <!-- Top 10 productos más vendidos -->
-        <script th:inline="javascript">
-            const nombresProductos = /*[[${nombresProductos}]]*/[];
-            const cantidadesVendidas = /*[[${cantidadesVendidas}]]*/[];
+            <!-- Top 10 productos más vendidos -->
+            <script th:inline="javascript">
+                const nombresProductos = /*[[${nombresProductos}]]*/[];
+                const cantidadesVendidas = /*[[${cantidadesVendidas}]]*/[];
 
-            const ctx1 = document.getElementById('topProductosChart').getContext('2d');
-            new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: nombresProductos,
-                    datasets: [{
-                        label: 'Cantidad Vendida',
-                        data: cantidadesVendidas,
-                        backgroundColor: 'rgba(40, 180, 99, 0.6)',
-                        borderColor: 'rgba(40, 180, 99, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
+                const ctx1 = document.getElementById('topProductosChart').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: nombresProductos,
+                        datasets: [{
+                            label: 'Cantidad Vendida',
+                            data: cantidadesVendidas,
+                            backgroundColor: 'rgba(40, 180, 99, 0.6)',
+                            borderColor: 'rgba(40, 180, 99, 1)',
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Unidades Vendidas', font: { size: 10 } },
-                            ticks: { font: { size: 9 } }
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
                         },
-                        x: {
-                            title: { display: true, text: 'Producto', font: { size: 10 } },
-                            ticks: { font: { size: 8 } }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Unidades Vendidas', font: { size: 10 } },
+                                ticks: { font: { size: 9 } }
+                            },
+                            x: {
+                                title: { display: true, text: 'Producto', font: { size: 10 } },
+                                ticks: { font: { size: 8 } }
+                            }
                         }
                     }
-                }
-            });
-        </script>
+                });
+            </script>
 
-        <!-- Productos con mayor importe -->
-        <script th:inline="javascript">
-            const nombresImporte = /*[[${nombresImporte}]]*/[];
-            const importes = /*[[${importes}]]*/[];
+            <!-- Productos con mayor importe -->
+            <script th:inline="javascript">
+                const nombresImporte = /*[[${nombresImporte}]]*/[];
+                const importes = /*[[${importes}]]*/[];
 
-            const ctx2 = document.getElementById('productosImporteChart').getContext('2d');
-            new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: nombresImporte,
-                    datasets: [{
-                        label: 'Importe Total (S/.)',
-                        data: importes,
-                        backgroundColor: 'rgba(241, 196, 15, 0.6)',
-                        borderColor: 'rgba(243, 156, 18, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
+                const ctx2 = document.getElementById('productosImporteChart').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: nombresImporte,
+                        datasets: [{
+                            label: 'Importe Total (S/.)',
+                            data: importes,
+                            backgroundColor: 'rgba(241, 196, 15, 0.6)',
+                            borderColor: 'rgba(243, 156, 18, 1)',
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Soles (S/.)', font: { size: 10 } },
-                            ticks: { font: { size: 9 } }
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
                         },
-                        x: {
-                            title: { display: true, text: 'Producto', font: { size: 10 } },
-                            ticks: { font: { size: 8 } }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Soles (S/.)', font: { size: 10 } },
+                                ticks: { font: { size: 9 } }
+                            },
+                            x: {
+                                title: { display: true, text: 'Producto', font: { size: 10 } },
+                                ticks: { font: { size: 8 } }
+                            }
                         }
                     }
-                }
-            });
-        </script>
-    </th:block>
+                });
+            </script>
+        </th:block>
 </body>
 
 </html>

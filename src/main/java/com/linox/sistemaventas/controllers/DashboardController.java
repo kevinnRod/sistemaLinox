@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,9 +17,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.linox.sistemaventas.models.Producto;
 import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.models.UsuarioRol;
 import com.linox.sistemaventas.repositories.UsuarioRepository;
+import com.linox.sistemaventas.services.InventarioService;
 import com.linox.sistemaventas.services.UsuarioRolService;
 import com.linox.sistemaventas.services.VentaService;
 
@@ -35,6 +38,9 @@ public class DashboardController {
 
     @Autowired
     private VentaService ventaService;
+
+    @Autowired
+    private InventarioService inventarioService;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -110,6 +116,45 @@ public class DashboardController {
         model.addAttribute("totales", totales);
 
         return "hola";
+    }
+
+    @GetMapping("/dashboard/venta")
+    public String mostrarDashboardVenta(Model model, HttpSession session) {
+        List<String> roles = (List<String>) session.getAttribute("roles");
+        if (roles == null || !roles.contains("ADMIN")) {
+            return "redirect:/acceso-denegado";
+        }
+
+        // KPI Ventas
+        long ventasHoy = ventaService.contarVentasHoy();
+        BigDecimal montoHoy = ventaService.calcularTotalVentasHoy();
+        long ventasSemana = ventaService.contarVentasSemana();
+        BigDecimal montoMes = ventaService.calcularTotalVentasMes();
+
+        // Gráfico de ventas por hora
+        List<String> horas = IntStream.rangeClosed(0, 23)
+                .mapToObj(h -> String.format("%02d:00", h))
+                .collect(Collectors.toList());
+
+        List<Integer> ventasPorHoraHoy = ventaService.obtenerVentasPorHoraHoy();
+        List<Integer> ventasPorHoraAyer = ventaService.obtenerVentasPorHoraAyer();
+
+        // Producto más vendido
+        String productoTop = ventaService.obtenerProductoMasVendidoNombre();
+        long cantidadTop = ventaService.obtenerProductoMasVendidoCantidad();
+
+        model.addAttribute("active_page", "dventa");
+        model.addAttribute("ventasHoy", ventasHoy);
+        model.addAttribute("montoHoy", montoHoy);
+        model.addAttribute("ventasSemana", ventasSemana);
+        model.addAttribute("montoMes", montoMes);
+        model.addAttribute("horas", horas);
+        model.addAttribute("ventasPorHoraHoy", ventasPorHoraHoy);
+        model.addAttribute("ventasPorHoraAyer", ventasPorHoraAyer);
+        model.addAttribute("productoTop", productoTop);
+        model.addAttribute("cantidadTop", cantidadTop);
+
+        return "dashboard/venta";
     }
 
 }

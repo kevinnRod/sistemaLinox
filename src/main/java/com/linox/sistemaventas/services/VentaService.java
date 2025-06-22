@@ -2,6 +2,7 @@
 // VentaService.java
 package com.linox.sistemaventas.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +33,21 @@ public interface VentaService {
 
     List<Object[]> obtenerTotalesPorMes(Integer idEmpleado);
 
+    long contarVentasHoy();
+
+    BigDecimal calcularTotalVentasHoy();
+
+    List<String> obtenerHorasHoyYAyer(); // ["7", "8", ..., "17"]
+
+    List<Integer> obtenerVentasPorHoraHoy();
+
+    List<Integer> obtenerVentasPorHoraAyer();
+
+    long contarVentasSemana();
+
+    BigDecimal calcularTotalVentasMes();
+
+    String obtenerProductoMasVendidoNombre();
+
+    Integer obtenerProductoMasVendidoCantidad();
 }

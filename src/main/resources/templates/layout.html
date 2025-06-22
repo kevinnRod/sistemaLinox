@@ -75,11 +75,7 @@
                                     menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
                             id="kt_aside_menu" data-kt-menu="true">
 
-                            <div class="menu-item">
-                                <div class="menu-content pb-2">
-                                    <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
-                                </div>
-                            </div>
+
 
                             <div class="menu-item">
                                 <a class="menu-link"
@@ -88,6 +84,35 @@
                                     <span class="menu-icon"><i class="bi bi-grid fs-3"></i></span>
                                     <span class="menu-title">Inicio</span>
                                 </a>
+                            </div>
+                            <div class="menu-item">
+                                <div class="menu-content pb-2">
+                                    <span class="menu-section text-muted text-uppercase fs-8 ls-1">Dashboard</span>
+                                </div>
+                            </div>
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:classappend="${active_page} == 'inventario' ? ' active text-danger' : ''"
+                                    th:href="@{/dashboard/inventario}">
+                                    <span class="menu-icon"><i class="bi bi-box-seam fs-3"></i></span>
+                                    <span class="menu-title">Inventario</span>
+                                </a>
+                            </div>
+
+                            <div class="menu-item">
+                                <a class="menu-link"
+                                    th:classappend="${active_page} == 'dventa' ? ' active text-danger' : ''"
+                                    th:href="@{/dashboard/venta}">
+                                    <span class="menu-icon"><i class="bi bi-cash-coin fs-3"></i></span>
+                                    <span class="menu-title">Ventas</span>
+                                </a>
+                            </div>
+
+
+                            <div class="menu-item">
+                                <div class="menu-content pb-2">
+                                    <span class="menu-section text-muted text-uppercase fs-8 ls-1">Contenido</span>
+                                </div>
                             </div>
                             <!-- GESTIÓN DE USUARIOS -->
                             <div th:if="${session.roles != null and session.roles.contains('ADMIN')}"

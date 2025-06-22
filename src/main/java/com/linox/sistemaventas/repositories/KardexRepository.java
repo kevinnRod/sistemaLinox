@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface KardexRepository extends JpaRepository<Kardex, Integer> {
     List<Kardex> findByIdEstado(Integer idEstado);
+
+    List<Kardex> findTop10ByIdEstadoOrderByFechaMovimientoDesc(Integer estado);
 }
