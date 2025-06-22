@@ -3,6 +3,7 @@
 package com.linox.sistemaventas.services;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,9 +40,9 @@ public interface VentaService {
 
     List<String> obtenerHorasHoyYAyer(); // ["7", "8", ..., "17"]
 
-    List<Integer> obtenerVentasPorHoraHoy();
+    List<Integer> obtenerVentasPorHoraSemanaActual();
 
-    List<Integer> obtenerVentasPorHoraAyer();
+    List<Integer> obtenerVentasPorHoraSemanaPasada();
 
     long contarVentasSemana();
 
@@ -50,4 +51,9 @@ public interface VentaService {
     String obtenerProductoMasVendidoNombre();
 
     Integer obtenerProductoMasVendidoCantidad();
+
+    List<Object[]> obtenerVentasPorCliente();
+
+    List<Object[]> obtenerVentasPorClienteEnRango(LocalDate inicio, LocalDate fin);
+
 }

@@ -228,18 +228,26 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public List<Integer> obtenerVentasPorHoraHoy() {
+    public List<Integer> obtenerVentasPorHoraSemanaActual() {
         LocalDate hoy = LocalDate.now();
-        LocalDateTime inicio = hoy.atStartOfDay();
-        LocalDateTime fin = hoy.atTime(LocalTime.MAX);
+        LocalDate primerDiaSemana = hoy.with(DayOfWeek.MONDAY);
+        LocalDate ultimoDiaSemana = hoy.with(DayOfWeek.SUNDAY);
+
+        LocalDateTime inicio = primerDiaSemana.atStartOfDay();
+        LocalDateTime fin = ultimoDiaSemana.atTime(LocalTime.MAX);
+
         return ventasPorHora(inicio, fin);
     }
 
     @Override
-    public List<Integer> obtenerVentasPorHoraAyer() {
-        LocalDate ayer = LocalDate.now().minusDays(1);
-        LocalDateTime inicio = ayer.atStartOfDay();
-        LocalDateTime fin = ayer.atTime(LocalTime.MAX);
+    public List<Integer> obtenerVentasPorHoraSemanaPasada() {
+        LocalDate hoy = LocalDate.now();
+        LocalDate primerDiaSemanaPasada = hoy.with(DayOfWeek.MONDAY).minusWeeks(1);
+        LocalDate ultimoDiaSemanaPasada = hoy.with(DayOfWeek.SUNDAY).minusWeeks(1);
+
+        LocalDateTime inicio = primerDiaSemanaPasada.atStartOfDay();
+        LocalDateTime fin = ultimoDiaSemanaPasada.atTime(LocalTime.MAX);
+
         return ventasPorHora(inicio, fin);
     }
 
@@ -301,6 +309,16 @@ public class VentaServiceImpl implements VentaService {
         }
 
         return new ArrayList<>(porHora.values());
+    }
+
+    @Override
+    public List<Object[]> obtenerVentasPorCliente() {
+        return ventaRepository.obtenerVentasPorCliente();
+    }
+
+    @Override
+    public List<Object[]> obtenerVentasPorClienteEnRango(LocalDate inicio, LocalDate fin) {
+        return ventaRepository.obtenerVentasPorClienteEnRango(inicio.atStartOfDay(), fin.atTime(23, 59, 59));
     }
 
 }

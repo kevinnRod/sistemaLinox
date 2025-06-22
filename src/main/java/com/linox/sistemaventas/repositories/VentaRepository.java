@@ -52,4 +52,36 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
         @Query("SELECT SUM(dv.cantidad) FROM Venta v JOIN v.detallesVenta dv GROUP BY dv.producto.nombreProducto ORDER BY SUM(dv.cantidad) DESC")
         List<Integer> obtenerProductoMasVendidoCantidad(Pageable pageable);
 
+        @Query(value = """
+                            SELECT
+                                COALESCE(CONCAT(p.nombres, ' ', p.apellidos), e.razon_social) AS cliente,
+                                SUM(v.total) AS monto
+                            FROM venta v
+                            LEFT JOIN cliente c ON v.cod_cliente = c.cod_cliente
+                            LEFT JOIN cliente_natural cn ON c.cod_cliente = cn.cod_cliente
+                            LEFT JOIN persona p ON cn.id_persona = p.id_persona
+                            LEFT JOIN cliente_juridico cj ON c.cod_cliente = cj.cod_cliente
+                            LEFT JOIN empresa e ON cj.id_empresa = e.id_empresa
+                            GROUP BY cliente
+                            ORDER BY monto DESC
+                        """, nativeQuery = true)
+        List<Object[]> obtenerVentasPorCliente();
+
+        @Query(value = """
+                            SELECT
+                                COALESCE(CONCAT(p.nombres, ' ', p.apellidos), e.razon_social) AS cliente,
+                                SUM(v.total) AS monto
+                            FROM venta v
+                            LEFT JOIN cliente c ON v.cod_cliente = c.cod_cliente
+                            LEFT JOIN cliente_natural cn ON c.cod_cliente = cn.cod_cliente
+                            LEFT JOIN persona p ON cn.id_persona = p.id_persona
+                            LEFT JOIN cliente_juridico cj ON c.cod_cliente = cj.cod_cliente
+                            LEFT JOIN empresa e ON cj.id_empresa = e.id_empresa
+                            WHERE v.fechaV BETWEEN :inicio AND :fin
+                            GROUP BY cliente
+                            ORDER BY monto DESC
+                        """, nativeQuery = true)
+        List<Object[]> obtenerVentasPorClienteEnRango(@Param("inicio") LocalDateTime inicio,
+                        @Param("fin") LocalDateTime fin);
+
 }
