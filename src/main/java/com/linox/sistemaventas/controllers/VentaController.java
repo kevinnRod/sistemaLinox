@@ -71,10 +71,15 @@ public class VentaController {
     private EmpresaAnfitrionService empresaAnfitrionService;
 
     // 3. Mostrar listado
-    @GetMapping()
-    public String listarVentas(Model model) {
+    @GetMapping
+    public String listarVentas(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
         List<Venta> ventas = ventaService.findAllActiveVentas();
 
+        // Convertir a lista de mapas
         List<Map<String, Object>> datosVentas = ventas.stream().map(venta -> {
             Map<String, Object> datos = new HashMap<>();
             datos.put("codigo", venta.getCodVenta());
@@ -82,22 +87,37 @@ public class VentaController {
             datos.put("total", venta.getTotal());
             datos.put("fecha", venta.getFechaV().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
             datos.put("empleado", venta.getEmpleado().getNombres());
+
             Cliente cliente = clienteService.findById(venta.getCliente().getCodCliente())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Cliente no encontrado con ID: " + venta.getCliente().getCodCliente()));
+                    .orElse(null);
+
             if (cliente instanceof ClienteNatural cn) {
                 datos.put("nombre", cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos());
                 datos.put("identificacion", cn.getPersona().getDni());
             } else if (cliente instanceof ClienteJuridico cj) {
                 datos.put("nombre", cj.getEmpresa().getRazonSocial());
                 datos.put("identificacion", cj.getEmpresa().getRuc());
+            } else {
+                datos.put("nombre", "Cliente no encontrado");
+                datos.put("identificacion", "-");
             }
 
             return datos;
         }).toList();
 
-        model.addAttribute("ventas", datosVentas);
+        // Paginación manual
+        int total = datosVentas.size();
+        int totalPages = (int) Math.ceil((double) total / size);
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, total);
+
+        List<Map<String, Object>> paginaVentas = datosVentas.subList(fromIndex, toIndex);
+
+        model.addAttribute("ventas", paginaVentas);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("active_page", "listarventa");
+
         return "venta/listar";
     }
 

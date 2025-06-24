@@ -18,7 +18,7 @@
                 </a>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive shadow rounded">
                 <table class="table table-hover table-bordered align-middle">
                     <thead class="table-dark text-center">
                         <tr>
@@ -31,18 +31,19 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody th:if="${ventas != null and !ventas.isEmpty()}">
-                        <tr th:each="venta : ${ventas}">
-                            <td class="text-center" th:text="${venta['codigo']}"></td>
-                            <td th:text="${venta['nombre']}"></td>
-                            <td th:text="${venta['identificacion']}"></td>
-                            <td th:text="${venta['empleado']}">Nombre empleado</td>
-                            <td class="text-center" th:text="${venta['fecha']}">01/06/2025</td>
-                            <td class="text-center" th:text="'S/ ' + ${venta['total']}">S/ 250.00</td>
+                    <tbody th:if="${ventas != null and ventas.content != null and !ventas.content.isEmpty()}">
+                        <tr th:each="venta : ${ventas.content}">
+                            <td class="text-center" th:text="${venta.codigo}"></td>
+                            <td th:text="${venta.nombre}"></td>
+                            <td th:text="${venta.identificacion}"></td>
+                            <td th:text="${venta.empleado}">Nombre empleado</td>
+                            <td class="text-center" th:text="${#dates.format(venta.fecha, 'dd/MM/yyyy')}"></td>
+                            <td class="text-center" th:text="'S/ ' + ${venta.total}"></td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
                                     <a th:href="@{'/ventas/' + ${venta.codigo}}" class="btn btn-sm btn-info">
-                                        <i class="bi bi-eye"></i> Ver </a>
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
                                     <form th:action="@{/ventas/eliminar/{id}(id=${venta.codigo})}" method="post"
                                         onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta venta?');">
                                         <input type="hidden" name="_method" value="delete" />
@@ -54,13 +55,31 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tbody th:unless="${ventas != null and !ventas.isEmpty()}">
+                    <tbody th:unless="${ventas != null and ventas.content != null and !ventas.content.isEmpty()}">
                         <tr>
                             <td colspan="7" class="text-center text-muted">No hay ventas registradas.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <nav>
+                    <ul class="pagination">
+                        <li th:classappend="${currentPage == 1} ? 'disabled'" class="page-item">
+                            <a class="page-link" th:href="@{|/ventas?page=${currentPage - 1}&size=10|}">Anterior</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"
+                                th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
+                        </li>
+                        <li th:classappend="${currentPage == totalPages} ? 'disabled'" class="page-item">
+                            <a class="page-link" th:href="@{|/ventas?page=${currentPage + 1}&size=10|}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
         </div>
     </div>
 

@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.models.UsuarioRol;
@@ -75,22 +76,41 @@ public class DashboardController {
     public String inicio(Model model) {
         model.addAttribute("active_page", "inicio");
 
+        // Obtener ventas por mes
         List<Object[]> ventasPorMes = ventaService.obtenerVentasPorMes();
 
         List<String> meses = new ArrayList<>();
         List<BigDecimal> totales = new ArrayList<>();
 
         for (Object[] fila : ventasPorMes) {
-            Integer mes = (Integer) fila[0]; // número de mes: 1 = Enero
+            Integer mes = (Integer) fila[0]; // 1 = enero
             BigDecimal total = (BigDecimal) fila[1];
 
-            // Convertimos el número de mes a su nombre en español
             String nombreMes = Month.of(mes).getDisplayName(TextStyle.FULL, new Locale("es"));
             meses.add(nombreMes);
             totales.add(total);
         }
 
-        // Top 10 productos más vendidos del mes
+        // Obtener la predicción desde la API Flask
+        Double prediccion = null;
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://localhost:5000/api/prediccion-mensual";
+            Map<String, Object> respuesta = restTemplate.getForObject(url, Map.class);
+
+            if (respuesta != null) {
+                prediccion = ((Number) respuesta.get("prediccion")).doubleValue();
+                model.addAttribute("ventaPredicha", prediccion);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Error al conectar con la API de predicción: " + e.getMessage());
+        }
+
+        model.addAttribute("meses", meses);
+        model.addAttribute("totales", totales);
+
+        // Top productos por cantidad
         List<Object[]> topProductos = ventaService.obtenerTop10ProductosMasVendidosDelMes();
         List<String> nombresProductos = new ArrayList<>();
         List<Integer> cantidadesVendidas = new ArrayList<>();
@@ -100,8 +120,8 @@ public class DashboardController {
             cantidadesVendidas.add(((Number) fila[1]).intValue());
         }
 
+        // Productos con mayor importe
         List<Object[]> productosConMayorImporte = ventaService.obtenerProductosConMayorImporteUltimoMes();
-
         List<String> nombresImporte = new ArrayList<>();
         List<Double> importes = new ArrayList<>();
 
@@ -112,12 +132,8 @@ public class DashboardController {
 
         model.addAttribute("nombresImporte", nombresImporte);
         model.addAttribute("importes", importes);
-
         model.addAttribute("nombresProductos", nombresProductos);
         model.addAttribute("cantidadesVendidas", cantidadesVendidas);
-
-        model.addAttribute("meses", meses);
-        model.addAttribute("totales", totales);
 
         return "hola";
     }

@@ -82,26 +82,47 @@
         <th:block layout:fragment="js">
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            <!-- Ventas por mes -->
             <script th:inline="javascript">
                 const labels = /*[[${meses}]]*/[];
-                const data = /*[[${totales}]]*/[];
+                const dataReal = /*[[${totales}]]*/[];
+                const prediccion = /*[[${ventaPredicha}]]*/ null;
+
+                const penultimoIndex = dataReal.length - 2;
+                const ultimoIndex = dataReal.length - 1;
+
+                const dataPrediccion = [
+                    { x: labels[penultimoIndex], y: dataReal[penultimoIndex] },
+                    { x: labels[ultimoIndex], y: prediccion }
+                ];
 
                 const ctx = document.getElementById('ventasMesChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Total de Ventas (S/)',
-                            data: data,
-                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                            borderColor: 'rgba(41, 128, 185, 1)',
-                            pointBackgroundColor: 'rgba(41, 128, 185, 1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true
-                        }]
+                        datasets: [
+                            {
+                                label: 'Total de Ventas (S/)',
+                                data: dataReal,
+                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                borderColor: 'rgba(41, 128, 185, 1)',
+                                pointBackgroundColor: 'rgba(41, 128, 185, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Predicción',
+                                data: dataPrediccion,
+                                borderColor: 'green',
+                                borderDash: [5, 5],
+                                borderWidth: 2,
+                                pointBackgroundColor: 'green',
+                                pointRadius: 6,
+                                tension: 0,
+                                fill: false
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
@@ -127,6 +148,10 @@
                     }
                 });
             </script>
+
+
+
+
 
             <!-- Top 10 productos más vendidos -->
             <script th:inline="javascript">

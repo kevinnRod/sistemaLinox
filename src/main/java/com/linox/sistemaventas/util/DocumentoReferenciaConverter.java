@@ -1,4 +1,4 @@
-package com.linox.sistemaventas.utils;
+package com.linox.sistemaventas.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,7 @@ import com.linox.sistemaventas.models.DocumentoReferencia;
 
 @Converter(autoApply = false)
 public class DocumentoReferenciaConverter implements AttributeConverter<DocumentoReferencia, String> {
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
