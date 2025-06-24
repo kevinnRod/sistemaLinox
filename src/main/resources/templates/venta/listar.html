@@ -10,7 +10,9 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="container mt-4">
+        <div class="container mt-5">
+
+            <!-- Cabecera -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Gestión de Ventas</h2>
                 <a th:href="@{/ventas/crear}" class="btn btn-success shadow-sm">
@@ -18,7 +20,8 @@
                 </a>
             </div>
 
-            <div class="table-responsive shadow rounded">
+            <!-- Tabla -->
+            <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
                     <thead class="table-dark text-center">
                         <tr>
@@ -31,14 +34,14 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody th:if="${ventas != null and ventas.content != null and !ventas.content.isEmpty()}">
-                        <tr th:each="venta : ${ventas.content}">
-                            <td class="text-center" th:text="${venta.codigo}"></td>
-                            <td th:text="${venta.nombre}"></td>
-                            <td th:text="${venta.identificacion}"></td>
-                            <td th:text="${venta.empleado}">Nombre empleado</td>
-                            <td class="text-center" th:text="${#dates.format(venta.fecha, 'dd/MM/yyyy')}"></td>
-                            <td class="text-center" th:text="'S/ ' + ${venta.total}"></td>
+                    <tbody th:if="${ventas != null and !ventas.isEmpty()}">
+                        <tr th:each="venta : ${ventas}">
+                            <td class="text-center" th:text="${venta['codigo']}"></td>
+                            <td th:text="${venta['nombre']}"></td>
+                            <td th:text="${venta['identificacion']}"></td>
+                            <td th:text="${venta['empleado']}"></td>
+                            <td class="text-center" th:text="${venta['fecha']}"></td>
+                            <td class="text-center" th:text="'S/ ' + ${venta['total']}"></td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
                                     <a th:href="@{'/ventas/' + ${venta.codigo}}" class="btn btn-sm btn-info">
@@ -55,7 +58,7 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tbody th:unless="${ventas != null and ventas.content != null and !ventas.content.isEmpty()}">
+                    <tbody th:unless="${ventas != null and !ventas.isEmpty()}">
                         <tr>
                             <td colspan="7" class="text-center text-muted">No hay ventas registradas.</td>
                         </tr>
@@ -63,18 +66,22 @@
                 </table>
             </div>
 
+            <!-- Paginación -->
             <div class="d-flex justify-content-center mt-4">
-                <nav>
-                    <ul class="pagination">
-                        <li th:classappend="${currentPage == 1} ? 'disabled'" class="page-item">
-                            <a class="page-link" th:href="@{|/ventas?page=${currentPage - 1}&size=10|}">Anterior</a>
+                <nav aria-label="Paginación de ventas">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                            <a class="page-link btn btn-outline-secondary"
+                                th:href="@{|/ventas?page=${currentPage - 1}&size=${size}|}">Anterior</a>
                         </li>
                         <li class="page-item disabled">
-                            <span class="page-link"
-                                th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
+                            <span class="page-link">
+                                Página <span th:text="${currentPage}"></span> de <span th:text="${totalPages}"></span>
+                            </span>
                         </li>
-                        <li th:classappend="${currentPage == totalPages} ? 'disabled'" class="page-item">
-                            <a class="page-link" th:href="@{|/ventas?page=${currentPage + 1}&size=10|}">Siguiente</a>
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                            <a class="page-link btn btn-outline-secondary"
+                                th:href="@{|/ventas?page=${currentPage + 1}&size=${size}|}">Siguiente</a>
                         </li>
                     </ul>
                 </nav>
