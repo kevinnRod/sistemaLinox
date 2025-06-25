@@ -20,7 +20,7 @@ import jakarta.persistence.Table;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "cliente")
 @DiscriminatorColumn(name = "tipo_cliente")
-@Proxy(lazy = false) // Esto desactiva los proxies de Hibernate
+@Proxy(lazy = false) 
 public abstract class Cliente {
 
     @Id
