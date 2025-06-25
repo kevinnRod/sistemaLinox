@@ -18,6 +18,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     boolean existsByCorreo(String correo);
 
-    // Agregar el método para buscar por idEstado
     List<Usuario> findByIdEstado(Integer idEstado);
 }
