@@ -181,17 +181,22 @@ public class VentaController {
 
     @GetMapping("/{codigo}")
     public String verDetalleVenta(@PathVariable("codigo") String codigo, Model model) {
-        // Buscar la venta por código, con su detalle (productos, cantidades, precios,
-        // etc.)
+        // Buscar la venta por código, con su detalle
         Optional<Venta> venta = ventaService.findByCodVenta(codigo);
 
-        if (venta.isPresent() == false) {
-            // Manejar error o redirigir
-            return "redirect:/ventas";
+        if (venta.isEmpty()) {
+            // Redirigir si la venta no existe
+            return "redirect:/ventas?error=VentaNoEncontrada";
         }
+
         Cliente cliente = clienteService.findById(venta.get().getCliente().getCodCliente())
-                .orElseThrow(() -> new RuntimeException(
-                        "Cliente no encontrado con ID: " + venta.get().getCliente().getCodCliente()));
+                .orElse(null);
+
+        if (cliente == null) {
+            // Redirigir si el cliente no existe, en lugar de lanzar una excepción
+            return "redirect:/ventas?error=ClienteNoEncontrado";
+        }
+
         if (cliente instanceof ClienteNatural cn) {
             model.addAttribute("nombre", cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos());
             model.addAttribute("identificacion", cn.getPersona().getDni());
@@ -202,7 +207,7 @@ public class VentaController {
 
         model.addAttribute("venta", venta.get());
         model.addAttribute("active_page", "listarventa");
-        return "venta/detalle"; // nombre del template para detalle
+        return "venta/detalle"; // Nombre del template para detalle
     }
 
     @GetMapping("/{codigo}/comprobante")

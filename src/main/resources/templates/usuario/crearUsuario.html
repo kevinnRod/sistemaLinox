@@ -43,6 +43,17 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="personaId" class="form-label">Empleado</label>
+                                <select name="personaId" class="form-select" id="personaId" required>
+                                    <option value="">-- Seleccione un empleado --</option>
+                                    <option th:each="empleado : ${empleadosSinUsuario}" th:value="${empleado.idPersona}"
+                                        th:text="${empleado.nombres + ' ' + empleado.apellidos}">
+                                    </option>
+                                </select>
+                            </div>
+
+
+                            <div class="mb-3">
                                 <label for="idEstado" class="form-label">Estado</label>
                                 <select name="idEstado" class="form-select" id="idEstado" required>
                                     <option value="">-- Seleccione --</option>

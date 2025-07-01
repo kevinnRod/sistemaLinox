@@ -19,8 +19,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -61,9 +61,8 @@ public class Usuario implements UserDetails {
     @Column(name = "id_estado")
     private Integer idEstado;
 
-    // Relación ManyToOne hacia Persona (opcional)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_persona")
+    @OneToOne
+    @JoinColumn(name = "id_persona", unique = true, nullable = false)
     private Persona persona;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
