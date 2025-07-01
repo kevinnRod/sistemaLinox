@@ -36,6 +36,9 @@ public class Persona {
     @Column(name = "dni", length = 8)
     private String dni;
 
+    @Column(length = 11, nullable = true, unique = true)
+    private String ruc;
+
     @Column(name = "nombres", length = 40)
     private String nombres;
 

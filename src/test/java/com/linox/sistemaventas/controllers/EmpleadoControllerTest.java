@@ -6,17 +6,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.linox.sistemaventas.config.SecurityConfigTest;
 import com.linox.sistemaventas.models.Cargo;
 import com.linox.sistemaventas.models.Empleado;
 import com.linox.sistemaventas.models.Sucursal;
@@ -24,64 +26,112 @@ import com.linox.sistemaventas.services.CargoService;
 import com.linox.sistemaventas.services.EmpleadoService;
 import com.linox.sistemaventas.services.SucursalService;
 
-@WebMvcTest(EmpleadoController.class)
-public class EmpleadoControllerTest {
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(controllers = EmpleadoController.class)
+@Import(SecurityConfigTest.class)
+class EmpleadoControllerTest {
 
-        // Método que provee varios sets de datos para testear
-        static Stream<Arguments> empleadosProvider() {
-                return Stream.of(
-                                Arguments.of("87654321", "Ana María", "García", "ana@gmail.com", "912345678",
-                                                "Jr. Lima 101", 2, 1,
-                                                "EMP00020"),
-                                Arguments.of("23456789", "Carlos", "Ríos", "carlos.rios@mail.com", "987654321",
-                                                "Av. Los Pinos", 1, 2,
-                                                "EMP00021"),
-                                Arguments.of("34567890", "Luis", "Pérez", "luis.perez@mail.com", "923456789", "Calle 3",
-                                                1, 1,
-                                                "EMP00022"),
-                                Arguments.of("45678201", "Marta", "Lopez", "marta.lopez@mail.com", "934567890",
-                                                "Av. Grau 404", 2, 2,
-                                                "EMP00023"),
-                                Arguments.of("56789012", "Josefina", "Morales", "josefina@mail.com", "945678901",
-                                                "Jr. Amazonas 88", 1,
-                                                1, "EMP00024"));
-        }
+    @Autowired
+    private MockMvc mockMvc;
 
-        @Autowired
-        private MockMvc mockMvc;
+    @MockBean
+    private EmpleadoService empleadoService;
 
-        @MockBean
-        private EmpleadoService empleadoService;
+    @MockBean
+    private CargoService cargoService;
 
-        @MockBean
-        private CargoService cargoService;
+    @MockBean
+    private SucursalService sucursalService;
 
-        @MockBean
-        private SucursalService sucursalService;
+    @InjectMocks
+    private EmpleadoController empleadoController;
 
-        @ParameterizedTest
-        @MethodSource("empleadosProvider")
-        void testGuardarEmpleadoConDatosValidos(String dni, String nombres, String apellidos, String correo,
-                        String telefono, String direccion, Integer idCargo, Integer idSucursal, String ultimoCod)
-                        throws Exception {
-                when(empleadoService.existsByDni(dni)).thenReturn(false);
-                when(cargoService.findById(idCargo)).thenReturn(Optional.of(new Cargo()));
-                when(sucursalService.findById(idSucursal)).thenReturn(Optional.of(new Sucursal()));
-                when(empleadoService.obtenerUltimoCodigoEmpleado()).thenReturn(ultimoCod);
+    private Cargo cargoMock;
+    private Sucursal sucursalMock;
 
-                mockMvc.perform(post("/empleado/save")
-                                .param("dni", dni)
-                                .param("nombres", nombres)
-                                .param("apellidos", apellidos)
-                                .param("correo", correo)
-                                .param("telefono", telefono)
-                                .param("direccion", direccion)
-                                .param("idCargo", String.valueOf(idCargo))
-                                .param("idSucursal", String.valueOf(idSucursal))
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                                .andExpect(status().is3xxRedirection())
-                                .andExpect(redirectedUrl("/empleado"));
+    @BeforeEach
+    void setUp() {
+        cargoMock = new Cargo();
+        cargoMock.setIdCargo(1);
+        cargoMock.setNombreCargo("Administrador");
 
-                verify(empleadoService).save(any(Empleado.class));
-        }
+        sucursalMock = new Sucursal();
+        sucursalMock.setIdSucursal(1);
+        sucursalMock.setNombreSucursal("Principal");
+    }
+
+    @Test
+    void guardarEmpleadoConDatosValidos_deberiaRedirigirConExito() throws Exception {
+        when(empleadoService.existsByDni("12345678")).thenReturn(false);
+        when(cargoService.findById(1)).thenReturn(Optional.of(cargoMock));
+        when(sucursalService.findById(1)).thenReturn(Optional.of(sucursalMock));
+
+        mockMvc.perform(post("/empleado/save")
+                .param("dni", "12345678")
+                .param("nombres", "Juan")
+                .param("apellidos", "Pérez")
+                .param("correo", "juan@example.com")
+                .param("telefono", "987654321")
+                .param("direccion", "Av. Siempre Viva 742")
+                .param("idCargo", "1")
+                .param("idSucursal", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/empleado"))
+                .andExpect(flash().attribute("success", "Empleado guardado correctamente."));
+
+        verify(empleadoService).save(any(Empleado.class));
+    }
+
+    @Test
+    void guardarEmpleadoConDniExistente_deberiaMostrarError() throws Exception {
+        when(empleadoService.existsByDni("12345678")).thenReturn(true);
+
+        mockMvc.perform(post("/empleado/save")
+                .param("dni", "12345678")
+                .param("nombres", "Juan")
+                .param("apellidos", "Pérez")
+                .param("correo", "juan@example.com")
+                .param("telefono", "987654321")
+                .param("direccion", "Av. Siempre Viva 742")
+                .param("idCargo", "1")
+                .param("idSucursal", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/empleado/create"))
+                .andExpect(flash().attributeExists("errores"))
+                .andExpect(flash().attributeExists("datos"));
+    }
+
+    @Test
+    void guardarEmpleadoConCorreoInvalido_deberiaMostrarError() throws Exception {
+        mockMvc.perform(post("/empleado/save")
+                .param("dni", "12345678")
+                .param("nombres", "Juan")
+                .param("apellidos", "Pérez")
+                .param("correo", "correo-invalido")
+                .param("telefono", "987654321")
+                .param("direccion", "Av. Siempre Viva 742")
+                .param("idCargo", "1")
+                .param("idSucursal", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/empleado/create"))
+                .andExpect(flash().attributeExists("errores"))
+                .andExpect(flash().attributeExists("datos"));
+    }
+
+    @Test
+    void guardarEmpleadoConCamposVacios_deberiaMostrarErrores() throws Exception {
+        mockMvc.perform(post("/empleado/save")
+                .param("dni", "")
+                .param("nombres", "")
+                .param("apellidos", "")
+                .param("correo", "")
+                .param("telefono", "")
+                .param("direccion", "")
+                .param("idCargo", "1")
+                .param("idSucursal", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/empleado/create"))
+                .andExpect(flash().attributeExists("errores"))
+                .andExpect(flash().attributeExists("datos"));
+    }
 }

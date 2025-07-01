@@ -110,6 +110,7 @@ public class SucursalController {
         model.addAttribute("empresas", empresas);
         model.addAttribute("active_page", "sucursal");
         return "sucursal/editarSucursal";
+
     }
 
     @PostMapping("/actualizar/{id}")
@@ -130,7 +131,7 @@ public class SucursalController {
 
             // Validar si el nombre ya existe en otra sucursal
             Optional<Sucursal> existente = sucursalService.findByNombreSucursal(nombreSucursal);
-            if (existente.get() != null && !existente.get().getIdSucursal().equals(id)) {
+            if (existente.isPresent() && !existente.get().getIdSucursal().equals(id)) {
                 redirectAttributes.addFlashAttribute("error", "El nombre de la sucursal ya está en uso.");
                 return "redirect:/sucursal/editar/" + id;
             }
@@ -142,8 +143,12 @@ public class SucursalController {
             sucursal.setEmail(email);
             sucursal.setUpdatedAt(LocalDateTime.now());
             sucursal.setIdEstado(idEstado);
-            EmpresaAnfitrion empresa = empresaAnfitrionService.findById(idEmpresa).orElseThrow();
-            sucursal.setEmpresaAnfitrion(empresa);
+            Optional<EmpresaAnfitrion> empresa = empresaAnfitrionService.findById(idEmpresa);
+            if (!empresa.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Empresa no encontrada");
+                return "redirect:/sucursal";
+            }
+            sucursal.setEmpresaAnfitrion(empresa.get());
             sucursalService.save(sucursal);
             redirectAttributes.addFlashAttribute("success", "Sucursal actualizada correctamente.");
         } catch (Exception e) {
@@ -153,20 +158,20 @@ public class SucursalController {
     }
 
     @PostMapping("/eliminar/{id}")
-    public String eliminarSucursal(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String eliminarSucursal(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {
             Optional<Sucursal> sucursalOpt = sucursalService.findById(id);
-            if (!sucursalOpt.isPresent()) {
+            if (sucursalOpt.isPresent()) {
+                Sucursal sucursal = sucursalOpt.get();
+                sucursal.setIdEstado(0); // Baja lógica
+                sucursal.setUpdatedAt(LocalDateTime.now());
+                sucursalService.save(sucursal);
+                redirectAttributes.addFlashAttribute("success", "Sucursal eliminada correctamente.");
+            } else {
                 redirectAttributes.addFlashAttribute("error", "La sucursal no fue encontrada.");
-                return "redirect:/sucursal";
             }
-            Sucursal sucursal = sucursalOpt.get();
-            sucursal.setIdEstado(0); // Marcar como inactiva
-            sucursal.setUpdatedAt(LocalDateTime.now());
-            sucursalService.save(sucursal);
-            redirectAttributes.addFlashAttribute("success", "Sucursal eliminada correctamente.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al eliminar la sucursal: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Ocurrió un error al eliminar la sucursal.");
         }
         return "redirect:/sucursal";
     }

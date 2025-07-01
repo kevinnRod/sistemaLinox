@@ -1,6 +1,8 @@
 package com.linox.sistemaventas.controllers;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import com.linox.sistemaventas.models.Sucursal;
 import com.linox.sistemaventas.services.CargoService;
 import com.linox.sistemaventas.services.EmpleadoService;
 import com.linox.sistemaventas.services.SucursalService;
+import com.linox.sistemaventas.services.VentaService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -37,6 +40,9 @@ public class EmpleadoController {
 
     @Autowired
     private SucursalService sucursalService;
+
+    @Autowired
+    private VentaService ventaService;
 
     @GetMapping
     public String getAll(Model model) {
@@ -257,6 +263,38 @@ public class EmpleadoController {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar el empleado: " + e.getMessage());
         }
         return "redirect:/empleado";
+    }
+
+    @GetMapping("/detalle/{id}")
+    public String verDetalleEmpleado(@PathVariable Integer id, Model model, RedirectAttributes redirect) {
+        Optional<Empleado> empleadoOpt = empleadoService.findById(id);
+        if (empleadoOpt.isPresent()) {
+
+            List<Object[]> ventasPorMes = ventaService.obtenerTotalesPorMes(id);
+            List<String> meses = new ArrayList<>();
+            List<BigDecimal> montos = new ArrayList<>();
+
+            String[] nombresMeses = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov",
+                    "Dic" };
+
+            for (Object[] fila : ventasPorMes) {
+                Integer mes = (Integer) fila[0];
+                BigDecimal total = (BigDecimal) fila[1];
+                meses.add(nombresMeses[mes - 1]); // Mes en formato texto
+                montos.add(total);
+            }
+
+            model.addAttribute("meses", meses);
+            model.addAttribute("montos", montos);
+
+            model.addAttribute("active_page", "empleado");
+
+            model.addAttribute("empleado", empleadoOpt.get());
+            return "empleado/detalle";
+        } else {
+            redirect.addFlashAttribute("error", "Empleado no encontrado");
+            return "redirect:/empleado";
+        }
     }
 
     private String generarCodigoEmpleado() {

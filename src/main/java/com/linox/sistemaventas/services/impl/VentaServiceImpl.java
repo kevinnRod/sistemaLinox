@@ -1,12 +1,20 @@
 package com.linox.sistemaventas.services.impl;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,6 +25,7 @@ import com.linox.sistemaventas.models.Producto;
 import com.linox.sistemaventas.models.TipoMovimiento;
 import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.models.Venta;
+import com.linox.sistemaventas.repositories.DetalleVentaRepository;
 import com.linox.sistemaventas.repositories.VentaRepository;
 import com.linox.sistemaventas.services.DetalleVentaService;
 import com.linox.sistemaventas.services.KardexService;
@@ -41,6 +50,9 @@ public class VentaServiceImpl implements VentaService {
 
     @Autowired
     private TipoMovimientoService tipoMovimientoService;
+
+    @Autowired
+    private DetalleVentaRepository detalleVentaRepository;
 
     @Autowired
     private DetalleVentaService detalleVentaService;
@@ -179,6 +191,134 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public Optional<Venta> findByCodVenta(String codVenta) {
         return ventaRepository.findByCodVenta(codVenta);
+    }
+
+    @Override
+    public List<Object[]> obtenerVentasPorMes() {
+        return ventaRepository.obtenerVentasPorMes();
+    }
+
+    @Override
+    public List<Object[]> obtenerTop10ProductosMasVendidosDelMes() {
+        return detalleVentaRepository.obtenerTop10ProductosMasVendidosDelMes();
+    }
+
+    @Override
+    public List<Object[]> obtenerProductosConMayorImporteUltimoMes() {
+        return detalleVentaRepository.obtenerProductosConMayorImporteUltimoMes(PageRequest.of(0, 5));
+    }
+
+    @Override
+    public List<Object[]> obtenerTotalesPorMes(Integer idEmpleado) {
+        return ventaRepository.obtenerTotalesPorMes(idEmpleado);
+    }
+
+    @Override
+    public long contarVentasHoy() {
+        LocalDateTime inicio = LocalDate.now().atStartOfDay();
+        LocalDateTime fin = LocalDateTime.now();
+        return ventaRepository.countByFechaVBetweenAndIdEstado(inicio, fin, 1);
+    }
+
+    @Override
+    public BigDecimal calcularTotalVentasHoy() {
+        LocalDateTime inicio = LocalDate.now().atStartOfDay();
+        LocalDateTime fin = LocalDateTime.now();
+        return ventaRepository.sumTotalByFechaVBetweenAndIdEstado(inicio, fin, 1).orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public List<Integer> obtenerVentasPorHoraSemanaActual() {
+        LocalDate hoy = LocalDate.now();
+        LocalDate primerDiaSemana = hoy.with(DayOfWeek.MONDAY);
+        LocalDate ultimoDiaSemana = hoy.with(DayOfWeek.SUNDAY);
+
+        LocalDateTime inicio = primerDiaSemana.atStartOfDay();
+        LocalDateTime fin = ultimoDiaSemana.atTime(LocalTime.MAX);
+
+        return ventasPorHora(inicio, fin);
+    }
+
+    @Override
+    public List<Integer> obtenerVentasPorHoraSemanaPasada() {
+        LocalDate hoy = LocalDate.now();
+        LocalDate primerDiaSemanaPasada = hoy.with(DayOfWeek.MONDAY).minusWeeks(1);
+        LocalDate ultimoDiaSemanaPasada = hoy.with(DayOfWeek.SUNDAY).minusWeeks(1);
+
+        LocalDateTime inicio = primerDiaSemanaPasada.atStartOfDay();
+        LocalDateTime fin = ultimoDiaSemanaPasada.atTime(LocalTime.MAX);
+
+        return ventasPorHora(inicio, fin);
+    }
+
+    @Override
+    public List<String> obtenerHorasHoyYAyer() {
+        return Arrays.stream(new int[24])
+                .mapToObj(i -> String.format("%02d:00", i))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long contarVentasSemana() {
+        LocalDate hoy = LocalDate.now();
+        LocalDate inicioSemana = hoy.with(DayOfWeek.MONDAY);
+        LocalDate finSemana = hoy.with(DayOfWeek.SUNDAY);
+
+        // Convertimos a LocalDateTime para hacer coincidir con la firma del repositorio
+        LocalDateTime inicio = inicioSemana.atStartOfDay();
+        LocalDateTime fin = finSemana.atTime(LocalTime.MAX);
+
+        return ventaRepository.countByFechaVBetween(inicio, fin);
+    }
+
+    @Override
+    public BigDecimal calcularTotalVentasMes() {
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())
+                .atTime(LocalTime.MAX);
+
+        return ventaRepository.totalVentasEntreFechas(startOfMonth, endOfMonth)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public String obtenerProductoMasVendidoNombre() {
+        List<String> productos = ventaRepository.obtenerProductoMasVendidoNombre(PageRequest.of(0, 1));
+        return productos.isEmpty() ? "Sin ventas" : productos.get(0);
+    }
+
+    @Override
+    public Integer obtenerProductoMasVendidoCantidad() {
+        return ventaRepository.obtenerProductoMasVendidoCantidad(PageRequest.of(0, 1))
+                .stream()
+                .findFirst()
+                .orElse(0);
+    }
+
+    private List<Integer> ventasPorHora(LocalDateTime inicio, LocalDateTime fin) {
+        List<Venta> ventas = ventaRepository.findByFechaVBetweenAndIdEstado(inicio, fin, 1);
+        Map<Integer, Integer> porHora = new TreeMap<>();
+
+        for (int i = 0; i < 24; i++) {
+            porHora.put(i, 0);
+        }
+
+        for (Venta v : ventas) {
+            int hora = v.getFechaV().getHour();
+            porHora.put(hora, porHora.get(hora) + 1);
+        }
+
+        return new ArrayList<>(porHora.values());
+    }
+
+    @Override
+    public List<Object[]> obtenerVentasPorCliente() {
+        return ventaRepository.obtenerVentasPorCliente();
+    }
+
+    @Override
+    public List<Object[]> obtenerVentasPorClienteEnRango(LocalDate inicio, LocalDate fin) {
+        return ventaRepository.obtenerVentasPorClienteEnRango(inicio.atStartOfDay(), fin.atTime(23, 59, 59));
     }
 
 }

@@ -2,6 +2,8 @@
 // VentaService.java
 package com.linox.sistemaventas.services;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,5 +25,35 @@ public interface VentaService {
     void guardarVentaConDetalles(Venta venta, List<Integer> productoIds, List<Integer> cantidades);
 
     long count();
+
+    List<Object[]> obtenerVentasPorMes();
+
+    List<Object[]> obtenerTop10ProductosMasVendidosDelMes();
+
+    List<Object[]> obtenerProductosConMayorImporteUltimoMes();
+
+    List<Object[]> obtenerTotalesPorMes(Integer idEmpleado);
+
+    long contarVentasHoy();
+
+    BigDecimal calcularTotalVentasHoy();
+
+    List<String> obtenerHorasHoyYAyer(); // ["7", "8", ..., "17"]
+
+    List<Integer> obtenerVentasPorHoraSemanaActual();
+
+    List<Integer> obtenerVentasPorHoraSemanaPasada();
+
+    long contarVentasSemana();
+
+    BigDecimal calcularTotalVentasMes();
+
+    String obtenerProductoMasVendidoNombre();
+
+    Integer obtenerProductoMasVendidoCantidad();
+
+    List<Object[]> obtenerVentasPorCliente();
+
+    List<Object[]> obtenerVentasPorClienteEnRango(LocalDate inicio, LocalDate fin);
 
 }

@@ -107,6 +107,11 @@ public class ClienteController {
             Cliente cliente;
 
             if ("JURIDICO".equalsIgnoreCase(tipo)) {
+                if (ruc == "" || razonSocial == "" || correo == "" || nombreComercial == "" || telefono == ""
+                        || direccion == "") {
+                    redirectAttributes.addFlashAttribute("error", "Faltan datos.");
+                    return "redirect:/cliente/create";
+                }
                 // Validar RUC y Razón Social
                 Optional<Empresa> empresaOpt = empresaService.buscarPorRuc(ruc);
                 Empresa empresa;
@@ -140,6 +145,11 @@ public class ClienteController {
                 cliente = cj;
 
             } else {
+                if (dni == "" || nombres == "" || correo == "" || apellidos == "" || telefono == ""
+                        || direccion == "") {
+                    redirectAttributes.addFlashAttribute("error", "Faltan datos.");
+                    return "redirect:/cliente/create";
+                }
                 // Validar DNI
                 Optional<Persona> personaOpt = personaService.findByDni(dni);
                 Persona persona;

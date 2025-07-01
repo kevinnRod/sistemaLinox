@@ -18,7 +18,7 @@ public class EmpresaAnfitrionServiceImpl implements EmpresaAnfitrionService {
 
     @Override
     public List<EmpresaAnfitrion> findAll() {
-        return empresaAnfitrionRepository.findAll();
+        return empresaAnfitrionRepository.findByidEstado(1);
     }
 
     @Override
@@ -34,5 +34,10 @@ public class EmpresaAnfitrionServiceImpl implements EmpresaAnfitrionService {
     @Override
     public void deleteById(Integer id) {
         empresaAnfitrionRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<EmpresaAnfitrion> getEmpresaUnica() {
+        return empresaAnfitrionRepository.findFirstByOrderByIdEmpresaAsc();
     }
 }
