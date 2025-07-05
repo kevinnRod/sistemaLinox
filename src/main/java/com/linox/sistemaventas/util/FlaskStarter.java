@@ -19,8 +19,9 @@ public class FlaskStarter {
         try {
             System.out.println("🚀 Iniciando intento de ejecutar la API Flask...");
 
-            String pythonPath = "C:\\ProgramData\\miniconda3\\python.exe";
-            String scriptPath = "D:\\Maykol\\A2025-I\\I.Web\\proyecto\\sistemaLinox\\modeladoLinox\\api_prediccion.py";
+            String pythonPath = "python";
+
+            String scriptPath = "modeladoLinox/api_prediccion.py";
 
             ProcessBuilder processBuilder = new ProcessBuilder(pythonPath, scriptPath);
             processBuilder.redirectErrorStream(true);
