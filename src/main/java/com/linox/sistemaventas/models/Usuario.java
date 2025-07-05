@@ -62,7 +62,7 @@ public class Usuario implements UserDetails {
     private Integer idEstado;
 
     @OneToOne
-    @JoinColumn(name = "id_persona", unique = true, nullable = false)
+    @JoinColumn(name = "id_persona", unique = true, nullable = true)
     private Persona persona;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
