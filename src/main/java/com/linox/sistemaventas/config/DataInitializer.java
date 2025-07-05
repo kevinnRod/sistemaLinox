@@ -1,5 +1,5 @@
 package com.linox.sistemaventas.config;
-
+import com.linox.sistemaventas.repositories.UsuarioRolRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +13,12 @@ import com.linox.sistemaventas.repositories.UsuarioRepository;
 
 @Configuration
 public class DataInitializer {
+
+    private final UsuarioRolRepository usuarioRolRepository;
+
+    DataInitializer(UsuarioRolRepository usuarioRolRepository) {
+        this.usuarioRolRepository = usuarioRolRepository;
+    }
 
     @Bean
     public CommandLineRunner initData(UsuarioRepository usuarioRepository,
@@ -43,7 +49,7 @@ public class DataInitializer {
                 // Asociar el rol al usuario
                 UsuarioRol usuarioRol = new UsuarioRol(usuario, rolAdmin);
                 usuarioRol.setIdEstado(1); // Activo
-                usuario.getUsuarioRoles().add(usuarioRol);
+                usuarioRolRepository.save(usuarioRol);
                 System.out.println("✅ Rol ADMIN asignado al usuario admin.");
             }
         };
