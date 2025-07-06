@@ -19,4 +19,8 @@ public interface UsuarioService {
     Optional<Usuario> findByCorreo(String correo);
 
     List<Usuario> findAllByEstadoActivo();
+
+    boolean existsByUsuario(String usuario);
+
+    boolean existsByCorreo(String correo);
 }

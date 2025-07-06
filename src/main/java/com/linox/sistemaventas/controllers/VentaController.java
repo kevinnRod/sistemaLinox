@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -49,6 +50,8 @@ import com.linox.sistemaventas.services.EmpresaAnfitrionService;
 import com.linox.sistemaventas.services.ProductoService;
 import com.linox.sistemaventas.services.VentaService;
 
+
+
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -77,7 +80,10 @@ public class VentaController {
             @RequestParam(defaultValue = "8") int size,
             Model model) {
 
-        List<Venta> ventas = ventaService.findAllActiveVentas();
+        List<Venta> ventas = ventaService.findAllActiveVentas()
+            .stream()
+            .sorted(Comparator.comparing(Venta::getFechaV).reversed())
+            .toList();
 
         List<Map<String, Object>> datosVentas = ventas.stream().map(venta -> {
             Map<String, Object> datos = new HashMap<>();

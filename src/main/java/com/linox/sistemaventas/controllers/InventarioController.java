@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.linox.sistemaventas.models.Producto;
+import com.linox.sistemaventas.models.Sucursal;
 import com.linox.sistemaventas.services.InventarioService;
 
 import jakarta.servlet.http.HttpSession;
@@ -47,13 +48,15 @@ public class InventarioController {
                 .toList();
 
         // Agrupar productos por sucursal
-        Map<String, Long> productosPorSucursal = productosActivos.stream()
+        Map<Sucursal, Long> productosPorSucursal = productosActivos.stream()
                 .filter(p -> p.getSucursal() != null)
                 .collect(Collectors.groupingBy(
-                        p -> p.getSucursal().getNombreSucursal(),
+                        Producto::getSucursal,
                         Collectors.counting()));
 
-        List<String> sucursalNombres = new ArrayList<>(productosPorSucursal.keySet());
+        List<String> sucursalNombres = productosPorSucursal.keySet().stream()
+                .map(Sucursal::getNombreSucursal)
+                .toList();
         List<Long> sucursalCantidades = new ArrayList<>(productosPorSucursal.values());
 
         // Agrupar productos con bajo stock por sucursal para el filtro dinámico
@@ -91,7 +94,11 @@ public class InventarioController {
         model.addAttribute("stocks", stocks); // gráfico bajo stock inicial
         model.addAttribute("sucursalNombres", sucursalNombres); // para gráfico por sucursal y select
         model.addAttribute("sucursalCantidades", sucursalCantidades);
-        model.addAttribute("sucursales", productosPorSucursal); // total sucursales
+        model.addAttribute("sucursales", productosPorSucursal.keySet().stream()
+                .collect(Collectors.toMap(
+                        Sucursal::getNombreSucursal,
+                        Sucursal::getNombreSucursal
+                ))); // total sucursales
         model.addAttribute("bajoStockPorSucursal", bajoStockPorSucursal); // para JS dinámico
 
         return "dashboard/inventario";

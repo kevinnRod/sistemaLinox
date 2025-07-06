@@ -87,10 +87,9 @@ public class UsuarioController {
         List<Empleado> empleadosSinUsuario = empleadoService.obtenerEmpleadosSinUsuario();
         model.addAttribute("empleadosSinUsuario", empleadosSinUsuario);
         model.addAttribute("active_page", "usuario");
-        return "usuario/crearUsuario"; // Vuelve a la vista usuario/crear.html
+        return "usuario/crearUsuario";
     }
 
-    // Crear un nuevo usuario
     @PostMapping("/save")
     public String saveUsuario(
             @RequestParam("usuario") @NotNull String usuario,
@@ -101,7 +100,19 @@ public class UsuarioController {
             @RequestParam("personaId") @NotNull Integer personaId,
             RedirectAttributes redirectAttributes) {
 
+        final long MAX_SIZE = 2 * 1024 * 1024; // 2MB
+
         try {
+            // Validación de usuario existente
+            if (usuarioService.existsByUsuario(usuario)) {
+                redirectAttributes.addFlashAttribute("error", "El nombre de usuario ya está registrado.");
+                return "redirect:/usuario/create";
+            }
+            if (usuarioService.existsByCorreo(correo)) {
+                redirectAttributes.addFlashAttribute("error", "El correo ya está registrado.");
+                return "redirect:/usuario/create";
+            }
+
             Usuario user = new Usuario();
             user.setUsuario(usuario);
             user.setCorreo(correo);
@@ -109,41 +120,32 @@ public class UsuarioController {
             user.setIdEstado(idEstado);
 
             Persona persona = personaService.findById(personaId)
-                    .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
+                    .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
             user.setPersona(persona);
 
             // Procesar la imagen si se envió
             if (foto != null && !foto.isEmpty()) {
                 String contentType = foto.getContentType();
-                if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
-                    redirectAttributes.addFlashAttribute("error", "El archivo debe ser una imagen JPEG o PNG.");
+                if (!(contentType.equals("image/jpeg") || contentType.equals("image/png"))) {
+                    redirectAttributes.addFlashAttribute("error", "La foto debe ser JPG o PNG.");
                     return "redirect:/usuario/create";
                 }
-                // Validar tamaño de archivo
                 if (foto.getSize() > MAX_SIZE) {
-                    redirectAttributes.addFlashAttribute("error", "El archivo es demasiado grande.");
+                    redirectAttributes.addFlashAttribute("error", "La foto debe pesar menos de 2MB.");
                     return "redirect:/usuario/create";
                 }
-
-                // Carpeta donde se guardan las fotos
                 String uploadDir = "uploads/usuarios/";
-                String fileName = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
+                String fileName = UUID.randomUUID() + "_" + foto.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
 
-                // Crear carpeta si no existe
                 if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
                 }
-
-                // Guardar el archivo en disco
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                // Guardar la ruta relativa en la BD
                 user.setUrlFoto("/uploads/usuarios/" + fileName);
             }
 
-            // Guardar el usuario
             usuarioService.save(user);
             redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
 
@@ -157,6 +159,7 @@ public class UsuarioController {
 
         return "redirect:/usuario";
     }
+
 
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable Integer id, Model model) {

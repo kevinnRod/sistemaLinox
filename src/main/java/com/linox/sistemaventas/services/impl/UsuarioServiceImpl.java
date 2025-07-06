@@ -50,4 +50,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<Usuario> findAllByEstadoActivo() {
         return usuarioRepository.findByIdEstado(1); // 1 es el estado activo
     }
+
+    @Override
+    public boolean existsByUsuario(String usuario) {
+        return usuarioRepository.existsByUsuario(usuario);
+    }
+
+    @Override
+    public boolean existsByCorreo(String correo) {
+        return usuarioRepository.existsByCorreo(correo);
+    }
+
 }
