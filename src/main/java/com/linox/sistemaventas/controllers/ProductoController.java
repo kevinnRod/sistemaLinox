@@ -1,10 +1,12 @@
 package com.linox.sistemaventas.controllers;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,14 +14,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.linox.sistemaventas.models.CategoriaProducto;
 import com.linox.sistemaventas.models.Producto;
+import com.linox.sistemaventas.services.CargoService;
 import com.linox.sistemaventas.services.CategoriaProductoService;
 import com.linox.sistemaventas.services.ProductoService;
 import com.linox.sistemaventas.services.ProveedorService;
 import com.linox.sistemaventas.services.SucursalService;
 import com.linox.sistemaventas.services.UnidadMedidaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.net.URLEncoder;
+
+
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,12 +53,44 @@ public class ProductoController {
     @Autowired
     private ProveedorService proveedorService;
 
+
+    
+
     // Mostrar lista
     @GetMapping
-    public String listarProductos(Model model) {
-        model.addAttribute("productos", productoService.findAllActivos());
+    public String listarProductos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) Integer sucursalId,
+            @RequestParam(required = false) Integer categoriaId,
+            Model model) {
+        
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Producto> productoPage = productoService.findByFilters(searchTerm, sucursalId, categoriaId, pageable);
+        
+        model.addAttribute("productos", productoPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productoPage.getTotalPages());
+        model.addAttribute("filterParams", buildFilterParams(searchTerm, sucursalId, categoriaId));
+        model.addAttribute("sucursales", sucursalService.findAllActivos());
+        model.addAttribute("categorias", categoriaProductoService.findAllActivos());
         model.addAttribute("active_page", "producto");
         return "productos/lista";
+    }
+
+    private String buildFilterParams(String searchTerm, Integer sucursalId, Integer categoriaId) {
+        StringBuilder params = new StringBuilder();
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            params.append("&searchTerm=").append(URLEncoder.encode(searchTerm, StandardCharsets.UTF_8));
+        }
+        if (sucursalId != null) {
+            params.append("&sucursalId=").append(sucursalId);
+        }
+        if (categoriaId != null) {
+            params.append("&categoriaId=").append(categoriaId);
+        }
+        return params.toString();
     }
 
     // Mostrar formulario de creación

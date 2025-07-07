@@ -3,10 +3,14 @@ package com.linox.sistemaventas.controllers;
 import com.linox.sistemaventas.models.Kardex;
 import com.linox.sistemaventas.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -31,11 +35,25 @@ public class KardexController {
 
     // Mostrar lista de movimientos
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("kardex", kardexService.findAllActivos());
+    public String listar(
+        @RequestParam(value = "producto", required = false) String producto,
+        @RequestParam(value = "tipo", required = false) String tipo,
+        @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+        @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "8") int size,
+        Model model
+    ) {
+        // Ajusta para que page sea 0-based
+        Page<Kardex> pageKardex = kardexService.buscarKardex(producto, tipo, fechaInicio, fechaFin, page - 1, size);
+        model.addAttribute("kardex", pageKardex.getContent());
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("totalPaginas", pageKardex.getTotalPages());
         model.addAttribute("active_page", "kardex");
         return "kardex/lista";
     }
+
+
 
     // Mostrar formulario de creación
     @GetMapping("/create")

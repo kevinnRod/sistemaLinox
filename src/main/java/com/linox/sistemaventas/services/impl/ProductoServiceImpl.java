@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.linox.sistemaventas.models.Producto;
@@ -55,4 +57,11 @@ public class ProductoServiceImpl implements ProductoService {
     public long count() {
         return productoRepository.count();
     }
+
+    // En ProductoService.java
+    @Override
+    public Page<Producto> findByFilters(String nombre, Integer categoriaId, Integer sucursalId, Pageable pageable) {
+        return productoRepository.findByFilters(nombre, categoriaId, sucursalId, pageable);
+    }
+
 }

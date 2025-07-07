@@ -1,23 +1,238 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
+      layout:decorate="~{layout}">
 
 <head>
     <th:block layout:fragment="head">
-        <title>Listado de Movimientos Kardex</title>
+        <title>Kardex</title>
+        <!-- Bootstrap Icons CDN -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <style>
+            body {
+                background: #f6f8fc;
+            }
+            .main-container {
+                padding: 1rem 0.5rem;
+                min-height: unset;
+            }
+            .card-kardex {
+                background: #fff;
+                border-radius: 18px;
+                box-shadow: 0 8px 32px 0 rgba(39, 68, 114, 0.10);
+                padding: 1.5rem 1.5rem;
+                margin-top: 0.5rem;
+                margin-bottom: 1.5rem;
+                position: relative;
+            }
+
+            .kardex-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 2.2rem;
+            }
+            .header-title {
+                background: linear-gradient(90deg, #25497a 0%, #53e7b6 100%);
+                color: #fff;
+                border-radius: 12px;
+                padding: 1.1rem 2.5rem;
+                font-size: 1.45rem;
+                font-weight: 700;
+                box-shadow: 0 4px 20px 0 rgba(39, 68, 114, 0.08);
+                letter-spacing: 0.5px;
+                border: 0;
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            /* Filtros */
+            .kardex-filtros {
+                margin-bottom: 1.5rem;
+            }
+            .form-label {
+                font-weight: 600;
+                font-size: 0.95rem;
+                color: #25497a;
+            }
+            .form-control, .form-select {
+                border-radius: 10px;
+                font-size: 0.97rem;
+                border: 1px solid #e2e8f0;
+                box-shadow: none;
+                transition: border .16s;
+            }
+            .form-control:focus, .form-select:focus {
+                border-color: #25497a;
+                box-shadow: 0 0 0 2px #25497a22;
+            }
+            .btn-limpiar {
+                background-color: #fff;
+                border: 1px solid #e2e8f0;
+                color: #25497a;
+                padding: 9px 20px;
+                font-weight: 600;
+                border-radius: 10px;
+                transition: 0.2s, box-shadow .2s;
+                box-shadow: 0 2px 8px rgba(39,68,114,0.04);
+            }
+            .btn-limpiar:hover {
+                background-color: #e5eefb;
+                color: #26324b;
+                box-shadow: 0 6px 18px rgba(39,68,114,0.09);
+            }
+            /* Tabla */
+            .table-kardex {
+                margin-top: 0.2rem;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 12px 0 rgba(39, 68, 114, 0.07);
+            }
+            .table-kardex thead th {
+                background: linear-gradient(90deg, #17223b 0%, #25497a 100%);
+                color: #fff;
+                font-size: 1.07rem;
+                font-weight: 700;
+                letter-spacing: .03em;
+                border: none;
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                box-shadow: 0 1px 0 #e8effa;
+                text-align: center;
+            }
+            .table-kardex tbody tr {
+                background-color: #f8fafc;
+                transition: background 0.2s, box-shadow 0.2s;
+            }
+            .table-kardex tbody tr:hover {
+                background-color: #e5eefb;
+                box-shadow: 0 2px 12px rgba(39,68,114,0.08);
+            }
+            .table-kardex td, .table-kardex th {
+                vertical-align: middle;
+                padding: 0.82rem 1.2rem;
+                font-size: 0.97rem;
+                color: #26324b;
+            }
+            /* Badges */
+            .badge-entrada, .badge-salida {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                color: #fff;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.91rem;
+                padding: 6px 18px 6px 12px;
+                box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+                border: none;
+            }
+            .badge-entrada {
+                background: linear-gradient(90deg, #2ecc71 70%, #53e7b6 100%);
+            }
+            .badge-salida {
+                background: linear-gradient(90deg, #e74c3c 60%, #ff8a65 100%);
+            }
+            .badge-entrada i, .badge-salida i {
+                font-size: 1.04em;
+                opacity: .7;
+            }
+            /* Paginación */
+            .pagination .page-link {
+                border: none;
+                color: #25497a;
+                background: #fff;
+                font-weight: 600;
+                border-radius: 8px;
+                margin: 0 3px;
+                transition: 0.2s;
+            }
+            .pagination .page-item.active .page-link {
+                background: linear-gradient(90deg, #25497a 0%, #53e7b6 100%);
+                color: #fff;
+                box-shadow: 0 2px 6px rgba(39,68,114,0.13);
+            }
+            .pagination .page-link:hover {
+                background-color: #e5eefb;
+                color: #26324b;
+            }
+            .pagination .page-item.disabled .page-link {
+                color: #bdbdbd;
+                background: #f1f1f1;
+            }
+            @media (max-width: 1200px) {
+                .card-kardex {
+                    padding: 1.2rem 0.5rem 1rem 0.5rem;
+                }
+                .header-title {
+                    font-size: 1.1rem;
+                    padding: 0.7rem 1rem;
+                }
+            }
+            @media (max-width: 768px) {
+                .main-container {
+                    padding: 1rem 0.2rem;
+                }
+                .card-kardex {
+                    padding: 0.5rem 0.2rem 0.5rem 0.2rem;
+                }
+                .header-title {
+                    width: 100%;
+                    text-align: center;
+                    font-size: 1.02rem;
+                }
+            }
+        </style>
     </th:block>
 </head>
 
 <body>
-    <div layout:fragment="content" class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0"><i class="bi bi-list-columns"></i> Kardex</h2>
+<div layout:fragment="content">
+    <div class="main-container">
+        <div class="card-kardex">
 
-        </div>
+            <!-- Encabezado -->
+            <div class="kardex-header">
+                <div class="header-title">
+                    <i class="bi bi-list-columns"></i> Kardex
+                </div>
+            </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-dark text-center">
+            <!-- Filtros -->
+            <form class="row g-2 align-items-end kardex-filtros" id="kardex-filtros" autocomplete="off">
+                <div class="col-md-3">
+                    <label class="form-label mb-1" for="filtroProducto">Producto</label>
+                    <input type="text" class="form-control" name="producto" id="filtroProducto" placeholder="Buscar producto..." th:value="${param.producto}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label mb-1" for="filtroTipo">Tipo</label>
+                    <select class="form-select" name="tipo" id="filtroTipo">
+                        <option value="" th:selected="${param.tipo == null or #strings.isEmpty(param.tipo)}">Todos los tipos</option>
+                        <option value="Entrada" th:selected='${"Entrada".equals(#strings.trim(param.tipo))}'>Entrada</option>
+                        <option value="Salida" th:selected='${"Salida".equals(#strings.trim(param.tipo))}'>Salida</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <div class="flex-grow-1">
+                        <label class="form-label mb-1" for="filtroFechaInicio">Desde</label>
+                        <input type="date" class="form-control" name="fechaInicio" id="filtroFechaInicio" th:value="${param.fechaInicio}">
+                    </div>
+                    <div class="flex-grow-1">
+                        <label class="form-label mb-1" for="filtroFechaFin">Hasta</label>
+                        <input type="date" class="form-control" name="fechaFin" id="filtroFechaFin" th:value="${param.fechaFin}">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-limpiar w-100" onclick="limpiarFiltros()">
+                        <i class="bi bi-eraser"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-kardex">
+                    <thead>
                     <tr>
                         <th>ID</th>
                         <th>Producto</th>
@@ -30,34 +245,120 @@
                         <th>Fecha</th>
                         <th>Detalle</th>
                     </tr>
-                </thead>
-                <tbody th:if="${kardex != null and !kardex.isEmpty()}">
+                    </thead>
+                    <tbody th:if="${kardex != null and !kardex.isEmpty()}">
                     <tr th:each="k : ${kardex}">
                         <td class="text-center" th:text="${k.idKardex}"></td>
                         <td th:text="${k.producto?.nombreProducto}"></td>
-                        <td th:text="${k.tipoMovimiento?.nombre}"></td>
+                        <td class="text-center">
+                            <span th:if="${k.tipoMovimiento?.nombre == 'Entrada'}" class="badge-entrada">
+                                <i class="bi bi-box-arrow-in-down"></i> Entrada
+                            </span>
+                            <span th:if="${k.tipoMovimiento?.nombre == 'Salida'}" class="badge-salida">
+                                <i class="bi bi-box-arrow-up"></i> Salida
+                            </span>
+                        </td>
                         <td class="text-end" th:text="${k.cantidad}"></td>
                         <td class="text-end" th:text="${k.stockResultante}"></td>
-                        <td class="text-end" th:text="${k.precioUnitario}"></td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(k.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
                         <td th:text="${k.documentoReferencia}"></td>
                         <td th:text="${k.sucursal?.nombreSucursal}"></td>
-                        <td class="text-center" th:text="${#temporals.format(k.fechaMovimiento, 'dd/MM/yyyy HH:mm')}">
-                        </td>
+                        <td class="text-center" th:text="${#temporals.format(k.fechaMovimiento, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${k.observaciones}"></td>
                     </tr>
-                </tbody>
-                <tbody th:unless="${kardex != null and !kardex.isEmpty()}">
+                    </tbody>
+                    <tbody th:unless="${kardex != null and !kardex.isEmpty()}">
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-3">
-                            <i class="bi bi-info-circle"></i> No hay movimientos registrados.
-                        </td>
+                        <td colspan="10" class="text-center text-muted">No hay movimientos registrados.</td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav th:if="${totalPaginas > 1}">
+                    <ul class="pagination pagination-sm">
+                        <!-- Botón Anterior -->
+                        <li class="page-item" th:classappend="${paginaActual == 1} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/kardex(
+                                    producto=${param.producto},
+                                    tipo=${param.tipo},
+                                    fechaInicio=${param.fechaInicio},
+                                    fechaFin=${param.fechaFin},
+                                    page=${paginaActual - 1}
+                                )}"
+                               aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <!-- Números de página -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(1, totalPaginas)}"
+                            th:classappend="${i == paginaActual} ? 'active'">
+                            <a class="page-link"
+                               th:href="@{/kardex(
+                                    producto=${param.producto},
+                                    tipo=${param.tipo},
+                                    fechaInicio=${param.fechaInicio},
+                                    fechaFin=${param.fechaFin},
+                                    page=${i}
+                                )}" th:text="${i}"></a>
+                        </li>
+                        <!-- Botón Siguiente -->
+                        <li class="page-item" th:classappend="${paginaActual == totalPaginas} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/kardex(
+                                    producto=${param.producto},
+                                    tipo=${param.tipo},
+                                    fechaInicio=${param.fechaInicio},
+                                    fechaFin=${param.fechaFin},
+                                    page=${paginaActual + 1}
+                                )}"
+                               aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
+</div>
 
-    <th:block layout:fragment="js"></th:block>
+<th:block layout:fragment="js">
+    <script>
+        // Referencias a los inputs
+        const producto = document.getElementById('filtroProducto');
+        const tipo = document.getElementById('filtroTipo');
+        const fechaInicio = document.getElementById('filtroFechaInicio');
+        const fechaFin = document.getElementById('filtroFechaFin');
+
+        function filtrarKardex() {
+            const params = new URLSearchParams();
+            params.append('producto', producto.value);
+            params.append('tipo', tipo.value);
+            params.append('fechaInicio', fechaInicio.value);
+            params.append('fechaFin', fechaFin.value);
+
+            window.location = '?' + params.toString();
+        }
+
+        // Escucha cambios automáticamente
+        producto.addEventListener('input', filtrarKardex);
+        tipo.addEventListener('change', filtrarKardex);
+        fechaInicio.addEventListener('change', filtrarKardex);
+        fechaFin.addEventListener('change', filtrarKardex);
+
+        function limpiarFiltros() {
+            document.getElementById('filtroProducto').value = '';
+            document.getElementById('filtroTipo').value = '';
+            document.getElementById('filtroFechaInicio').value = '';
+            document.getElementById('filtroFechaFin').value = '';
+            filtrarKardex();
+        }
+    </script>
+</th:block>
 </body>
-
 </html>
