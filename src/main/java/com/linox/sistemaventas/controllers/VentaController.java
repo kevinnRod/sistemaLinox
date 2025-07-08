@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -49,6 +50,8 @@ import com.linox.sistemaventas.services.EmpresaAnfitrionService;
 import com.linox.sistemaventas.services.ProductoService;
 import com.linox.sistemaventas.services.VentaService;
 
+
+
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -71,15 +74,17 @@ public class VentaController {
     private EmpresaAnfitrionService empresaAnfitrionService;
 
     // 3. Mostrar listado
-    @GetMapping
+    @GetMapping()
     public String listarVentas(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "8") int size,
             Model model) {
 
-        List<Venta> ventas = ventaService.findAllActiveVentas();
+        List<Venta> ventas = ventaService.findAllActiveVentas()
+            .stream()
+            .sorted(Comparator.comparing(Venta::getFechaV).reversed())
+            .toList();
 
-        // Convertir a lista de mapas
         List<Map<String, Object>> datosVentas = ventas.stream().map(venta -> {
             Map<String, Object> datos = new HashMap<>();
             datos.put("codigo", venta.getCodVenta());
@@ -105,17 +110,17 @@ public class VentaController {
             return datos;
         }).toList();
 
-        // Paginación manual
-        int total = datosVentas.size();
-        int totalPages = (int) Math.ceil((double) total / size);
-        int fromIndex = (page - 1) * size;
-        int toIndex = Math.min(fromIndex + size, total);
-
+        // Paginación
+        int totalVentas = datosVentas.size();
+        int totalPages = (int) Math.ceil((double) totalVentas / size);
+        int fromIndex = Math.min((page - 1) * size, totalVentas);
+        int toIndex = Math.min(fromIndex + size, totalVentas);
         List<Map<String, Object>> paginaVentas = datosVentas.subList(fromIndex, toIndex);
 
         model.addAttribute("ventas", paginaVentas);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("size", size);
         model.addAttribute("active_page", "listarventa");
 
         return "venta/listar";
@@ -182,17 +187,22 @@ public class VentaController {
 
     @GetMapping("/{codigo}")
     public String verDetalleVenta(@PathVariable("codigo") String codigo, Model model) {
-        // Buscar la venta por código, con su detalle (productos, cantidades, precios,
-        // etc.)
+        // Buscar la venta por código, con su detalle
         Optional<Venta> venta = ventaService.findByCodVenta(codigo);
 
-        if (venta.isPresent() == false) {
-            // Manejar error o redirigir
-            return "redirect:/ventas";
+        if (venta.isEmpty()) {
+            // Redirigir si la venta no existe
+            return "redirect:/ventas?error=VentaNoEncontrada";
         }
+
         Cliente cliente = clienteService.findById(venta.get().getCliente().getCodCliente())
-                .orElseThrow(() -> new RuntimeException(
-                        "Cliente no encontrado con ID: " + venta.get().getCliente().getCodCliente()));
+                .orElse(null);
+
+        if (cliente == null) {
+            // Redirigir si el cliente no existe, en lugar de lanzar una excepción
+            return "redirect:/ventas?error=ClienteNoEncontrado";
+        }
+
         if (cliente instanceof ClienteNatural cn) {
             model.addAttribute("nombre", cn.getPersona().getNombres() + " " + cn.getPersona().getApellidos());
             model.addAttribute("identificacion", cn.getPersona().getDni());
@@ -203,7 +213,7 @@ public class VentaController {
 
         model.addAttribute("venta", venta.get());
         model.addAttribute("active_page", "listarventa");
-        return "venta/detalle"; // nombre del template para detalle
+        return "venta/detalle"; // Nombre del template para detalle
     }
 
     @GetMapping("/{codigo}/comprobante")

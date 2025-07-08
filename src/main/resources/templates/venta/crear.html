@@ -1,240 +1,456 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
-
+      layout:decorate="~{layout}">
 <head>
     <th:block layout:fragment="head">
         <title>Registrar Venta</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap" rel="stylesheet">
         <style>
+            body {
+                background: #eef2ff; /* Azul muy claro para el fondo de la página */
+                font-family: 'Inter', Arial, sans-serif;
+            }
+            .main-container {
+                padding: 2.5rem 1.5rem;
+                min-height: 100vh;
+            }
             .card {
-                border-radius: 1rem;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 18px;
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+                max-width: 950px;
+                margin: 2.5rem auto;
+                padding: 2.5rem !important;
+                background: #fff;
+                border: none;
             }
-
-            .form-label i {
-                margin-right: 5px;
+            .section-title {
+                font-weight: 700;
+                color: #17223b; /* Azul oscuro para títulos */
+                letter-spacing: 0.5px;
+                margin-bottom: 1.5rem;
+                font-size: 1.6rem;
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
             }
-
-            .btn-primary,
-            .btn-danger,
+            .form-label {
+                color: #274472; /* Azul medio para etiquetas */
+                font-weight: 500;
+                font-size: 1.05rem;
+                margin-bottom: 0.4rem;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+            .form-select, .form-control, .select2-container--default .select2-selection--single {
+                border-radius: 0.7rem !important;
+                border: 1px solid #c7d2fe !important; /* Borde azul claro */
+                background: #f8faff; /* Fondo azul muy claro */
+                font-size: 1.02rem;
+                min-height: 46px;
+                color: #17223b; /* Texto en azul oscuro */
+                padding: 0.6rem 1.2rem;
+                transition: border 0.2s, box-shadow 0.2s;
+            }
+            .form-select:focus, .form-control:focus, .select2-container--default .select2-selection--single:focus {
+                border-color: #3a8dde !important; /* Azul medio al enfocar */
+                box-shadow: 0 0 0 3px rgba(58, 141, 222, 0.2); /* Sombra azul clara */
+                background: #fff;
+                outline: none;
+            }
+            .select2-container--default .select2-selection--single {
+                height: 46px;
+                display: flex;
+                align-items: center;
+                padding-left: 0.6rem;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 46px;
+                right: 12px;
+            }
+            .select2-dropdown {
+                border-radius: 0.7rem !important;
+                border: 1px solid #c7d2fe !important; /* Borde azul claro */
+                font-size: 1.02rem;
+                box-shadow: 0 4px 12px rgba(58, 141, 222, 0.1);
+            }
+            .select2-results__option--highlighted[aria-selected] {
+                background: #dbe6ff !important; /* Azul claro para opción destacada */
+                color: #274472 !important; /* Texto azul medio */
+            }
+            .select2-results__option[aria-selected=true] {
+                background: #c7d2fe !important; /* Azul claro más oscuro para selección */
+                color: #17223b !important; /* Texto azul oscuro */
+            }
+            .btn {
+                border-radius: 9px;
+                font-weight: 600;
+                font-size: 1.08rem;
+                padding: 0.65rem 1.8rem;
+                border: none;
+                transition: background 0.18s, box-shadow 0.18s;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .btn-primary {
+                background: #3a8dde; /* Azul medio para botones primarios */
+                color: #fff;
+                box-shadow: 0 2px 12px 0 rgba(58, 141, 222, 0.13);
+            }
+            .btn-primary:hover, .btn-primary:focus {
+                background: #274472; /* Azul más oscuro al pasar el ratón */
+                box-shadow: 0 4px 20px 0 rgba(58, 141, 222, 0.22);
+                color: #fff;
+            }
             .btn-success {
-                border-radius: 1.5rem;
+                background: linear-gradient(90deg, #3a8dde 0%, #70c1ff 100%); /* Gradiente azul claro */
+                color: #fff;
+                box-shadow: 0 2px 12px 0 rgba(58, 141, 222, 0.13);
             }
-
-            #tabla-productos th,
-            #tabla-productos td {
+            .btn-success:hover, .btn-success:focus {
+                background: linear-gradient(90deg, #274472 0%, #3a8dde 100%); /* Gradiente más oscuro */
+                box-shadow: 0 4px 20px 0 rgba(58, 141, 222, 0.22);
+                color: #fff;
+            }
+            .btn-danger {
+                background: #e57373; /* Rojo claro para peligro, como contraste */
+                color: #fff;
+                box-shadow: 0 2px 12px 0 rgba(229, 115, 115, 0.09);
+            }
+            .btn-danger:hover, .btn-danger:focus {
+                background: #c62828; /* Rojo más oscuro */
+                box-shadow: 0 4px 16px 0 rgba(229, 115, 115, 0.16);
+                color: #fff;
+            }
+            .badge-stock {
+                font-size: 1.02rem;
+                background: #dbe6ff; /* Fondo azul claro para badges */
+                color: #274472; /* Texto azul medio */
+                border-radius: 0.7rem;
+                padding: 0.4em 1.2em;
+                font-weight: 600;
+                letter-spacing: 0.1px;
+            }
+            .badge-stock.low {
+                background: #ffdede; /* Fondo rojo claro para stock bajo */
+                color: #c62828; /* Texto rojo oscuro */
+            }
+            hr {
+                border-top: 2px solid #c7d2fe; /* Línea divisoria en azul claro */
+                margin: 1.8rem 0;
+            }
+            .table-responsive {
+                border-radius: 0.8rem;
+                overflow: hidden;
+                box-shadow: 0 2px 12px 0 rgba(25, 118, 210, 0.07);
+            }
+            #tabla-productos {
+                background: transparent;
+                margin-bottom: 0;
+            }
+            #tabla-productos th, #tabla-productos td {
                 vertical-align: middle;
+                border: none;
+                padding: 0.8rem 1rem;
+            }
+            #tabla-productos thead {
+                background: linear-gradient(90deg, #17223b 0%, #274472 100%); /* Gradiente azul oscuro */
+                color: #fff;
+            }
+            #tabla-productos th {
+                font-weight: 700;
+                font-size: 1.1rem;
+                letter-spacing: 0.2px;
+            }
+            #tabla-productos tbody tr {
+                background: #f8fafc; /* Fondo azul muy claro */
+                transition: background 0.17s;
+            }
+            #tabla-productos tbody tr:hover {
+                background: #e8effa; /* Azul claro al pasar el ratón */
+            }
+            #tabla-productos tfoot th {
+                background: #eef2ff; /* Azul muy claro para pie de tabla */
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: #17223b; /* Azul oscuro para el total */
+            }
+            .table-striped>tbody>tr:nth-of-type(odd)>* {
+                background-color: #f9faff; /* Azul muy claro para filas alternas */
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #17223b; /* Texto azul oscuro */
+                line-height: 46px;
+            }
+            .empty-message {
+                color: #b0b8c1;
+                font-style: italic;
+                text-align: center;
+                padding: 1.5rem;
+                background: #f0f7ff;
+                border-radius: 0.7rem;
+                margin-bottom: 1rem;
+            }
+            @media (max-width: 991px) {
+                .card {
+                    padding: 1.5rem !important;
+                }
+                .btn {
+                    font-size: 1rem;
+                    padding: 0.6rem 1.2rem;
+                }
+            }
+            @media (max-width: 600px) {
+                .card {
+                    padding: 1rem !important;
+                }
+                .section-title {
+                    font-size: 1.4rem;
+                }
             }
         </style>
     </th:block>
 </head>
-
 <body>
-    <div layout:fragment="content" class="">
-        <div class="card p-2">
-            <h2 class="mb-4 text-center text-primary">
-                <i class="bi bi-cart-plus-fill fs-2 me-2"></i> Registrar Nueva Venta
+<div layout:fragment="content">
+    <div class="main-container">
+        <div class="card">
+            <h2 class="section-title justify-content-center">
+                <i class="bi bi-cart-plus-fill fs-2"></i>
+                Registrar Nueva Venta
             </h2>
-
             <form th:action="@{/ventas/guardar}" method="post" th:object="${venta}">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label"><i class="bi bi-person-badge-fill"></i> Empleado</label>
-                        <select name="empleado.id" class="form-select">
-                            <option th:each="e : ${empleados}" th:value="${e.idPersona}" th:text="${e.nombres}">
-                            </option>
+                        <select name="empleado.id" class="form-select" required>
+                            <option value="">-- Seleccione un empleado --</option>
+                            <option th:each="e : ${empleados}" th:value="${e.idPersona}" th:text="${e.nombres}"></option>
                         </select>
-
                         <label class="form-label mt-3"><i class="bi bi-calendar-event-fill"></i> Fecha</label>
-                        <input type="text" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}"
-                            class="form-control bg-light" disabled />
-
+                        <input type="text" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}" class="form-control bg-light" disabled />
                         <label class="form-label mt-3"><i class="bi bi-receipt-cutoff"></i> Nro Venta</label>
-                        <input type="text" th:value="${venta.codVenta}" name="codVenta" class="form-control bg-light"
-                            readonly />
+                        <input type="text" th:value="${venta.codVenta}" name="codVenta" class="form-control bg-light" readonly />
                     </div>
-
                     <div class="col-md-6">
                         <label class="form-label"><i class="bi bi-people-fill"></i> Cliente</label>
-                        <select name="codCliente" class="form-select" required>
+                        <select name="codCliente" id="cliente-select" class="form-select" required>
                             <option value="">-- Seleccione un cliente --</option>
                             <option th:each="c : ${clientes}" th:value="${c.codCliente}"
-                                th:text="${c.getClass().getSimpleName == 'ClienteNatural' ? c.persona.nombres + ' ' + c.persona.apellidos : c.empresa.razonSocial}">
+                                    th:text="${c.getClass().getSimpleName == 'ClienteNatural' ? c.persona.nombres + ' ' + c.persona.apellidos : c.empresa.razonSocial}">
                             </option>
                         </select>
                     </div>
                 </div>
-
                 <hr>
-
                 <!-- AGREGAR PRODUCTOS -->
                 <div class="mb-4">
-                    <h4 class="text-success"><i class="bi bi-box-seam"></i> Agregar Productos</h4>
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <label class="form-label"><i></i> Producto</label>
+                    <h4 class="section-title fs-5"><i class="bi bi-box-seam"></i> Agregar Productos</h4>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label">Producto</label>
                             <select id="producto-select" class="form-select">
-                                <option th:value="${null}" th:text="'Seleccione un producto'"></option>
-                                <option th:each="p : ${productos}" th:value="${p.id}" th:data-stock="${p.stock}"
-                                    th:text="${p.nombreProducto + ' - S/' + p.precioUnitario}">
+                                <option value="">Seleccione un producto</option>
+                                <option th:each="p : ${productos}" th:value="${p.id}" 
+                                        th:data-stock="${p.stock}" th:data-precio="${p.precioUnitario}"
+                                        th:text="${p.nombreProducto + ' - S/' + p.precioUnitario}">
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label"><i></i> Cantidad</label>
-                            <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1" step="1"
-                                class="form-control" />
+                        <div class="col-md-2">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1" step="1" class="form-control" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Stock</label>
+                            <div><span id="stock-disponible" class="badge badge-stock">-</span></div>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label"><i></i> Stock</label>
-                            <input type="text" id="stock-disponible" class="form-control bg-light" readonly
-                                placeholder="Stock disponible" />
-                        </div>
-
-                        <div class="col-md-3">
-                            <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">
-                                <i class="bi bi-plus-circle-fill"></i> Agregar
+                            <button type="button" class="btn btn-primary w-100 py-2" onclick="agregarProducto()">
+                                <i class="bi bi-plus-circle-fill"></i> Agregar Producto
                             </button>
                         </div>
                     </div>
                 </div>
-
                 <!-- TABLA -->
                 <div class="table-responsive mb-4">
-                    <table id="tabla-productos" class="table table-bordered table-striped align-middle">
-                        <thead class="table-primary text-center">
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Subtotal</th>
-                                <th>Acción</th>
-                            </tr>
+                    <table id="tabla-productos" class="table align-middle">
+                        <thead class="text-center">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
                         </thead>
                         <tbody id="tbody-productos"></tbody>
                         <tfoot>
-                            <tr>
-                                <th colspan="2" class="text-end">TOTAL:</th>
-                                <th class="text-center" id="total-general">S/0.00</th>
-                                <th></th>
-                            </tr>
+                        <tr>
+                            <th colspan="3" class="text-end">TOTAL:</th>
+                            <th class="text-center" id="total-general">S/ 0.00</th>
+                            <th></th>
+                        </tr>
                         </tfoot>
                     </table>
+                    <div id="empty-message" class="empty-message" style="display: none;">
+                        No hay productos agregados. Agrega productos para continuar.
+                    </div>
                 </div>
-
                 <!-- Inputs ocultos -->
                 <div id="contenedor-inputs"></div>
-
-                <div class="text-end d-flex justify-content-end gap-2">
-                    <a th:href="@{/ventas}" class="btn btn-danger btn-lg">
+                <div class="text-end d-flex justify-content-end gap-3 mt-4">
+                    <a th:href="@{/ventas}" class="btn btn-danger btn-lg px-4">
                         <i class="bi bi-x-circle-fill"></i> Cancelar
                     </a>
-                    <button type="submit" class="btn btn-success btn-lg">
+                    <button type="submit" class="btn btn-success btn-lg px-4" id="guardar-venta">
                         <i class="bi bi-save2-fill"></i> Guardar Venta
                     </button>
                 </div>
             </form>
         </div>
     </div>
+</div>
+<!-- JS -->
+<th:block layout:fragment="js">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        const productosSeleccionados = {};
+        const stockOriginal = {};
 
-    <!-- JS -->
-    <th:block layout:fragment="js">
-        <script th:inline="javascript">
-            const productosSeleccionados = {};
-            const stockOriginal = {};
+        $(document).ready(function () {
+            $('#producto-select').select2({ width: '100%', placeholder: "Seleccione un producto" });
+            $('#cliente-select').select2({ width: '100%', placeholder: "Seleccione un cliente" });
 
-            function agregarProducto() {
-                const select = document.getElementById('producto-select');
-                const cantidadInput = document.getElementById('cantidad');
-                const cantidad = parseInt(cantidadInput.value);
-                const productoId = select.value;
-                const productoNombre = select.options[select.selectedIndex].text;
-                const precio = parseFloat(productoNombre.split('S/')[1]);
-
-                if (!productoId || isNaN(cantidad) || cantidad < 1) {
-                    alert('Producto o cantidad inválida');
-                    return;
-                }
-
-                const stockDisponible = stockOriginal[productoId] - (productosSeleccionados[productoId]?.cantidad || 0);
-                if (cantidad > stockDisponible) {
-                    alert('Cantidad excede el stock disponible.');
-                    return;
-                }
-
-                const tbody = document.querySelector('#tabla-productos tbody');
-                const contenedor = document.getElementById('contenedor-inputs');
-
-                if (productosSeleccionados[productoId]) {
-                    const fila = document.getElementById('fila-' + productoId);
-                    const nuevaCantidad = productosSeleccionados[productoId].cantidad + cantidad;
-                    const nuevoSubtotal = (nuevaCantidad * precio).toFixed(2);
-                    fila.querySelector('.cantidad').innerText = nuevaCantidad;
-                    fila.querySelector('.subtotal').innerText = 'S/' + nuevoSubtotal;
-
-                    document.getElementById('input-cantidad-' + productoId).value = nuevaCantidad;
-                    productosSeleccionados[productoId].cantidad = nuevaCantidad;
-                } else {
-                    const fila = document.createElement('tr');
-                    fila.id = 'fila-' + productoId;
-                    fila.innerHTML = `
-            <td>${productoNombre}</td>
-            <td class="cantidad text-center">${cantidad}</td>
-            <td class="subtotal text-center">S/${(cantidad * precio).toFixed(2)}</td>
-            <td class="text-center">
-                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto('${productoId}')">
-                    <i class="bi bi-trash-fill"></i> Eliminar
-                </button>
-            </td>
-        `;
-                    tbody.appendChild(fila);
-
-                    contenedor.innerHTML += `
-            <input type="hidden" name="productoIds" value="${productoId}" id="input-id-${productoId}" />
-            <input type="hidden" name="cantidades" value="${cantidad}" id="input-cantidad-${productoId}" />
-        `;
-
-                    productosSeleccionados[productoId] = { cantidad };
-                }
-
-                // ✅ ACTUALIZAR STOCK VISIBLE
-                const nuevoDisponible = stockOriginal[productoId] - productosSeleccionados[productoId].cantidad;
-                document.getElementById('stock-disponible').value = nuevoDisponible;
-
-                cantidadInput.value = 1;
-                actualizarTotal();
-            }
-
-            function eliminarProducto(productoId) {
-                document.getElementById('fila-' + productoId).remove();
-                document.getElementById('input-id-' + productoId).remove();
-                document.getElementById('input-cantidad-' + productoId).remove();
-                delete productosSeleccionados[productoId];
-                actualizarTotal();
-            }
-            function actualizarTotal() {
-                let total = 0;
-                for (const id in productosSeleccionados) {
-                    const fila = document.getElementById('fila-' + id);
-                    const subtotalText = fila.querySelector('.subtotal').innerText.replace('S/', '');
-                    total += parseFloat(subtotalText);
-                }
-                document.getElementById('total-general').innerText = 'S/' + total.toFixed(2);
-            }
-
-            document.getElementById('producto-select').addEventListener('change', function () {
+            $('#producto-select').on('change', function () {
                 const option = this.options[this.selectedIndex];
                 const productoId = this.value;
                 const stock = parseInt(option.getAttribute('data-stock'));
                 stockOriginal[productoId] = stock;
-
-                // Si el producto ya fue agregado, restar lo agregado
                 const usado = productosSeleccionados[productoId]?.cantidad || 0;
                 const stockDisponible = stock - usado;
-                document.getElementById('stock-disponible').value = stockDisponible;
+                const badge = $('#stock-disponible');
+                badge.text(isNaN(stockDisponible) ? '-' : stockDisponible);
+                if (stockDisponible < 5 && stockDisponible > 0) {
+                    badge.addClass('low');
+                } else {
+                    badge.removeClass('low');
+                }
             });
-        </script>
-    </th:block>
-</body>
+        });
 
+        function agregarProducto() {
+            const select = document.getElementById('producto-select');
+            const cantidadInput = document.getElementById('cantidad');
+            const cantidad = parseInt(cantidadInput.value);
+            const productoId = select.value;
+            const option = select.options[select.selectedIndex];
+            const productoNombre = option.text.split(' - ')[0];
+            const precio = parseFloat(option.getAttribute('data-precio'));
+
+            if (!productoId || isNaN(cantidad) || cantidad < 1) {
+                alert('Producto o cantidad inválida. Por favor, seleccione un producto y especifique una cantidad mayor a 0.');
+                return;
+            }
+
+            const stockDisponible = stockOriginal[productoId] - (productosSeleccionados[productoId]?.cantidad || 0);
+            if (cantidad > stockDisponible) {
+                alert('La cantidad solicitada excede el stock disponible. Stock actual: ' + stockDisponible);
+                return;
+            }
+
+            const tbody = document.getElementById('tbody-productos');
+            const contenedor = document.getElementById('contenedor-inputs');
+            const emptyMessage = document.getElementById('empty-message');
+
+            if (productosSeleccionados[productoId]) {
+                const fila = document.getElementById('fila-' + productoId);
+                const nuevaCantidad = productosSeleccionados[productoId].cantidad + cantidad;
+                const nuevoSubtotal = (nuevaCantidad * precio).toFixed(2);
+                fila.querySelector('.cantidad').innerText = nuevaCantidad;
+                fila.querySelector('.subtotal').innerText = 'S/ ' + nuevoSubtotal;
+                document.getElementById('input-cantidad-' + productoId).value = nuevaCantidad;
+                productosSeleccionados[productoId].cantidad = nuevaCantidad;
+            } else {
+                const fila = document.createElement('tr');
+                fila.id = 'fila-' + productoId;
+                fila.innerHTML = `
+                    <td>${productoNombre}</td>
+                    <td class="cantidad text-center">${cantidad}</td>
+                    <td class="text-center">S/ ${precio.toFixed(2)}</td>
+                    <td class="subtotal text-center">S/ ${(cantidad * precio).toFixed(2)}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto('${productoId}')">
+                            <i class="bi bi-trash-fill"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(fila);
+                contenedor.innerHTML += `
+                    <input type="hidden" name="productoIds" value="${productoId}" id="input-id-${productoId}" />
+                    <input type="hidden" name="cantidades" value="${cantidad}" id="input-cantidad-${productoId}" />
+                `;
+                productosSeleccionados[productoId] = { cantidad };
+            }
+
+            const nuevoDisponible = stockOriginal[productoId] - productosSeleccionados[productoId].cantidad;
+            const badge = document.getElementById('stock-disponible');
+            badge.innerText = isNaN(nuevoDisponible) ? '-' : nuevoDisponible;
+            if (nuevoDisponible < 5 && nuevoDisponible > 0) {
+                badge.classList.add('low');
+            } else {
+                badge.classList.remove('low');
+            }
+            cantidadInput.value = 1;
+            select.value = '';
+            $('#producto-select').trigger('change');
+            emptyMessage.style.display = 'none';
+            actualizarTotal();
+        }
+
+        function eliminarProducto(productoId) {
+            document.getElementById('fila-' + productoId).remove();
+            document.getElementById('input-id-' + productoId).remove();
+            document.getElementById('input-cantidad-' + productoId).remove();
+            delete productosSeleccionados[productoId];
+            actualizarTotal();
+
+            const select = document.getElementById('producto-select');
+            if (select.value === productoId || select.value === '') {
+                const badge = document.getElementById('stock-disponible');
+                badge.innerText = '-';
+                badge.classList.remove('low');
+            }
+            const tbody = document.getElementById('tbody-productos');
+            const emptyMessage = document.getElementById('empty-message');
+            if (tbody.children.length === 0) {
+                emptyMessage.style.display = 'block';
+            }
+        }
+
+        function actualizarTotal() {
+            let total = 0;
+            for (const id in productosSeleccionados) {
+                const fila = document.getElementById('fila-' + id);
+                const subtotalText = fila.querySelector('.subtotal').innerText.replace('S/ ', '');
+                total += parseFloat(subtotalText);
+            }
+            document.getElementById('total-general').innerText = 'S/ ' + total.toFixed(2);
+        }
+
+        // Validación al enviar el formulario
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const tbody = document.getElementById('tbody-productos');
+            if (tbody.children.length === 0) {
+                e.preventDefault();
+                alert('Debe agregar al menos un producto para registrar la venta.');
+            }
+        });
+    </script>
+</th:block>
+</body>
 </html>

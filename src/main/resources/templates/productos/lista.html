@@ -6,22 +6,269 @@
 <head>
     <th:block layout:fragment="head">
         <title>Productos</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap" rel="stylesheet">
+        <style>
+            body {
+                background: #eef2ff; /* Fondo azul muy claro */
+                font-family: 'Inter', Arial, sans-serif; /* Tipografía moderna */
+                margin: 0; /* Elimina margen por defecto del body */
+            }
+            .main-container {
+                padding: 1.5rem 1.5rem; /* Reducido de 2.5rem a 1.5rem */
+                min-height: 100vh;
+            }
+            .header-section {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem; /* Reducido de 2rem a 1.5rem */
+            }
+            .header-title {
+                font-weight: 700;
+                color: #17223b; /* Azul oscuro */
+                font-size: 1.6rem; /* Reducido de 1.8rem a 1.6rem */
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+            }
+            .btn-nuevo {
+                background: linear-gradient(90deg, #3a8dde 0%, #70c1ff 100%); /* Gradiente azul claro */
+                color: #fff;
+                border-radius: 9px;
+                font-weight: 600;
+                font-size: 1rem; /* Reducido de 1.08rem a 1rem */
+                padding: 0.5rem 1.5rem; /* Reducido de 0.65rem 1.8rem a 0.5rem 1.5rem */
+                border: none;
+                transition: background 0.18s, box-shadow 0.18s;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                box-shadow: 0 2px 12px 0 rgba(58, 141, 222, 0.13);
+            }
+            .btn-nuevo:hover {
+                background: linear-gradient(90deg, #274472 0%, #3a8dde 100%); /* Gradiente más oscuro */
+                box-shadow: 0 4px 20px 0 rgba(58, 141, 222, 0.22);
+                color: #fff;
+            }
+            .filter-section {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem; /* Reducido de 1.5rem a 1rem */
+                margin-bottom: 1.5rem; /* Reducido de 2rem a 1.5rem */
+                box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.08);
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem; /* Reducido de 1.5rem a 1rem */
+            }
+            .filter-group {
+                flex: 1;
+                min-width: 250px;
+            }
+            .filter-label {
+                color: #274472; /* Azul medio */
+                font-weight: 600;
+                margin-bottom: 0.3rem; /* Reducido de 0.5rem a 0.3rem */
+                font-size: 0.95rem; /* Reducido de 1rem a 0.95rem */
+            }
+            .filter-input, .filter-select {
+                border: 1px solid #c7d2fe; /* Azul claro */
+                border-radius: 8px;
+                padding: 0.5rem 0.8rem; /* Reducido de 0.6rem 1rem a 0.5rem 0.8rem */
+                font-size: 0.95rem; /* Reducido de 1rem a 0.95rem */
+                color: #17223b; /* Azul oscuro */
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+            .filter-input:focus, .filter-select:focus {
+                border-color: #3a8dde; /* Azul medio */
+                box-shadow: 0 0 0 0.2rem rgba(58, 141, 222, 0.2);
+                outline: none;
+            }
+            .btn-filtrar {
+                background: #dbe6ff; /* Azul muy claro */
+                color: #274472; /* Azul medio */
+                border-radius: 9px;
+                font-weight: 600;
+                font-size: 1rem; /* Reducido de 1.08rem a 1rem */
+                padding: 0.5rem 1.5rem; /* Reducido de 0.65rem 1.8rem a 0.5rem 1.5rem */
+                border: none;
+                transition: background 0.18s, box-shadow 0.18s;
+                align-self: flex-end;
+            }
+            .btn-filtrar:hover {
+                background: #c7d2fe; /* Azul claro más oscuro */
+                color: #17223b; /* Azul oscuro */
+                box-shadow: 0 4px 16px 0 rgba(58, 141, 222, 0.13);
+            }
+            .table-container {
+                background: #fff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.08);
+            }
+            .table-custom thead th {
+                background: linear-gradient(90deg, #17223b 0%, #274472 100%); /* Gradiente azul oscuro */
+                color: #fff;
+                font-weight: 700;
+                border: none;
+                font-size: 1rem; /* Reducido de 1.05rem a 1rem */
+                padding: 0.7rem 1rem; /* Reducido de 0.9rem 1.2rem a 0.7rem 1rem */
+            }
+            .table-custom tbody tr {
+                background: #f8fafc; /* Fondo azul muy claro */
+                transition: background 0.15s, box-shadow 0.15s;
+            }
+            .table-custom tbody tr:hover {
+                background: #e8effa; /* Azul claro al pasar el ratón */
+                box-shadow: 0 2px 12px 0 rgba(25, 118, 210, 0.09);
+            }
+            .table-custom tbody td {
+                border: none;
+                padding: 0.6rem 1rem; /* Reducido de 0.8rem 1.2rem a 0.6rem 1rem */
+                font-size: 0.95rem; /* Reducido de 1.02rem a 0.95rem */
+                color: #17223b;
+            }
+            .badge-custom {
+                padding: 0.4rem 0.8rem; /* Reducido de 0.5rem 1rem a 0.4rem 0.8rem */
+                border-radius: 8px;
+                font-size: 0.85rem; /* Reducido de 0.9rem a 0.85rem */
+                font-weight: 600;
+            }
+            .badge-activo {
+                background: #e6f7ee; /* Verde claro */
+                color: #2e7d32; /* Verde oscuro */
+            }
+            .badge-inactivo {
+                background: #feeced; /* Rojo claro */
+                color: #d32f2f; /* Rojo oscuro */
+            }
+            .btn-accion {
+                border-radius: 8px;
+                font-size: 0.9rem; /* Reducido de 0.95rem a 0.9rem */
+                padding: 0.4rem 1rem; /* Reducido de 0.5rem 1.2rem a 0.4rem 1rem */
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                transition: background 0.18s, box-shadow 0.18s;
+            }
+            .btn-editar {
+                background: #fff3e0; /* Amarillo claro */
+                color: #f57c00; /* Naranja */
+            }
+            .btn-editar:hover {
+                background: #ffe0b2; /* Amarillo más oscuro */
+                box-shadow: 0 2px 8px 0 rgba(245, 124, 0, 0.2);
+            }
+            .btn-eliminar {
+                background: #feeced; /* Rojo claro */
+                color: #d32f2f; /* Rojo oscuro */
+            }
+            .btn-eliminar:hover {
+                background: #ffcdd2; /* Rojo más oscuro */
+                box-shadow: 0 2px 8px 0 rgba(211, 47, 47, 0.2);
+            }
+            .pagination-section {
+                display: flex;
+                justify-content: center;
+                margin-top: 1rem; /* Reducido de 1.5rem a 1rem */
+                padding: 0.5rem; /* Reducido de 1rem a 0.5rem */
+            }
+            .pagination-custom {
+                display: flex;
+                gap: 0.5rem;
+            }
+            .pagination-custom li a {
+                background: #f8fafc; /* Fondo azul muy claro */
+                color: #274472; /* Azul medio */
+                border: 1px solid #c7d2fe; /* Azul claro */
+                border-radius: 8px;
+                padding: 0.4rem 0.8rem; /* Reducido de 0.5rem 1rem a 0.4rem 0.8rem */
+                transition: background 0.2s, color 0.2s;
+                font-size: 0.95rem; /* Reducido de 1rem a 0.95rem */
+            }
+            .pagination-custom li a:hover {
+                background: #3a8dde; /* Azul medio */
+                color: #fff;
+            }
+            .pagination-custom li.active a {
+                background: #3a8dde; /* Azul medio */
+                color: #fff;
+                font-weight: 600;
+            }
+            .no-data {
+                color: #5c6bc0; /* Azul medio */
+                font-size: 1rem; /* Reducido de 1.1rem a 1rem */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.6rem;
+                padding: 1.5rem; /* Reducido de 2rem a 1.5rem */
+            }
+            @media (max-width: 768px) {
+                .filter-section {
+                    flex-direction: column;
+                    gap: 0.8rem; /* Reducido de 1.2rem a 0.8rem */
+                }
+                .btn-filtrar {
+                    width: 100%;
+                    align-self: center;
+                }
+                .header-section {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.8rem; /* Reducido de 1rem a 0.8rem */
+                }
+            }
+        </style>
     </th:block>
 </head>
 
 <body>
 <div layout:fragment="content">
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0"><i class="bi bi-box-seam"></i> Gestión de Productos</h2>
-            <a th:href="@{/productos/create}" class="btn btn-success shadow-sm">
+    <div class="main-container">
+        <div class="header-section">
+            <h2 class="header-title"><i class="bi bi-box-seam fs-2"></i> Gestión de Productos</h2>
+            <a th:href="@{/productos/create}" class="btn btn-nuevo">
                 <i class="bi bi-plus-lg"></i> Nuevo Producto
             </a>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-dark text-center">
+        <div class="filter-section">
+            <div class="filter-group">
+                <label class="filter-label" for="searchTerm">Buscar por Nombre o Código</label>
+                <input type="text" id="searchTerm" name="searchTerm" class="form-control filter-input"
+                       placeholder="Ingrese nombre o código" th:value="${param.searchTerm}">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label" for="sucursalId">Filtrar por Sucursal</label>
+                <select id="sucursalId" name="sucursalId" class="form-select filter-select">
+                    <option value="">Todas las Sucursales</option>
+                    <option th:each="sucursal : ${sucursales}"
+                            th:value="${sucursal.idSucursal}"
+                            th:text="${sucursal.nombreSucursal}"
+                            th:selected="${param.sucursalId == sucursal.idSucursal.toString()}">
+                    </option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label" for="categoriaId">Filtrar por Categoría</label>
+                <select id="categoriaId" name="categoriaId" class="form-select filter-select">
+                    <option value="">Todas las Categorías</option>
+                    <option th:each="categoria : ${categorias}"
+                            th:value="${categoria.id}"
+                            th:text="${categoria.descripcion}"
+                            th:selected="${param.categoriaId == categoria.id.toString()}">
+                    </option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-filtrar" onclick="applyFilters()">
+                <i class="bi bi-search"></i> Filtrar
+            </button>
+        </div>
+
+        <div class="table-responsive table-container">
+            <table class="table table-hover table-custom align-middle">
+                <thead class="text-center">
                     <tr>
                         <th>ID</th>
                         <th>Sucursal</th>
@@ -46,24 +293,23 @@
                         <td class="text-center" th:text="${producto.stock}"></td>
                         <td th:text="${producto.unidadMedida != null ? producto.unidadMedida.descripcion : '—'}"></td>
                         <td class="text-center">
-                            <span class="badge"
+                            <span class="badge-custom"
                                   th:text="${producto.idEstado == 1 ? 'Activo' : 'Inactivo'}"
-                                  th:classappend="${producto.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                  th:classappend="${producto.idEstado == 1 ? 'badge-activo' : 'badge-inactivo'}">
                             </span>
                         </td>
                         <td class="text-center" th:text="${#temporals.format(producto.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                         <td class="text-center" th:text="${#temporals.format(producto.updatedAt, 'dd/MM/yyyy HH:mm')}"></td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-2">
-                                <a th:href="@{'/productos/editar/' + ${producto.id}}" class="btn btn-sm btn-warning" title="Editar">
+                                <a th:href="@{'/productos/editar/' + ${producto.id}}" class="btn btn-accion btn-editar" title="Editar">
                                     <i class="bi bi-pencil-square"></i> Editar
                                 </a>
-
                                 <form th:action="@{'/productos/eliminar/' + ${producto.id}}"
                                       method="post"
                                       onsubmit="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
                                     <input type="hidden" name="_method" value="delete" />
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                    <button type="submit" class="btn btn-accion btn-eliminar" title="Eliminar">
                                         <i class="bi bi-trash"></i> Eliminar
                                     </button>
                                 </form>
@@ -73,18 +319,49 @@
                 </tbody>
                 <tbody th:unless="${productos != null and !productos.isEmpty()}">
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-3">
+                        <td colspan="11" class="no-data">
                             <i class="bi bi-info-circle"></i> No hay productos registrados.
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <div class="pagination-section" th:if="${totalPages > 1}">
+            <nav aria-label="Paginación de productos">
+                <ul class="pagination pagination-custom">
+                    <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{'/productos?page=' + ${currentPage - 1} + ${filterParams}}">Anterior</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${currentPage == i ? 'active' : ''}">
+                        <a class="page-link" th:href="@{'/productos?page=' + ${i} + ${filterParams}}"
+                           th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{'/productos?page=' + ${currentPage + 1} + ${filterParams}}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 
 <th:block layout:fragment="js">
-    <!-- JS adicional si lo necesitas -->
+    <script>
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchTerm').value;
+            const sucursalId = document.getElementById('sucursalId').value;
+            const categoriaId = document.getElementById('categoriaId').value;
+            let url = '/productos';
+            const params = [];
+            if (searchTerm) params.push('searchTerm=' + encodeURIComponent(searchTerm));
+            if (sucursalId) params.push('sucursalId=' + sucursalId);
+            if (categoriaId) params.push('categoriaId=' + categoriaId);
+            if (params.length > 0) url += '?' + params.join('&');
+            window.location.href = url;
+        }
+    </script>
 </th:block>
 </body>
 </html>

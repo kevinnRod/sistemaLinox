@@ -22,4 +22,5 @@ public interface EmpleadoService {
 
     String obtenerUltimoCodigoEmpleado();
 
+    List<Empleado> obtenerEmpleadosSinUsuario();
 }

@@ -1,6 +1,7 @@
 package com.linox.sistemaventas.repositories;
 
 import com.linox.sistemaventas.models.TipoMovimiento;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

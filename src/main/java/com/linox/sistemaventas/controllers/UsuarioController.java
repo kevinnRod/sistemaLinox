@@ -1,5 +1,6 @@
 package com.linox.sistemaventas.controllers;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,9 +33,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.linox.sistemaventas.models.Empleado;
+import com.linox.sistemaventas.models.Persona;
 import com.linox.sistemaventas.models.Rol;
 import com.linox.sistemaventas.models.Usuario;
 import com.linox.sistemaventas.models.UsuarioRol;
+import com.linox.sistemaventas.services.EmpleadoService;
+import com.linox.sistemaventas.services.PersonaService;
 import com.linox.sistemaventas.services.RolService;
 import com.linox.sistemaventas.services.UsuarioRolService;
 import com.linox.sistemaventas.services.UsuarioService;
@@ -40,6 +48,8 @@ import com.linox.sistemaventas.services.impl.UsuarioDetailsServiceImpl;
 @Controller
 @RequestMapping("/usuario") // Ruta base para las vistas de usuario
 public class UsuarioController {
+
+    private static final long MAX_SIZE = 1048576; // 1 MB en bytes
 
     @Autowired
     private RolService rolService;
@@ -56,6 +66,12 @@ public class UsuarioController {
     @Autowired
     private UsuarioDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private PersonaService personaService;
+
     // Obtener todos los usuarios y redirigir a la vista
     @GetMapping
     public String getAll(Model model) {
@@ -68,57 +84,82 @@ public class UsuarioController {
     // Mostrar el formulario de creación de un nuevo usuario
     @GetMapping("/create")
     public String crearUsuario(Model model) {
+        List<Empleado> empleadosSinUsuario = empleadoService.obtenerEmpleadosSinUsuario();
+        model.addAttribute("empleadosSinUsuario", empleadosSinUsuario);
         model.addAttribute("active_page", "usuario");
-        return "usuario/crearUsuario"; // Vuelve a la vista usuario/crear.html
+        return "usuario/crearUsuario";
     }
 
-    // Crear un nuevo usuario
     @PostMapping("/save")
     public String saveUsuario(
-            @RequestParam("usuario") String usuario,
-            @RequestParam("correo") String correo,
-            @RequestParam("contrasenaEnc") String contrasenaEnc,
-            @RequestParam("idEstado") Integer idEstado,
+            @RequestParam("usuario") @NotNull String usuario,
+            @RequestParam("correo") @Email String correo,
+            @RequestParam("contrasenaEnc") @NotNull String contrasenaEnc,
+            @RequestParam("idEstado") @NotNull Integer idEstado,
             @RequestParam(value = "foto", required = false) MultipartFile foto,
+            @RequestParam("personaId") @NotNull Integer personaId,
             RedirectAttributes redirectAttributes) {
 
+        final long MAX_SIZE = 2 * 1024 * 1024; // 2MB
+
         try {
+            // Validación de usuario existente
+            if (usuarioService.existsByUsuario(usuario)) {
+                redirectAttributes.addFlashAttribute("error", "El nombre de usuario ya está registrado.");
+                return "redirect:/usuario/create";
+            }
+            if (usuarioService.existsByCorreo(correo)) {
+                redirectAttributes.addFlashAttribute("error", "El correo ya está registrado.");
+                return "redirect:/usuario/create";
+            }
+
             Usuario user = new Usuario();
             user.setUsuario(usuario);
             user.setCorreo(correo);
             user.setContrasenaEnc(passwordEncoder.encode(contrasenaEnc));
             user.setIdEstado(idEstado);
 
+            Persona persona = personaService.findById(personaId)
+                    .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+            user.setPersona(persona);
+
             // Procesar la imagen si se envió
             if (foto != null && !foto.isEmpty()) {
-                // Carpeta donde se guardan las fotos (relativa a la raíz del proyecto)
+                String contentType = foto.getContentType();
+                if (!(contentType.equals("image/jpeg") || contentType.equals("image/png"))) {
+                    redirectAttributes.addFlashAttribute("error", "La foto debe ser JPG o PNG.");
+                    return "redirect:/usuario/create";
+                }
+                if (foto.getSize() > MAX_SIZE) {
+                    redirectAttributes.addFlashAttribute("error", "La foto debe pesar menos de 2MB.");
+                    return "redirect:/usuario/create";
+                }
                 String uploadDir = "uploads/usuarios/";
-                String fileName = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
+                String fileName = UUID.randomUUID() + "_" + foto.getOriginalFilename();
                 Path uploadPath = Paths.get(uploadDir);
 
-                // Crear carpeta si no existe
                 if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
                 }
-
-                // Guardar el archivo en disco
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(foto.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                // Guardar la ruta relativa en la BD
                 user.setUrlFoto("/uploads/usuarios/" + fileName);
             }
 
-            // Guardar el usuario
             usuarioService.save(user);
             redirectAttributes.addFlashAttribute("success", "Usuario guardado correctamente.");
 
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la imagen: " + e.getMessage());
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el usuario: " + e.getMessage());
         }
 
         return "redirect:/usuario";
     }
+
 
     @GetMapping("/editar/{id}")
     public String editarUsuario(@PathVariable Integer id, Model model) {
@@ -157,7 +198,7 @@ public class UsuarioController {
             if (contrasena != null && !contrasena.isBlank()) {
                 user.setContrasenaEnc(passwordEncoder.encode(contrasena));
             }
-            
+
             user.setIdEstado(idEstado);
             // Procesar la imagen si se envió
             if (foto != null && !foto.isEmpty()) {

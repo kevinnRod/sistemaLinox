@@ -5,81 +5,258 @@
 <head>
     <th:block layout:fragment="head">
         <title>Ventas</title>
+        <!-- Bootstrap Icons CDN -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <style>
+            body {
+                background: #eef2ff; /* Fondo azul muy claro para un ambiente fresco */
+                font-family: 'Inter', Arial, sans-serif; /* Tipografía moderna */
+            }
+            .main-container {
+                padding: 2.5rem 1.5rem;
+                min-height: 100vh;
+            }
+            .card-ventas {
+                background: #fff;
+                border-radius: 18px;
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+                padding: 2.2rem 2.5rem 2rem 2.5rem;
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+                position: relative;
+            }
+            .ventas-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2.2rem;
+            }
+            .header-title {
+                background: linear-gradient(90deg, #17223b 0%, #274472 100%); /* Gradiente azul oscuro */
+                color: #fff;
+                border-radius: 12px;
+                padding: 1.1rem 2.5rem;
+                font-size: 1.45rem;
+                font-weight: 700;
+                box-shadow: 0 4px 20px 0 rgba(39, 68, 114, 0.08);
+                letter-spacing: 0.5px;
+                border: 0;
+                margin-bottom: 0;
+            }
+            .btn-nueva-venta {
+                background: linear-gradient(90deg, #3a8dde 0%, #70c1ff 100%); /* Gradiente azul claro */
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                border-radius: 9px;
+                padding: 0.65rem 1.8rem;
+                font-size: 1.08rem;
+                box-shadow: 0 2px 12px 0 rgba(58, 141, 222, 0.13);
+                transition: background 0.18s, box-shadow 0.18s;
+                backdrop-filter: blur(2px);
+            }
+            .btn-nueva-venta:hover {
+                background: linear-gradient(90deg, #274472 0%, #3a8dde 100%); /* Gradiente más oscuro al hover */
+                box-shadow: 0 4px 20px 0 rgba(58, 141, 222, 0.22);
+                color: #fff;
+            }
+            .table-custom {
+                margin-top: 0.8rem;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 2px 12px 0 rgba(25, 118, 210, 0.07);
+            }
+            .table-custom thead th {
+                background: linear-gradient(90deg, #17223b 0%, #274472 100%); /* Gradiente azul oscuro */
+                color: #fff;
+                font-weight: 700;
+                border: none;
+                font-size: 1.02rem;
+            }
+            .table-custom tbody tr {
+                background: #f8fafc; /* Fondo azul muy claro para filas */
+                transition: box-shadow 0.15s, background 0.12s;
+            }
+            .table-custom tbody tr:hover {
+                background: #e8effa; /* Azul claro al pasar el ratón */
+                box-shadow: 0 2px 12px 0 rgba(25, 118, 210, 0.09);
+            }
+            .btn-ver {
+                background: #3a8dde; /* Azul medio */
+                color: #fff;
+                font-weight: 500;
+                border: none;
+                border-radius: 7px;
+                padding: 0.36rem 1.1rem;
+                font-size: 0.97rem;
+                transition: background 0.15s, box-shadow 0.15s;
+                box-shadow: 0 2px 8px 0 rgba(58, 141, 222, 0.07);
+            }
+            .btn-ver:hover {
+                background: #274472; /* Azul más oscuro al hover */
+                color: #fff;
+                box-shadow: 0 4px 16px 0 rgba(58, 141, 222, 0.13);
+            }
+            .btn-eliminar {
+                background: #e57373; /* Rojo claro para contraste */
+                color: #fff;
+                font-weight: 500;
+                border: none;
+                border-radius: 7px;
+                padding: 0.36rem 1.1rem;
+                font-size: 0.97rem;
+                transition: background 0.13s, box-shadow 0.13s;
+                box-shadow: 0 2px 8px 0 rgba(229, 115, 115, 0.09);
+            }
+            .btn-eliminar:hover {
+                background: #c62828; /* Rojo más oscuro al hover */
+                box-shadow: 0 4px 16px 0 rgba(229, 115, 115, 0.16);
+            }
+            .pagination .page-item .page-link {
+                border-radius: 6px !important;
+                margin: 0 2px;
+                font-weight: 600;
+                transition: background 0.13s, color 0.13s;
+                color: #274472; /* Azul oscuro */
+                border: none;
+                background: transparent;
+            }
+            .pagination .page-item.active .page-link {
+                background: linear-gradient(90deg, #274472 0%, #3a8dde 100%); /* Gradiente azul */
+                color: #fff;
+                box-shadow: 0 2px 8px 0 rgba(58, 141, 222, 0.10);
+            }
+            .pagination .page-link:hover {
+                background: #dbe6ff; /* Azul muy claro al hover */
+                color: #17223b; /* Azul más oscuro */
+            }
+            .pagination .page-item.disabled .page-link {
+                color: #b0b8c1;
+                background: #f2f2f2;
+            }
+            @media (max-width: 1200px) {
+                .card-ventas {
+                    padding: 1.2rem 0.5rem 1rem 0.5rem;
+                }
+                .header-title {
+                    font-size: 1.1rem;
+                    padding: 0.7rem 1rem;
+                }
+                .btn-nueva-venta {
+                    padding: 0.5rem 1.1rem;
+                    font-size: 0.98rem;
+                }
+            }
+            @media (max-width: 768px) {
+                .main-container {
+                    padding: 1rem 0.2rem;
+                }
+                .card-ventas {
+                    padding: 0.5rem 0.2rem 0.5rem 0.2rem;
+                }
+                .ventas-header {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+                .header-title {
+                    width: 100%;
+                    text-align: center;
+                    font-size: 1.02rem;
+                }
+                .btn-nueva-venta {
+                    width: 100%;
+                }
+            }
+        </style>
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content">
-        <div class="container mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Gestión de Ventas</h2>
-                <a th:href="@{/ventas/crear}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-lg"></i> Nueva Venta
-                </a>
-            </div>
+        <div class="main-container">
+            <div class="card-ventas">
+                <!-- Cabecera -->
+                <div class="ventas-header">
+                    <div class="header-title">
+                        <i class="bi bi-bar-chart-fill me-2"></i>Gestión de Ventas
+                    </div>
+                    <a th:href="@{/ventas/crear}" class="btn btn-nueva-venta shadow">
+                        <i class="bi bi-plus-lg"></i> Nueva Venta
+                    </a>
+                </div>
 
-            <div class="table-responsive shadow rounded">
-                <table class="table table-hover table-bordered align-middle">
-                    <thead class="table-dark text-center">
-                        <tr>
-                            <th>Número</th>
-                            <th>Cliente</th>
-                            <th>Identificación</th>
-                            <th>Empleado</th>
-                            <th>Fecha</th>
-                            <th>Total</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody th:if="${ventas != null and ventas.content != null and !ventas.content.isEmpty()}">
-                        <tr th:each="venta : ${ventas.content}">
-                            <td class="text-center" th:text="${venta.codigo}"></td>
-                            <td th:text="${venta.nombre}"></td>
-                            <td th:text="${venta.identificacion}"></td>
-                            <td th:text="${venta.empleado}">Nombre empleado</td>
-                            <td class="text-center" th:text="${#dates.format(venta.fecha, 'dd/MM/yyyy')}"></td>
-                            <td class="text-center" th:text="'S/ ' + ${venta.total}"></td>
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a th:href="@{'/ventas/' + ${venta.codigo}}" class="btn btn-sm btn-info">
-                                        <i class="bi bi-eye"></i> Ver
-                                    </a>
-                                    <form th:action="@{/ventas/eliminar/{id}(id=${venta.codigo})}" method="post"
-                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta venta?');">
-                                        <input type="hidden" name="_method" value="delete" />
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tbody th:unless="${ventas != null and ventas.content != null and !ventas.content.isEmpty()}">
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">No hay ventas registradas.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <!-- Tabla -->
+                <div class="table-responsive mt-0">
+                    <table class="table table-hover table-custom align-middle mt-0">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Número</th>
+                                <th>Cliente</th>
+                                <th>Identificación</th>
+                                <th>Empleado</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody th:if="${ventas != null and !ventas.isEmpty()}">
+                            <tr th:each="venta : ${ventas}">
+                                <td class="text-center" th:text="${venta['codigo']}"></td>
+                                <td th:text="${venta['nombre']}"></td>
+                                <td th:text="${venta['identificacion']}"></td>
+                                <td th:text="${venta['empleado']}"></td>
+                                <td class="text-center" th:text="${venta['fecha']}"></td>
+                                <td class="text-center" th:text="'S/ ' + ${venta['total']}"></td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a th:href="@{'/ventas/' + ${venta.codigo}}" class="btn btn-ver btn-sm">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                        <form th:action="@{/ventas/eliminar/{id}(id=${venta.codigo})}" method="post"
+                                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta venta?');" style="display:inline;">
+                                            <input type="hidden" name="_method" value="delete" />
+                                            <button type="submit" class="btn btn-eliminar btn-sm">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody th:unless="${ventas != null and !ventas.isEmpty()}">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No hay ventas registradas.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="d-flex justify-content-center mt-4">
-                <nav>
-                    <ul class="pagination">
-                        <li th:classappend="${currentPage == 1} ? 'disabled'" class="page-item">
-                            <a class="page-link" th:href="@{|/ventas?page=${currentPage - 1}&size=10|}">Anterior</a>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link"
-                                th:text="'Página ' + ${currentPage} + ' de ' + ${totalPages}"></span>
-                        </li>
-                        <li th:classappend="${currentPage == totalPages} ? 'disabled'" class="page-item">
-                            <a class="page-link" th:href="@{|/ventas?page=${currentPage + 1}&size=10|}">Siguiente</a>
-                        </li>
-                    </ul>
-                </nav>
+                <!-- Paginación con botones numerados -->
+                <div class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Paginación de ventas">
+                        <ul class="pagination pagination-sm">
+                            <!-- Botón anterior -->
+                            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{|/ventas?page=${currentPage - 1}&size=${size}|}" aria-label="Anterior">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <!-- Botones numerados -->
+                            <li class="page-item"
+                                th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a class="page-link" th:href="@{|/ventas?page=${i}&size=${size}|}" th:text="${i}"></a>
+                            </li>
+                            <!-- Botón siguiente -->
+                            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a class="page-link" th:href="@{|/ventas?page=${currentPage + 1}&size=${size}|}" aria-label="Siguiente">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-
         </div>
     </div>
 
@@ -87,5 +264,4 @@
         <!-- Bootstrap Icons si no están en layout -->
     </th:block>
 </body>
-
 </html>

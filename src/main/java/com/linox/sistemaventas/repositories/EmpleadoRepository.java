@@ -15,5 +15,6 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Integer> {
 
     Empleado findTopByOrderByCodEmpleadoDesc();
 
+    List<Empleado> findByUsuarioIsNull();
     // Puedes agregar métodos personalizados si lo necesitas
 }

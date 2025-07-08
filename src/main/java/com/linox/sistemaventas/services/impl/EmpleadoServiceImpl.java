@@ -60,4 +60,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
         return null; // si no hay ninguno
     }
 
+    public List<Empleado> obtenerEmpleadosSinUsuario() {
+        return empleadoRepository.findByUsuarioIsNull();
+    }
+
 }

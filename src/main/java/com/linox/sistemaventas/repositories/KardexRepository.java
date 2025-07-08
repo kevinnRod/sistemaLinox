@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface KardexRepository extends JpaRepository<Kardex, Integer> {
-    List<Kardex> findByIdEstado(Integer idEstado);
+    List<Kardex> findByIdEstadoOrderByFechaMovimientoDesc(Integer idEstado);
 
     List<Kardex> findTop10ByIdEstadoOrderByFechaMovimientoDesc(Integer estado);
 }

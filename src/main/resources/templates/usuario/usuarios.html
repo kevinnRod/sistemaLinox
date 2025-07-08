@@ -4,41 +4,136 @@
 
 <head>
     <th:block layout:fragment="head">
-        <title>Usuarios</title>
+        <title>Gestión de Usuarios</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+        <style>
+            body {
+                background-color: #f4f6fa;
+            }
+            .card-table {
+                background: #fff;
+                border-radius: 1.1rem;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+                padding: 2rem 2rem 1.5rem 2rem;
+            }
+            .table thead {
+                background-color: #25334d;
+                color: #fff;
+                font-weight: 600;
+                border-top-left-radius: 0.7rem;
+                border-top-right-radius: 0.7rem;
+                font-size: 1.04rem;
+                letter-spacing: 0.5px;
+            }
+            .table tbody tr {
+                transition: background 0.15s;
+            }
+            .table-hover tbody tr:hover {
+                background-color: #f1f7ff;
+            }
+            .btn-custom {
+                border-radius: 0.7rem;
+                font-size: 0.97rem;
+                font-weight: 500;
+                transition: background 0.13s;
+            }
+            .btn-view {
+                background: #8e44ad;
+                color: #fff;
+            }
+            .btn-view:hover {
+                background: #6c3483;
+                color: #fff;
+            }
+            .btn-edit {
+                background: #f7ca18;
+                color: #4d3900;
+            }
+            .btn-edit:hover {
+                background: #f4d03f;
+                color: #4d3900;
+            }
+            .btn-delete {
+                background: #e74c3c;
+                color: #fff;
+            }
+            .btn-delete:hover {
+                background: #c0392b;
+                color: #fff;
+            }
+            .badge-success {
+                background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+                color: #222;
+                font-weight: 500;
+            }
+            .badge-danger {
+                background: #e74c3c;
+                color: #fff;
+                font-weight: 500;
+            }
+            .btn-new-user {
+                background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+                color: #222;
+                font-weight: 600;
+                border-radius: 0.7rem;
+                padding: 0.6rem 1.5rem;
+                font-size: 1.07rem;
+                border: none;
+                box-shadow: 0 2px 8px rgba(52, 199, 89, 0.07);
+                transition: background 0.15s;
+            }
+            .btn-new-user:hover {
+                background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+                color: #111;
+            }
+            .user-photo {
+                width: 40px;
+                height: 40px;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 2px solid #eaeaea;
+            }
+            @media (max-width: 768px) {
+                .card-table { padding: 1rem 0.4rem; }
+                .table-responsive { font-size: 0.96rem; }
+                .btn-new-user { width: 100%; margin-bottom: 1rem; }
+            }
+        </style>
     </th:block>
 </head>
 
 <body>
     <div layout:fragment="content">
-        <div class="container mt-4">
-            <!-- Mostrar mensajes -->
+        <div class="container py-4">
+            <!-- Mensajes -->
             <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
                 <span th:text="${success}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-
             <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                 <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Gestión de Usuarios</h2>
-                <a th:href="@{/usuario/create}" class="btn btn-success shadow-sm">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <h2 class="mb-0 fw-bold" style="color:#23272b;">Gestión de Usuarios</h2>
+                <a th:href="@{/usuario/create}" class="btn btn-new-user shadow-sm">
                     <i class="bi bi-plus-lg"></i> Nuevo Usuario
                 </a>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle">
-                    <thead class="table-dark text-center">
+            <div class="card-table table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th>ID</th>
+                            <th class="text-center">ID</th>
                             <th>Foto</th>
                             <th>Usuario</th>
                             <th>Correo</th>
-                            <th>Estado</th>
-                            <th>Creado</th>
-                            <th>Acciones</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Creado</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody th:if="${usuarios != null and !usuarios.isEmpty()}">
@@ -46,34 +141,29 @@
                             <td class="text-center" th:text="${usuario.idUsuario}"></td>
                             <td class="text-center">
                                 <img th:src="${usuario.urlFoto != null && !usuario.urlFoto.isEmpty() 
-                    ? usuario.urlFoto 
-                    : '/images/user-default.png'}" alt="Foto" class="rounded-circle"
-                                    style="width: 40px; height: 40px; object-fit: cover;">
+                                    ? usuario.urlFoto 
+                                    : '/images/user-default.png'}" alt="Foto" class="user-photo">
                             </td>
-
                             <td th:text="${usuario.usuario}"></td>
                             <td th:text="${usuario.correo}"></td>
                             <td class="text-center">
-                                <span class="badge" th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
-                                    th:classappend="${usuario.idEstado == 1 ? 'bg-success' : 'bg-danger'}">
+                                <span th:text="${usuario.idEstado == 1 ? 'Activo' : 'Inactivo'}"
+                                    th:classappend="${usuario.idEstado == 1 ? 'badge badge-success' : 'badge badge-danger'}">
                                 </span>
                             </td>
-                            <td class="text-center"
-                                th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td class="text-center" th:text="${#temporals.format(usuario.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                             <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a th:href="@{'/usuario/ver/' + ${usuario.idUsuario}}" class="btn btn-sm btn-info">
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                    <a th:href="@{'/usuario/ver/' + ${usuario.idUsuario}}" class="btn btn-sm btn-view btn-custom">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>
-                                    <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}"
-                                        class="btn btn-sm btn-warning">
+                                    <a th:href="@{'/usuario/editar/' + ${usuario.idUsuario}}" class="btn btn-sm btn-edit btn-custom">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
-
                                     <form th:action="@{'/usuario/eliminar/' + ${usuario.idUsuario}}" method="post"
-                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');" style="display:inline;">
                                         <input type="hidden" name="_method" value="delete" />
-                                        <button type="submit" class="btn btn-sm btn-danger">
+                                        <button type="submit" class="btn btn-sm btn-delete btn-custom">
                                             <i class="bi bi-trash"></i> Eliminar
                                         </button>
                                     </form>
@@ -83,18 +173,12 @@
                     </tbody>
                     <tbody th:unless="${usuarios != null and !usuarios.isEmpty()}">
                         <tr>
-                            <td colspan="6" class="text-center text-muted">No hay usuarios registrados.</td>
+                            <td colspan="7" class="text-center text-muted py-4">No hay usuarios registrados.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <th:block layout:fragment="js">
-        <!-- Si usas íconos de Bootstrap, asegúrate de tener esta línea en tu layout base -->
-        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> -->
-    </th:block>
 </body>
-
 </html>

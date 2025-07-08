@@ -3,6 +3,9 @@ package com.linox.sistemaventas.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.linox.sistemaventas.models.Producto;
 
 public interface ProductoService {
@@ -21,5 +24,6 @@ public interface ProductoService {
     List<Producto> findByCodProductoAndIdEstado(String codProducto, Integer idEstado);
 
     long count();
+    Page<Producto> findByFilters(String nombre, Integer categoriaId, Integer sucursalId, Pageable pageable);
 
 }
