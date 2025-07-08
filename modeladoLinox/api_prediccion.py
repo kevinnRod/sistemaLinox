@@ -2,13 +2,12 @@ from flask import Flask, jsonify
 import joblib
 import pandas as pd
 import mysql.connector
-from sklearn.ensemble import RandomForestRegressor  # ✅ Importar RandomForest
-import os
+from sklearn.ensemble import RandomForestRegressor  
 from datetime import datetime
 
 app = Flask(__name__)
 
-def entrenar_modelo_si_es_nuevo_mes():
+def entrenar_modelo_si_es_nuevo_mes():|
     mes_actual = datetime.now().strftime('%Y-%m')
     archivo_mes = 'mes_actual_nombre.pkl'
 
@@ -29,7 +28,7 @@ def entrenar_modelo_si_es_nuevo_mes():
     conn = mysql.connector.connect(
         host='localhost',
         user='root',
-        password='',
+        password='Dominickmedina7',
         database='linox'
     )
 
@@ -50,7 +49,7 @@ def entrenar_modelo_si_es_nuevo_mes():
     X = df_filtrado[['mes_index']]
     y = df_filtrado['total_ventas']
 
-    # ✅ Usamos RandomForestRegressor
+    
     modelo = RandomForestRegressor(n_estimators=100, random_state=42)
     modelo.fit(X, y)
 
@@ -63,7 +62,8 @@ def entrenar_modelo_si_es_nuevo_mes():
     return modelo, mes_index_a_predecir, mes_actual
 
 # Entrenamiento si corresponde
-modelo, mes_index_actual, mes_nombre_actual = entrenar_modelo_si_es_nuevo_mes()
+    
+    modelo, mes_index_actual, mes_nombre_actual = entrenar_modelo_si_es_nuevo_mes()
 
 @app.route('/api/prediccion-mensual', methods=['GET'])
 def prediccion_mes():
