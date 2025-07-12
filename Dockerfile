@@ -1,14 +1,22 @@
-# Imagen base con Java 21
+# Imagen base
 FROM eclipse-temurin:21-jdk
 
-# Directorio de trabajo en el contenedor
+# Instalar Python y pip
+RUN apt-get update && apt-get install -y python3 python3-pip
+
+# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar el .jar al contenedor
+# Copiar archivos necesarios
 COPY target/sistemaventas-0.0.1-SNAPSHOT.jar app.jar
+COPY modeladoLinox /app/modeladoLinox
+COPY requirements.txt .
 
-# Puerto expuesto por la app
-EXPOSE 8080
+# Instalar dependencias Python
+RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
-# Comando de inicio
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Exponer puertos
+EXPOSE 8080 5000
+
+# Comando para iniciar Flask en segundo plano y luego Spring Boot
+CMD python3 modeladoLinox/api_prediccion.py & java -jar app.jar
