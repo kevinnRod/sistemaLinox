@@ -19,7 +19,7 @@ public class FlaskStarter {
         try {
             System.out.println("🚀 Iniciando intento de ejecutar la API Flask...");
 
-            String pythonPath = "python";
+            String pythonPath = "python3";
 
             String scriptPath = "modeladoLinox/api_prediccion.py";
 
