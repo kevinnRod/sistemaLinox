@@ -8,3 +8,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://192.168.1.2:3306/linox
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 12345
+
+      PYMYSQL_HOST: 192.168.1.2
+      PYMYSQL_USER: root
+      PYMYSQL_PASS: 12345
+      PYMYSQL_DB: linox

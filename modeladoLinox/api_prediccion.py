@@ -27,10 +27,10 @@ def entrenar_modelo_si_es_nuevo_mes():
             os.remove(archivo)
 
     conn = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='',
-        database='linox'
+        host=os.getenv("PYMYSQL_HOST", "localhost"),
+        user=os.getenv("PYMYSQL_USER", "root"),
+        password=os.getenv("PYMYSQL_PASS", "12345"),
+        database=os.getenv("PYMYSQL_DB", "linox")
     )
 
     query = """
