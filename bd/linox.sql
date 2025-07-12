@@ -26,6 +26,7 @@ SET time_zone = "+00:00";
 --
 -- Estructura de tabla para la tabla `cargo`
 --
+SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `cargo`;
 CREATE TABLE IF NOT EXISTS `cargo` (
@@ -968,6 +969,7 @@ ALTER TABLE `venta`
   ADD CONSTRAINT `FK1db02qyoe55s64l1skr6ipe6x` FOREIGN KEY (`cod_cliente`) REFERENCES `cliente` (`cod_cliente`),
   ADD CONSTRAINT `FK748lxxe2tw5mlt50ume0tt31j` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_persona`);
 COMMIT;
+SET FOREIGN_KEY_CHECKS = 1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
