@@ -16,34 +16,34 @@ public class FlaskStarter {
 
     @PostConstruct
     public void startFlaskApi() {
-        try {
-            System.out.println("🚀 Iniciando intento de ejecutar la API Flask...");
+        // try {
+        //     System.out.println("🚀 Iniciando intento de ejecutar la API Flask...");
 
-            String pythonPath = "python3";
+        //     String pythonPath = "python3";
 
-            String scriptPath = "modeladoLinox/api_prediccion.py";
+        //     String scriptPath = "modeladoLinox/api_prediccion.py";
 
-            ProcessBuilder processBuilder = new ProcessBuilder(pythonPath, scriptPath);
-            processBuilder.redirectErrorStream(true);
-            flaskProcess = processBuilder.start(); // ← Guardamos el proceso
+        //     ProcessBuilder processBuilder = new ProcessBuilder(pythonPath, scriptPath);
+        //     processBuilder.redirectErrorStream(true);
+        //     flaskProcess = processBuilder.start(); // ← Guardamos el proceso
 
-            new Thread(() -> {
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(flaskProcess.getInputStream()))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        System.out.println("[FLASK] " + line);
-                    }
-                } catch (IOException e) {
-                    System.err.println("❌ Error leyendo salida del script Flask: " + e.getMessage());
-                }
-            }).start();
+        //     new Thread(() -> {
+        //         try (BufferedReader reader = new BufferedReader(
+        //                 new InputStreamReader(flaskProcess.getInputStream()))) {
+        //             String line;
+        //             while ((line = reader.readLine()) != null) {
+        //                 System.out.println("[FLASK] " + line);
+        //             }
+        //         } catch (IOException e) {
+        //             System.err.println("❌ Error leyendo salida del script Flask: " + e.getMessage());
+        //         }
+        //     }).start();
 
-            System.out.println("✅ Proceso de arranque de Flask iniciado.");
-        } catch (IOException e) {
-            System.out.println("❌ Error al iniciar la API Flask: " + e.getMessage());
-            e.printStackTrace();
-        }
+        //     System.out.println("✅ Proceso de arranque de Flask iniciado.");
+        // } catch (IOException e) {
+        //     System.out.println("❌ Error al iniciar la API Flask: " + e.getMessage());
+        //     e.printStackTrace();
+        // }
     }
 
     @PreDestroy
