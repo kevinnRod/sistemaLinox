@@ -84,4 +84,28 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     List<Object[]> obtenerVentasPorClienteEnRango(@Param("inicio") LocalDateTime inicio,
             @Param("fin") LocalDateTime fin);
 
+        @Query(value="""
+                SELECT v.cod_cliente AS CLIENTE,SUM(v.total) AS TOTAL
+                FROM venta v
+                WHERE v.fechav >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+                GROUP BY(v.cod_cliente);
+                
+                """,nativeQuery = true)
+        List<Object[]> obtenerVentasUltimoMes();
+
+        @Query(value="""
+                        SELECT p.nombre_producto AS PRODUCTO,SUM(d.subtotal) AS TOTAL
+                        FROM venta v
+                        JOIN detalle_venta d ON d.id_venta = v.id_venta
+                        JOIN producto p ON p.id_producto = d.id_producto
+                        WHERE v.fechav >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+                        GROUP BY(p.nombre_producto);
+                        """,nativeQuery = true)
+        List<Object[]> obtenerMontoProductosVend();
+
+
+        @Query(value = """
+                        SELECT nombre_producto as PRODUCTO,stock as STOCK  FROM producto WHERE stock<15;
+                        """,nativeQuery = true)
+        List<Object[]> obtenerProdStockBajo();
 }
